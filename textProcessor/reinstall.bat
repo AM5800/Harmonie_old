@@ -1,0 +1,1 @@
+cabal install -j --enable-tests --package-db=clear --package-db=global --package-db=%~dp0\build\sandbox\packages --prefix=%~dp0\build\sandbox\files --enable-library-profiling --only-dependencies --force-reinstalls --reinstall
