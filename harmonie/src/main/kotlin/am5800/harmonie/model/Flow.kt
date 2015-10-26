@@ -1,17 +1,11 @@
 package am5800.harmonie.model
 
-import am5800.harmonie.model.FlowItemsSource
-import am5800.harmonie.model.FlowItemResult
-import am5800.harmonie.model.FlowScore
 import am5800.harmonie.model.logging.LoggerProvider
 import am5800.harmonie.model.util.Property
 import org.joda.time.DateTime
 import org.joda.time.Duration
 import org.joda.time.Seconds
-import java.util.EnumSet
-import java.util.LinkedHashSet
-import java.util.LinkedList
-import java.util.Timer
+import java.util.*
 import kotlin.concurrent.schedule
 
 public class Flow(

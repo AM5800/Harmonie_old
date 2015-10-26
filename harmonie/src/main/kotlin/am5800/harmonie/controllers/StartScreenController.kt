@@ -2,7 +2,6 @@ package am5800.harmonie.controllers
 
 import am5800.harmonie.R
 import am5800.harmonie.controllers.defaultControls.ButtonController
-import am5800.harmonie.model.AttemptsHistoryManager
 import am5800.harmonie.model.EntityScheduler
 import am5800.harmonie.model.FlowManager
 import am5800.harmonie.model.Lifetime
@@ -42,7 +41,7 @@ public class StartScreenController(
     override fun bind(view: BindableView, bindingLifetime: Lifetime) {
         super.bind(view, bindingLifetime)
         val textsView = view.getChild<ListView>(R.id.textParts)
-        textsView.setAdapter(ArrayAdapter(view.activity, android.R.layout.simple_list_item_1, items))
+        textsView.adapter = ArrayAdapter(view.activity, android.R.layout.simple_list_item_1, items)
         textsView.setOnItemClickListener({ a, b, c, d ->
             textClicked(c)
         });

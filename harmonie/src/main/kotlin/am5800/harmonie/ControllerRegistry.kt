@@ -1,10 +1,9 @@
 package am5800.harmonie
 
 import am5800.harmonie.model.Lifetime
-import am5800.harmonie.viewBinding.BindableFragment
 import am5800.harmonie.viewBinding.BindableController
+import am5800.harmonie.viewBinding.BindableFragment
 import android.support.v4.app.FragmentManager
-import java.util
 import java.util.*
 
 public class ControllerRegistry {

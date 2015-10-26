@@ -1,18 +1,10 @@
 package am5800.harmonie
 
-import am5800.harmonie.HarmonieApplication
-import am5800.harmonie.R
-import am5800.harmonie.ControllerRegistry
 import am5800.harmonie.model.Lifetime
-import am5800.harmonie.tryReadFile
 import android.os.Bundle
-import android.os.Environment
-import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import java.io.File
-import java.io.FileOutputStream
 
 
 public class MainActivity : AppCompatActivity() {
@@ -20,7 +12,7 @@ public class MainActivity : AppCompatActivity() {
     public var controllerRegistry: ControllerRegistry? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val app = getApplication() as HarmonieApplication
+        val app = application as HarmonieApplication
 
         val lt = Lifetime()
         mainActivityLifetime = lt
@@ -32,8 +24,8 @@ public class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         if (savedInstanceState != null) {
-            registry.restore(getSupportFragmentManager())
-        } else registry.start(getSupportFragmentManager())
+            registry.restore(supportFragmentManager)
+        } else registry.start(supportFragmentManager)
     }
 
     override fun onDestroy() {
@@ -51,7 +43,7 @@ public class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        val id = item!!.getItemId()
+        val id = item!!.itemId
 
         if (id == R.id.action_settings) {
             return true

@@ -1,8 +1,5 @@
 package am5800.harmonie.model
 
-import com.google.common.collect.LinkedHashMultimap
-import com.google.common.collect.Multimap
-
 public data class RenderedExample(public val entityId: EntityId, public val text: String, public val meanings: List<String>) {
     override fun toString(): String {
         return "$text -> ${meanings.join(" | ")}"
@@ -11,13 +8,13 @@ public data class RenderedExample(public val entityId: EntityId, public val text
 
 public open class ExamplesRenderer() {
     fun render(example: Example): RenderedExample {
-        val ranges = example.ranges.sortBy {it.start}
+        val ranges = example.ranges.sortedBy { it.start }
         assertNotOverlapping(ranges, example.entityId)
 
         val sb = StringBuilder(example.text)
-        for (range in ranges.reverse()) {
+        for (range in ranges.reversed()) {
             val actual = sb.substring(range.start, range.start + range.length)
-            sb.replace(range.start, range.start + range.length, "<b>"+actual+"</b>")
+            sb.replace(range.start, range.start + range.length, "<b>$actual</b>")
         }
 
         val start = ranges.first().start - 50

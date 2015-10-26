@@ -46,7 +46,7 @@ public class EntitySchedulerImpl(private val settings: AppSettings,
             writer.writeInt(map.size())
             for (kvp in map) {
                 writer.writeString(kvp.getKey().serialize())
-                writer.writeLong(kvp.getValue().getMillis())
+                writer.writeLong(kvp.getValue().millis)
             }
         })
     }

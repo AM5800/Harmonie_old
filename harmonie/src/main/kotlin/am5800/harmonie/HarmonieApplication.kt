@@ -27,16 +27,16 @@ public class HarmonieApplication : Application() {
             val lt = Lifetime()
             lifetime = lt
 
-            val env = AndroidEnvironment(getAssets(), this)
-
-            val harmonieDb = HarmonieDb(this)
-            harmonieDb.importDatabase()
+            val env = AndroidEnvironment(assets, this)
 
             val settingsDb = SettingsDb(this)
+            val harmonieDb = HarmonieDb(this, lt, settingsDb, loggerProvider)
 
-            val database = harmonieDb.getReadableDatabase()!!
+
+
+            val database = harmonieDb.readableDatabase!!
             val settings = AppSettings()
-            val germanEntityManager = GermanEntityManager(harmonieDb.getReadableDatabase())
+            val germanEntityManager = GermanEntityManager(harmonieDb.readableDatabase)
             val deserializers = listOf(germanEntityManager)
             val textsProvider = TextsProvider(loggerProvider, database, deserializers)
             val historyManager = AttemptsHistoryManagerImpl(env, settings, deserializers)
@@ -47,12 +47,16 @@ public class HarmonieApplication : Application() {
             val flowController = FlowManager(loggerProvider, lt, historyManager, scheduler, bucketsAlg, newEntitiesSource)
             val registry = ControllerRegistry()
             controllerRegistry = registry
+            DbSynchronizer(historyManager, scheduler, deserializers, harmonieDb, lt)
+
+            settingsDb.initialize()
+            harmonieDb.initialize()
 
             // Creating VMs
             val statsVm = StatsController(historyManager, registry, bucketsAlg)
             val textVm = TextController(textsProvider, lt, TextPartScoreCalculator(bucketsAlg, historyManager), TextProgress(env), registry)
             val startVm = StartScreenController(flowController, textVm, statsVm, scheduler)
-            val markErrorHelper = MarkErrorHelper(settingsDb.getWritableDatabase(), loggerProvider)
+            val markErrorHelper = MarkErrorHelper(settingsDb.writableDatabase, loggerProvider)
             val flowVm = FlowController(lt, flowController, listOf(WordsContentManagerController(examplesManager, germanEntityManager, markErrorHelper)), registry)
             //Start
             registry.registerKnownController(startVm, lt)

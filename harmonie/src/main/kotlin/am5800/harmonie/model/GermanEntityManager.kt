@@ -1,10 +1,8 @@
 package am5800.harmonie.model
 
-import am5800.harmonie.model.EntityId
 import am5800.harmonie.model.words.PartOfSpeech
 import android.database.sqlite.SQLiteDatabase
-import org.joda.time.DateTime
-import java.util.ArrayList
+import java.util.*
 
 public class GermanEntityManager(private val db: SQLiteDatabase) : EntityManager, EntityIdDeserializer {
     override fun getEntitiesForText(textPartId: TextPartId): List<EntityId> {
@@ -63,9 +61,9 @@ public class GermanEntityManager(private val db: SQLiteDatabase) : EntityManager
     }
 
     private fun parseRanges(rangesStr: String): List<ExampleRange> {
-        val ranges = rangesStr.splitBy("|")
+        val ranges = rangesStr.split("|")
         return ranges.map {
-            val list = it.splitBy(",").map {it.trim()}
+            val list = it.split(",").map {it.trim()}
             if (list.count() != 2) throw Exception("Can't parse range: " + rangesStr)
             val start = Integer.parseInt(list[0])
             val length = Integer.parseInt(list[1])
@@ -74,7 +72,7 @@ public class GermanEntityManager(private val db: SQLiteDatabase) : EntityManager
     }
 
     private fun parseMeanings(meaningsStr: String): List<String> {
-        return meaningsStr.splitBy("|").map { it.trim() }
+        return meaningsStr.split("|").map { it.trim() }
     }
 
     private fun String.handleGender(gender : Gender?) : String {
@@ -90,7 +88,7 @@ public class GermanEntityManager(private val db: SQLiteDatabase) : EntityManager
         if (!string.startsWith("de:")) return null;
 
         val id = string.substring(3)
-        val parts = id.splitBy("|")
+        val parts = id.split("|")
 
         val nf = parts[0].trim()
         if (parts.count() < 1 || parts[1].count() < 1) return GermanWordId(nf, PartOfSpeech.NonWord, null)

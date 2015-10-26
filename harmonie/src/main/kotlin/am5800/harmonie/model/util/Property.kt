@@ -13,18 +13,18 @@ public class PropertyChangedArg<T>(private val old: T, public val newValue: T?, 
 public class Property<T>(value: T?) {
     private val binders: ArrayList<(PropertyChangedArg<T?>) -> Unit> = ArrayList()
     var value: T? = value
-        get() = $value
+        get() = field
         set(v) {
-            if ($value == v) return
-            val arg = PropertyChangedArg($value, v, true)
-            $value = v
+            if (field == v) return
+            val arg = PropertyChangedArg(field, v, true)
+            field = v
             binders.forEach { b -> if (!arg.handled) b(arg) }
         }
 
     fun bind(lifetime: Lifetime, binder: (PropertyChangedArg<T?>) -> Unit) {
         binders.add(binder)
         lifetime.addAction { binders.remove (binder) }
-        binder(PropertyChangedArg(null, $value, false))
+        binder(PropertyChangedArg(null, value, false))
     }
 
     fun bindNotNull(lifetime: Lifetime, binder: (T) -> Unit) {

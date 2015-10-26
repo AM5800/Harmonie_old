@@ -1,16 +1,14 @@
 package am5800.harmonie.controllers
 
 import am5800.harmonie.R
-import am5800.harmonie.viewBinding.ReflectionBindableController
-import am5800.harmonie.controllers.FlowItemController
 import am5800.harmonie.controllers.defaultControls.ButtonController
-import am5800.harmonie.controllers.Visibility
 import am5800.harmonie.controllers.defaultControls.TextViewController
-import org.joda.time.DateTime
-import am5800.harmonie.controllers.toVisibilityCollapsed
-import am5800.harmonie.model.*
+import am5800.harmonie.model.FlowItemResult
+import am5800.harmonie.model.Gender
+import am5800.harmonie.model.GermanWordId
+import am5800.harmonie.model.RenderedExample
 import am5800.harmonie.model.util.Property
-import am5800.harmonie.model.words.PartOfSpeech
+import am5800.harmonie.viewBinding.ReflectionBindableController
 import android.text.Html
 
 
@@ -19,9 +17,9 @@ public class GermanRecallController(private val example : RenderedExample, markE
     public val dasController: ButtonController = ButtonController(R.id.dasBtn, { submitGender(Gender.Neuter, dasController) }, "das")
     public val derController: ButtonController = ButtonController(R.id.derBtn, { submitGender(Gender.Masculine, derController) }, "der")
     public val dieController: ButtonController = ButtonController(R.id.dieBtn, { submitGender(Gender.Feminine, dieController) }, "die")
-    public val rightController: ButtonController = ButtonController(R.id.rightBtn, { submitAnswer(true) }, "помню")
-    public val wrongController: ButtonController = ButtonController(R.id.wrongBtn, { submitAnswer(false) }, "не помню")
-    public val nextController: ButtonController = ButtonController(R.id.nextBtn, { onNext() }, "показать перевод")
+    public val rightController: ButtonController = ButtonController(R.id.rightBtn, { submitAnswer(true) }, "пїЅпїЅпїЅпїЅпїЅ")
+    public val wrongController: ButtonController = ButtonController(R.id.wrongBtn, { submitAnswer(false) }, "пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ")
+    public val nextController: ButtonController = ButtonController(R.id.nextBtn, { onNext() }, "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ")
 
     public val answerController: TextViewController = TextViewController(R.id.answerTextView, "", Visibility.Collapsed)
     public val hintController: TextViewController = TextViewController(R.id.hintTextView, "", Visibility.Visible)

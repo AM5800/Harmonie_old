@@ -10,7 +10,7 @@ public class NewEntitiesSource (private val textsProvider : TextsProvider,
         val used = historyManager.getKeys().plus(deprecatedItems).toSet()
 
         val result = ArrayList<EntityId>()
-        val parts = textsProvider.texts.sortBy { it.id }.flatMap { it.parts }
+        val parts = textsProvider.texts.sortedBy { it.id }.flatMap { it.parts }
 
         for (part in parts) {
             for (entity in part.entities) {

@@ -1,7 +1,5 @@
 package am5800.harmonie.model
 
-import am5800.harmonie.model.EntityId
-
 
 public interface EntityIdDeserializer {
     public fun tryDeserialize(string : String) : EntityId?

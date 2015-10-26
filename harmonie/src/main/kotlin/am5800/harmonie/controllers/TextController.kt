@@ -1,18 +1,16 @@
 package am5800.harmonie.controllers
 
-import am5800.harmonie.R
-import am5800.harmonie.controllers.TextAdapter
 import am5800.harmonie.ControllerRegistry
-import am5800.harmonie.viewBinding.BindableView
-import am5800.harmonie.viewBinding.ReflectionBindableController
-import am5800.harmonie.controllers.defaultControls.ButtonController
+import am5800.harmonie.R
 import am5800.harmonie.controllers.defaultControls.TextViewController
 import am5800.harmonie.model.*
 import am5800.harmonie.model.util.Property
+import am5800.harmonie.viewBinding.BindableView
+import am5800.harmonie.viewBinding.ReflectionBindableController
 import android.widget.ListView
 
 public class TextPartController(private val part: TextPart, scoreCalc: TextPartScoreCalculator) {
-    val score: String = "Лексика: " + Math.round (scoreCalc.calculate(part) * 100.0).toString () + "%"
+    val score: String = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ: " + Math.round (scoreCalc.calculate(part) * 100.0).toString () + "%"
     val body: String = part.text
 }
 
@@ -43,12 +41,12 @@ public class TextController(private val textsProvider: TextsProvider,
 
         val listView = view.getChild<ListView>(R.id.listview)
         currentParts.bindNotNull (lifetime, { parts ->
-            listView.setAdapter(TextAdapter(view.activity, parts.toTypedArray(), lifetime))
+            listView.adapter = TextAdapter(view.activity, parts.toTypedArray())
         })
 
         listView.setSelection(focusedPart.value!!)
         bindingLifetime.addAction {
-            focusedPart.value = listView.getFirstVisiblePosition()
+            focusedPart.value = listView.firstVisiblePosition
         }
     }
 }

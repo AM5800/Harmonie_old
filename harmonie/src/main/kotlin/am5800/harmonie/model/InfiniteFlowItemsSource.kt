@@ -10,7 +10,7 @@ public class InfiniteFlowItemsSource(private val scheduler: EntityScheduler,
     override fun getItems(amount: Int, deprecatedItems: Set<EntityId>): List<EntityId> {
         val now = DateTime()
         val scheduled = scheduler.getAllScheduledItems()
-                .sortBy { it.dueDate }
+                .sortedBy { it.dueDate }
                 .filter { !deprecatedItems.contains(it.entity) }
 
         val result = scheduled.filter { it.dueDate <= now }.map { it.entity }.toArrayList()
@@ -29,7 +29,7 @@ public class InfiniteFlowItemsSource(private val scheduler: EntityScheduler,
             if (result.size() >= amount) break
             if (second.hasNext()) {
                 val next = second.next()
-                if (!deprecatedItems.contains(next)) result.add(next)
+                //if (!deprecatedItems.contains(next)) result.add(next)
             }
         }
 

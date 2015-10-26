@@ -12,4 +12,6 @@ CREATE UNIQUE INDEX IF NOT EXISTS germanExamplesIndex ON germanExamples (partId,
 CREATE TABLE IF NOT EXISTS knownAffixes (verbId INTEGER, prepositionId INTEGER, wordId INTEGER)
 CREATE UNIQUE INDEX IF NOT EXISTS knownAffixesIndex ON knownAffixes (verbId, prepositionId, wordId)
 INSERT OR IGNORE INTO texts (id, languageId, name) VALUES("PG1", 0, "Technik, Gerätekunde, Aerodynamik")
-INSERT OR IGNORE INTO texts (id, languageId, name) VALUES("PG2", 1, "Flugpraxis, Verhalten in besonderen Fällen, Menschliche Leistungsfähigkeit, Natur- und Umweltschutz")
+INSERT OR IGNORE INTO texts (id, languageId, name) VALUES("PG2", 0, "Flugpraxis, Verhalten in besonderen Fällen, Menschliche Leistungsfähigkeit, Natur- und Umweltschutz")
+INSERT OR IGNORE INTO texts (id, languageId, name) VALUES("PG3", 0, "Luftrecht")
+INSERT OR IGNORE INTO texts (id, languageId, name) VALUES("PG4", 0, "Meteorologie")

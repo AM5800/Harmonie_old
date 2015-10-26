@@ -17,9 +17,9 @@ public class ButtonController(
 
     override fun bind(view: BindableView, bindingLifetime: Lifetime) {
         val btn = view.getChild<Button>(id)
-        title.bindNotNull(bindingLifetime, { view.runOnUiThread ({ btn.setText(it) }) })
-        enabled.bindNotNull(bindingLifetime, { view.runOnUiThread ({ btn.setEnabled(it) }) })
-        visible.bindNotNull(bindingLifetime, { view.runOnUiThread ({ btn.setVisibility(it.toVisible()) }) })
+        title.bindNotNull(bindingLifetime, { view.runOnUiThread ({ btn.text = it }) })
+        enabled.bindNotNull(bindingLifetime, { view.runOnUiThread ({ btn.isEnabled = it }) })
+        visible.bindNotNull(bindingLifetime, { view.runOnUiThread ({ btn.visibility = it.toVisible() }) })
         btn.setOnClickListener { view.runOnUiThread { clicked () } }
     }
 

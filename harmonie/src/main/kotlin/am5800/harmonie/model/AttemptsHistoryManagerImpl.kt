@@ -1,12 +1,10 @@
 package am5800.harmonie.model
 
-import am5800.harmonie.model
 import com.google.common.collect.HashMultimap
-import am5800.harmonie.model.Attempt
 import org.joda.time.DateTime
 
 public class AttemptsHistoryManagerImpl(private val env: FileEnvironment,
-                                        private val settings: model.AppSettings,
+                                        private val settings: AppSettings,
                                         private val deserializers : List<EntityIdDeserializer>) : AttemptsHistoryManager {
     private final val file = "attempts.dat"
 
@@ -73,7 +71,7 @@ public class AttemptsHistoryManagerImpl(private val env: FileEnvironment,
 
     override fun getAttempts(entity: EntityId): List<Attempt> {
         val result = map[entity] ?: return emptyList()
-        return result.toList().sortBy { a -> a.date }
+        return result.toList().sortedBy { a -> a.date }
     }
 
     override fun addAttempt(attempt: Attempt) {
@@ -83,7 +81,7 @@ public class AttemptsHistoryManagerImpl(private val env: FileEnvironment,
 
     private fun writeAttempt(attempt: Attempt, writer: OutputStreamWrapper) {
         writer.writeString(attempt.entity.serialize())
-        writer.writeLong(attempt.date.getMillis())
+        writer.writeLong(attempt.date.millis)
         writer.writeString(attempt.note)
         writer.writeBool(attempt.success)
         writer.writeFloat(attempt.score)

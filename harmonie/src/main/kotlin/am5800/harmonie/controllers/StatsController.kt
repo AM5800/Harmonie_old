@@ -21,7 +21,7 @@ public class StatsController(private val histMan: AttemptsHistoryManager,
     override fun bind(view: BindableView, bindingLifetime: Lifetime) {
         val graph = view.getChild<GraphView>(R.id.graph)
 
-        graph.getLegendRenderer().setVisible(true)
+        graph.legendRenderer.isVisible = true
         fun getColor(level: WordLearnLevel) = when (level) {
             WordLearnLevel.JustStarted -> Color.BLUE
             WordLearnLevel.BarelyKnown -> Color.GREEN
@@ -47,8 +47,8 @@ public class StatsController(private val histMan: AttemptsHistoryManager,
                 val title = titles[dataPoint.first] ?: continue
                 val series = dataPoint.second.toTypedArray()
                 val graphSeries = LineGraphSeries(series)
-                graphSeries.setTitle(title)
-                graphSeries.setColor(getColor(dataPoint.first))
+                graphSeries.title = title
+                graphSeries.color = getColor(dataPoint.first)
                 graph.addSeries(graphSeries)
             }
         })
@@ -78,7 +78,7 @@ public class StatsController(private val histMan: AttemptsHistoryManager,
             for (word in words) {
                 val attemptsToDate = histMan.getAttempts(word).filter { it.date < date }
                 val level = repetitionAlg.computeLevel(attemptsToDate)
-                map[level] = map[level] + 1
+                map[level] = map[level]!! + 1
             }
             result.add(StatPoint(map))
 

@@ -8,10 +8,10 @@ import org.joda.time.*
 
 public class BucketRepetitionAlgorithm : RepetitionAlgorithm {
 
-    private val buckets = listOf(Hours.ONE.toPeriod(), Days.ONE.toPeriod(), Weeks.TWO.toPeriod(), Months.TWO.toPeriod(), Months.SIX.toPeriod())
+    public val buckets : List<Period> = listOf(Hours.ONE.toPeriod(), Days.ONE.toPeriod(), Weeks.TWO.toPeriod(), Months.TWO.toPeriod(), Months.SIX.toPeriod())
 
     override fun computeLevel(attempts: List<Attempt>): WordLearnLevel {
-        val bucket = compute(attempts.sortBy {it.date}).first
+        val bucket = compute(attempts.sortedBy { it.date }).first
 
         val level =
                 if (bucket == -1) WordLearnLevel.NotStarted
@@ -26,7 +26,7 @@ public class BucketRepetitionAlgorithm : RepetitionAlgorithm {
     override fun getNextDueDate(attempts: List<Attempt>): DateTime {
         if (attempts.isEmpty()) throw Exception("No attempts")
 
-        val sortedAttempts = attempts.sortBy {it.date}
+        val sortedAttempts = attempts.sortedBy { it.date }
         var newBucket = compute(sortedAttempts)
         return newBucket.second
     }
@@ -35,20 +35,20 @@ public class BucketRepetitionAlgorithm : RepetitionAlgorithm {
     private fun compute(sortedAttempts : List<Attempt>) : Pair<Int, DateTime> {
         if (sortedAttempts.isEmpty()) return Pair(-1, DateTime());
         var bucket = if (isSuccessful(sortedAttempts.first())) 2 else 0
-        var prev : Attempt? = null
         var base = sortedAttempts.first()
-        for (attempt in sortedAttempts) {
-            if (!isSuccessful(attempt)) bucket = 0
-            else if (prev != null) {
-                if (isAfterDueDate(attempt, base, bucket) && bucket < buckets.size()) {
+        for (attempt in sortedAttempts.drop(1)) {
+            if (!isSuccessful(attempt)) {
+                bucket = 0
+                base = attempt
+            }
+            else {
+                if (isAfterDueDate(attempt, base, bucket)) {
                     ++bucket
                     base = attempt
                 }
             }
-
-            prev = attempt
         }
-        val delta = buckets[bucket]
+        val delta = if (bucket < buckets.size()) buckets[bucket] else buckets.last()
         val lastAttempt = sortedAttempts.last()
 
         if (!isSuccessful(lastAttempt)) base = lastAttempt

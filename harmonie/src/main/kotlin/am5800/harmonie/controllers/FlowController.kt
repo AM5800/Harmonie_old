@@ -59,23 +59,23 @@ public class FlowController(parentLifetime: Lifetime,
         val sourceString = "След. повтор через "
         val dueDate = nextDueDate.plus(Seconds.ONE)
 
-        val minutes = Minutes.minutesBetween(now, dueDate).getMinutes()
+        val minutes = Minutes.minutesBetween(now, dueDate).minutes
         if (minutes < 60) {
             return sourceString + pluralize(minutes, "минуту", "минуты", "минут")
         }
 
-        val hours = Hours.hoursBetween(now, dueDate).getHours()
+        val hours = Hours.hoursBetween(now, dueDate).hours
         if (hours < 24) {
             return sourceString + pluralize(hours, "час", "часа", "часов")
         }
 
-        val days = Days.daysBetween(now, dueDate).getDays()
+        val days = Days.daysBetween(now, dueDate).days
         if (days < 7) {
             return sourceString + pluralize(days, "день", "дня", "дней")
         }
 
-        val weeks = Weeks.weeksBetween(now, dueDate).getWeeks()
-        val months = Months.monthsBetween(now, dueDate).getMonths()
+        val weeks = Weeks.weeksBetween(now, dueDate).weeks
+        val months = Months.monthsBetween(now, dueDate).months
 
         if (months < 1) {
             return sourceString + pluralize(weeks, "неделю", "недели", "недель")

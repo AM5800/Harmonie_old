@@ -1,11 +1,8 @@
 package am5800.harmonie.model
 
-import am5800.harmonie.model
 import am5800.harmonie.model.logging.LoggerProvider
-import am5800.harmonie.model.nameWithoutExt
 import android.database.sqlite.SQLiteDatabase
-import java.io.File
-import java.util.ArrayList
+import java.util.*
 
 public class TextPart (
     public val id: TextPartId,

@@ -1,78 +1,101 @@
 import am5800.harmonie.model.Attempt
-import am5800.harmonie.model.EntityIds.EntityId
-import model.WordLearnLevel
-import common.repetition.BucketRepetitionAlgoritm
-import org.joda.time.*
+import am5800.harmonie.model.GermanWordId
+import am5800.harmonie.model.WordLearnLevel
+import am5800.harmonie.model.repetition.BucketRepetitionAlgorithm
+import am5800.harmonie.model.words.PartOfSpeech
+import org.joda.time.DateTime
+import org.joda.time.Period
 import org.junit.Test
+import java.util.*
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 public class BucketAlgTests {
     private val now = DateTime(2015, 1, 1, 0, 0, 0, 0)
-    private val alg = BucketRepetitionAlgoritm()
-    private val id = am5800.harmonie.model.EntityIds.EntityId("")
+    private val alg = BucketRepetitionAlgorithm()
+    private val id = GermanWordId("word", PartOfSpeech.Noun, null)
 
     @Test
-    public fun TestKnown() {
-        val attempts = listOf(am5800.harmonie.model.Attempt(id, now, 1.0f, null, true))
+    public fun testKnown() {
+        val attempts = listOf(mkAttempt(true))
+        val level = alg.computeLevel(attempts)
+        assertEquals(WordLearnLevel.Confident, level)
+    }
+
+    @Test
+    public fun secondBeforeDueDate() {
+        val attempts = listOf(mkAttempt(false), mkAttempt(true, alg.buckets[0].minusMinutes(2)))
         val dueDate = alg.getNextDueDate(attempts)
-        assertEquals(2, Weeks.weeksBetween(now, dueDate).getWeeks())
+        assertEquals(now.plus(alg.buckets[0]), dueDate)
     }
 
     @Test
-    public fun HalfHour() {
-        val attempts = listOf(am5800.harmonie.model.Attempt(id, now, 1.0f, null, false), am5800.harmonie.model.Attempt(id, now.plus(Minutes.minutes(30)), 1.0f, null, true))
+    public fun secondBeforeDueDateWrong() {
+        val secondAttempt = mkAttempt(false, alg.buckets[0].minusMinutes(2))
+        val attempts = listOf(mkAttempt(false), secondAttempt)
         val dueDate = alg.getNextDueDate(attempts)
-        assertEquals(now.plus(Hours.ONE), dueDate)
+        assertEquals(secondAttempt.date.plus(alg.buckets[0]), dueDate)
     }
 
     @Test
-    public fun HalfHourWrong() {
-        val attempts = listOf(am5800.harmonie.model.Attempt(id, now, 1.0f, null, true), am5800.harmonie.model.Attempt(id, now.plus(Minutes.minutes(30)), 0.0f, null, true))
+    public fun secondAfterDueDate() {
+        val secondAttempt = mkAttempt(true, alg.buckets[0].plusMinutes(10))
+        val attempts = listOf(mkAttempt(false), secondAttempt)
         val dueDate = alg.getNextDueDate(attempts)
-        assertEquals(now.plus(Hours.ONE).plus(Minutes.minutes(30)), dueDate)
+        assertEquals(secondAttempt.date.plus(alg.buckets[1]), dueDate)
     }
 
     @Test
-    public fun MoreThanOneHour() {
-        val attempts = listOf(am5800.harmonie.model.Attempt(id, now, 1.0f, null, false), am5800.harmonie.model.Attempt(id, now.plus(Minutes.minutes(90)), 1.0f, null, true))
+    public fun secondAfterDueDateWrong() {
+        val secondAttempt = mkAttempt(false, alg.buckets[0].plusMinutes(10))
+        val attempts = listOf(mkAttempt(false), secondAttempt)
         val dueDate = alg.getNextDueDate(attempts)
-        assertEquals(now.plus(Days.ONE).plus(Minutes.minutes(90)), dueDate)
+        assertEquals(secondAttempt.date.plus(alg.buckets[0]), dueDate)
     }
 
+
     @Test
-    public fun MoreThanOneHourWrong() {
-        val lastAttemptDate = now.plus(Minutes.minutes(90))
-        val attempts = listOf(am5800.harmonie.model.Attempt(id, now, 1.0f, null, true), am5800.harmonie.model.Attempt(id, lastAttemptDate, 0.0f, null, false))
+    public fun testAlmostIdealSequence() {
+        val attempts = mkAlmostIdealSequence()
+        val level = alg.computeLevel(attempts)
+        assertEquals(WordLearnLevel.Known, level)
+    }
+
+
+    @Test
+    public fun testAlmostIdealSequenceWrong() {
+        val sequence = mkAlmostIdealSequence().take(4)
+        val attempts = sequence.plus(mkAttempt(false, sequence.last().date))
+        val level = alg.computeLevel(attempts)
         val dueDate = alg.getNextDueDate(attempts)
-        assertEquals(lastAttemptDate.plus(Hours.ONE), dueDate)
+        assertEquals(WordLearnLevel.JustStarted, level)
+        assertEquals(attempts.last().date.plus(alg.buckets[0]), dueDate)
     }
 
-
     @Test
-    public fun TestWithLongBreak() {
-        val lastAttemptDate = now.plus(Days.TWO)
-        val attempts = listOf(am5800.harmonie.model.Attempt(id, now, 1.0f, null, false), am5800.harmonie.model.Attempt(id, lastAttemptDate, 1.0f, null, true))
+    public fun testAlmostIdealSequenceWrongRight() {
+        val sequence = mkAlmostIdealSequence().take(4)
+        val attempt1 = mkAttempt(false, sequence.last().date.plusMinutes(5))
+        val attempt2 = mkAttempt(true, attempt1.date.plusMinutes(5))
+        val attempts = sequence.plus(attempt1).plus(attempt2)
+        val level = alg.computeLevel(attempts)
         val dueDate = alg.getNextDueDate(attempts)
-        assertEquals(lastAttemptDate.plus(Days.ONE), dueDate)
+        assertEquals(WordLearnLevel.JustStarted, level)
+        assertEquals(attempt1.date.plus(alg.buckets[0]), dueDate)
     }
 
-    @Test
-    public fun TestWithLongBreakWrong() {
-        val lastAttemptDate = now.plus(Days.TWO)
-        val attempts = listOf(am5800.harmonie.model.Attempt(id, now, 1.0f, null, true), am5800.harmonie.model.Attempt(id, lastAttemptDate, 0.0f, null, true))
-        val dueDate = alg.getNextDueDate(attempts)
-        assertEquals(lastAttemptDate.plus(Hours.ONE), dueDate)
+    private fun mkAlmostIdealSequence(): List<Attempt> {
+        val attempts = listOf(mkAttempt(false)).plus(alg.buckets.fold(ArrayList<Attempt>(), { acc, period ->
+            if (acc.isEmpty()) {
+                acc.add(mkAttempt(true, period.plusMinutes(5)))
+            } else {
+                acc.add(mkAttempt(true, acc.last().date.plus(period.plusMinutes(5))))
+            }
+            acc
+        }))
+        return attempts
     }
 
-    @Test
-    public fun TestALot() {
-        val intervals = listOf(Minutes.minutes(90), Hours.hours(22), Hours.hours(5))
-        val dates = intervals.fold(arrayListOf(now), { dates, interval ->
-            dates.add(dates.last() + interval)
-            dates
-        })
-        val attempts = dates.map { am5800.harmonie.model.Attempt(id, it, 1.0f, null, true) }
-        assertEquals(WordLearnLevel.Confident, alg.computeWordLearnLevel(attempts))
-    }
+
+    private fun mkAttempt(success: Boolean, period: Period = Period.ZERO) = Attempt(id, now.plus(period), 1.0f, null, success)
+    private fun mkAttempt(success: Boolean, date: DateTime) = Attempt(id, date, 1.0f, null, success)
 }

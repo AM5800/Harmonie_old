@@ -4,7 +4,6 @@ import am5800.harmonie.model.Lifetime
 import android.app.Activity
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 
 
 public class BindableViewImpl(private val layoutInflater: LayoutInflater, layoutId: Int, public override val activity : Activity) : BindableView {
