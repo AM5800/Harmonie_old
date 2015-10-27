@@ -32,11 +32,11 @@ public class HarmonieApplication : Application() {
             val settingsDb = SettingsDb(this)
             val harmonieDb = HarmonieDb(this, lt, settingsDb, loggerProvider)
 
-            val database = harmonieDb.readableDatabase!!
             val settings = AppSettings()
-            val germanEntityManager = GermanEntityManager(harmonieDb.readableDatabase)
+
+            val germanEntityManager = GermanEntityManager(harmonieDb)
             val deserializers = listOf(germanEntityManager)
-            val textsProvider = TextsProvider(loggerProvider, database, deserializers)
+            val textsProvider = TextsProvider(loggerProvider, harmonieDb, deserializers)
             val historyManager = AttemptsHistoryManagerImpl(env, settings, deserializers)
             val scheduler = EntitySchedulerImpl(settings, env, deserializers)
             val examplesManager = ExamplesRenderer()
@@ -45,10 +45,9 @@ public class HarmonieApplication : Application() {
             val flowManager = FlowManager(loggerProvider, lt, historyManager, scheduler, bucketsAlg, newEntitiesSource)
             val registry = ControllerRegistry()
             controllerRegistry = registry
-            DbSynchronizer(historyManager, scheduler, deserializers, harmonieDb, lt)
+            DbSynchronizer(historyManager, scheduler, deserializers, harmonieDb)
 
-            settingsDb.initialize()
-            harmonieDb.initialize()
+
 
             // Creating controllers
             val statsController = StatsController(historyManager, bucketsAlg)

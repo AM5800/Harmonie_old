@@ -1,5 +1,6 @@
 package am5800.harmonie.model
 
+import am5800.harmonie.HarmonieDb
 import am5800.harmonie.model.logging.LoggerProvider
 import android.database.sqlite.SQLiteDatabase
 import java.util.*
@@ -17,7 +18,7 @@ public data class Text (
 )
 
 public class TextsProvider(loggerProvider: LoggerProvider,
-                           private val database: SQLiteDatabase,
+                           private val database: HarmonieDb,
                            private val entityManagers : List<EntityManager>) {
     private val myTexts = ArrayList<Text>()
     public val texts: List<Text> get() = myTexts
@@ -25,7 +26,7 @@ public class TextsProvider(loggerProvider: LoggerProvider,
 
     init {
         logger.verbose("looking for texts")
-        val textsCursor = database.rawQuery("SELECT id,name FROM texts", null)
+        val textsCursor = database.rawQuery("SELECT id,name FROM texts", emptyArray())
 
         while (textsCursor.moveToNext()) {
             val textId = textsCursor.getString(0)

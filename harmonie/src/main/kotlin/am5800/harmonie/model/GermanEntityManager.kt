@@ -1,10 +1,11 @@
 package am5800.harmonie.model
 
+import am5800.harmonie.HarmonieDb
 import am5800.harmonie.model.words.PartOfSpeech
 import android.database.sqlite.SQLiteDatabase
 import java.util.*
 
-public class GermanEntityManager(private val db: SQLiteDatabase) : EntityManager, EntityIdDeserializer {
+public class GermanEntityManager(private val db: HarmonieDb) : EntityManager, EntityIdDeserializer {
     override fun getEntitiesForText(textPartId: TextPartId): List<EntityId> {
 
         val result = ArrayList<EntityId>()

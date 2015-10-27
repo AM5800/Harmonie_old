@@ -4,6 +4,7 @@ import am5800.harmonie.model.Lifetime
 import am5800.harmonie.model.logging.LoggerProvider
 import am5800.harmonie.model.util.Signal
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.google.common.hash.Hashing
@@ -23,17 +24,20 @@ public class HarmonieDb(private val context: Context, lifetime: Lifetime, privat
     override fun onCreate(db: SQLiteDatabase) {
     }
 
-    public fun initialize() {
-        if (!checkDbUpdateNeeded()) return
-        logger.info("Performing db update")
-        close()
-        context.assets.open("Harmonie.db").use { inStream ->
-            FileOutputStream(DbLocation).use { outStream ->
-                inStream.copyTo(outStream)
+    public val dbIsUpdatedThisLaunch : Boolean
+
+    init {
+        if (checkDbUpdateNeeded()) {
+            logger.info("Performing db update")
+            close()
+            context.assets.open("Harmonie.db").use { inStream ->
+                FileOutputStream(DbLocation).use { outStream ->
+                    inStream.copyTo(outStream)
+                }
             }
-        }
-        writableDatabase.close()
-        dbUpdatedSignal.fire(Unit)
+            writableDatabase.close()
+            dbIsUpdatedThisLaunch = true
+        } else dbIsUpdatedThisLaunch = false
     }
 
     private fun checkDbUpdateNeeded() : Boolean {
@@ -48,7 +52,10 @@ public class HarmonieDb(private val context: Context, lifetime: Lifetime, privat
         return hash != previousHash
     }
 
-    public val dbUpdatedSignal : Signal<Unit> = Signal(lifetime)
+    fun rawQuery(sql: String,  selectionArgs : Array<String>): Cursor {
+        return readableDatabase.rawQuery(sql, selectionArgs)
+    }
+
 
 }
 

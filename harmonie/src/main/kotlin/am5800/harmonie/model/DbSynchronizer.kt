@@ -6,10 +6,9 @@ import am5800.harmonie.HarmonieDb
 public class DbSynchronizer(attemptsManager: AttemptsHistoryManager,
                             scheduler: EntityScheduler,
                             entityManagers: List<EntityManager>,
-                            harmonieDb: HarmonieDb,
-                            lifetime : Lifetime) {
+                            harmonieDb: HarmonieDb) {
     init {
-        harmonieDb.dbUpdatedSignal.subscribe(lifetime, {
+        if (harmonieDb.dbIsUpdatedThisLaunch) {
             val list = attemptsManager.getKeys().plus(scheduler.getAllScheduledItems().map { it.entity })
             for (entity in list) {
                 if (entityManagers.all {it.getExamples(entity).isEmpty()}) {
@@ -18,6 +17,6 @@ public class DbSynchronizer(attemptsManager: AttemptsHistoryManager,
                     scheduler.remove(entityList)
                 }
             }
-        })
+        }
     }
 }
