@@ -20,14 +20,14 @@ public class ControllerRegistry : ViewOpener {
 
     override fun bringToFront(controller: BindableController) {
         controllerStack.addLast(controller)
-        val fm = fragmentManager!!
+        val fm = fragmentManager ?: return
         val ft = fm.beginTransaction()
         ft.replace(R.id.main_layout, BindableFragment())
         ft.commit()
     }
 
-    fun restore(supportFragmentManager: FragmentManager) {
-        fragmentManager = supportFragmentManager
+    fun restore(fm: FragmentManager) {
+        fragmentManager = fm
     }
 
     fun back() : Boolean{
