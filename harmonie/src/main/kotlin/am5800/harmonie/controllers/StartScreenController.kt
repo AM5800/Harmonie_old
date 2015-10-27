@@ -1,6 +1,7 @@
 package am5800.harmonie.controllers
 
 import am5800.harmonie.R
+import am5800.harmonie.ViewOpener
 import am5800.harmonie.controllers.defaultControls.ButtonController
 import am5800.harmonie.model.EntityScheduler
 import am5800.harmonie.model.FlowManager
@@ -15,8 +16,8 @@ import org.joda.time.Minutes
 public class StartScreenController(
         flowController: FlowManager,
         private val textController: TextController,
-        statsVm: StatsController,
-        private val scheduler: EntityScheduler) : ReflectionBindableController(R.layout.start_screen) {
+        statsController: StatsController,
+        private val scheduler: EntityScheduler, private val opener: ViewOpener) : ReflectionBindableController(R.layout.start_screen) {
     private val innerItems = textController.texts
     val items: List<String> = innerItems.map { part -> part.title }
 
@@ -25,7 +26,7 @@ public class StartScreenController(
     }, createButtonTitle())
 
     public val statsButton: ButtonController = ButtonController(R.id.graph, {
-        statsVm.activate()
+        opener.bringToFront(statsController)
     }, "статистика")
 
     private fun createButtonTitle() : String {
@@ -35,7 +36,7 @@ public class StartScreenController(
 
     fun textClicked(index: Int) {
         val id = innerItems[index].id
-        textController.open(id)
+        opener.bringToFront(textController.openText(id))
     }
 
     override fun bind(view: BindableView, bindingLifetime: Lifetime) {

@@ -1,34 +1,25 @@
 package am5800.harmonie
 
-import am5800.harmonie.model.Lifetime
 import am5800.harmonie.viewBinding.BindableController
 import am5800.harmonie.viewBinding.BindableFragment
 import android.support.v4.app.FragmentManager
 import java.util.*
 
-public class ControllerRegistry {
-    private val knownVms = LinkedList<BindableController>()
-    private val vmStack = LinkedList<BindableController>()
-    private var defaultVm : BindableController? = null
-
-    public fun registerKnownController(vm : BindableController, lifetime : Lifetime) {
-        knownVms.addLast(vm)
-        lifetime.addAction {
-            knownVms.remove(vm)
-        }
-    }
+public class ControllerRegistry : ViewOpener {
+    private val controllerStack = LinkedList<BindableController>()
 
     fun top(): BindableController {
-        return vmStack.last()
+        return controllerStack.last()
     }
 
-    fun restoreVm(layoutId: Int): BindableController {
-        val result = knownVms.first { it.id == layoutId }
-        return result
+    fun restoreController(layoutId: Int): BindableController {
+        val result = controllerStack.last()
+        if (result.id != layoutId) throw Exception("Trying to restore not the last controller")
+        return controllerStack.last()
     }
 
-    fun bringToFront(vm: BindableController) {
-        vmStack.addLast(vm)
+    override fun bringToFront(controller: BindableController) {
+        controllerStack.addLast(controller)
         val fm = fragmentManager!!
         val ft = fm.beginTransaction()
         ft.replace(R.id.main_layout, BindableFragment())
@@ -39,13 +30,9 @@ public class ControllerRegistry {
         fragmentManager = supportFragmentManager
     }
 
-    fun setDefaultVm(vm : BindableController) {
-        defaultVm = vm
-    }
-
     fun back() : Boolean{
-        if (vmStack.size() <= 1) return false
-        vmStack.removeLast()
+        if (controllerStack.size() <= 1) return false
+        controllerStack.removeLast()
         val fm = fragmentManager!!
         val ft = fm.beginTransaction()
         ft.replace(R.id.main_layout, BindableFragment())
@@ -56,8 +43,6 @@ public class ControllerRegistry {
     private var fragmentManager: FragmentManager? = null
 
     fun start(supportFragmentManager: FragmentManager) {
-        vmStack.addLast(defaultVm!!) // Default vm should be always set
-
         fragmentManager = supportFragmentManager
 
         val transaction = supportFragmentManager.beginTransaction()

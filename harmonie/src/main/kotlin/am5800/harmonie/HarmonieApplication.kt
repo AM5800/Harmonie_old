@@ -32,8 +32,6 @@ public class HarmonieApplication : Application() {
             val settingsDb = SettingsDb(this)
             val harmonieDb = HarmonieDb(this, lt, settingsDb, loggerProvider)
 
-
-
             val database = harmonieDb.readableDatabase!!
             val settings = AppSettings()
             val germanEntityManager = GermanEntityManager(harmonieDb.readableDatabase)
@@ -44,7 +42,7 @@ public class HarmonieApplication : Application() {
             val examplesManager = ExamplesRenderer()
             val bucketsAlg = BucketRepetitionAlgorithm()
             val newEntitiesSource = NewEntitiesSource(textsProvider, historyManager)
-            val flowController = FlowManager(loggerProvider, lt, historyManager, scheduler, bucketsAlg, newEntitiesSource)
+            val flowManager = FlowManager(loggerProvider, lt, historyManager, scheduler, bucketsAlg, newEntitiesSource)
             val registry = ControllerRegistry()
             controllerRegistry = registry
             DbSynchronizer(historyManager, scheduler, deserializers, harmonieDb, lt)
@@ -52,19 +50,14 @@ public class HarmonieApplication : Application() {
             settingsDb.initialize()
             harmonieDb.initialize()
 
-            // Creating VMs
-            val statsVm = StatsController(historyManager, registry, bucketsAlg)
-            val textVm = TextController(textsProvider, lt, TextPartScoreCalculator(bucketsAlg, historyManager), TextProgress(env), registry)
-            val startVm = StartScreenController(flowController, textVm, statsVm, scheduler)
+            // Creating controllers
+            val statsController = StatsController(historyManager, bucketsAlg)
+            val textController = TextController(textsProvider, lt, TextPartScoreCalculator(bucketsAlg, historyManager), TextProgress(env))
+            val startController = StartScreenController(flowManager, textController, statsController, scheduler, registry)
             val markErrorHelper = MarkErrorHelper(settingsDb.writableDatabase, loggerProvider)
-            val flowVm = FlowController(lt, flowController, listOf(WordsContentManagerController(examplesManager, germanEntityManager, markErrorHelper)), registry)
-            //Start
-            registry.registerKnownController(startVm, lt)
-            registry.registerKnownController(textVm, lt)
-            registry.registerKnownController(statsVm, lt)
-            registry.registerKnownController(flowVm, lt)
+            val flowController = FlowController(lt, flowManager, listOf(WordsContentManagerController(examplesManager, germanEntityManager, markErrorHelper)), registry)
 
-            registry.setDefaultVm(startVm)
+            registry.bringToFront(startController)
 
         } catch (e: Exception) {
             logger.exception(e)

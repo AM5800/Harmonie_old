@@ -26,7 +26,7 @@ public class BindableFragment : Fragment() {
             }
             else {
                 layoutId = savedInstanceState.getInt(idTag)
-                registry.restoreVm(layoutId)
+                registry.restoreController(layoutId)
             }
 
         val bindableView = BindableViewImpl(inflater!!, vm.id, activity)

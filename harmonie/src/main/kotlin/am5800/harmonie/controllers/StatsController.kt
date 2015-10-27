@@ -16,7 +16,6 @@ import org.joda.time.Days
 import java.util.LinkedHashMap
 
 public class StatsController(private val histMan: AttemptsHistoryManager,
-                             private val controllerRegistry: ControllerRegistry,
                              private val repetitionAlg: RepetitionAlgorithm) : BindableController {
     override fun bind(view: BindableView, bindingLifetime: Lifetime) {
         val graph = view.getChild<GraphView>(R.id.graph)
@@ -54,16 +53,17 @@ public class StatsController(private val histMan: AttemptsHistoryManager,
         })
     }
 
+    override fun onActivated() {
+        super.onActivated()
+        calcData()
+    }
+
     override val id: Int = R.layout.statistics
 
     public class StatPoint(public val data: Map<WordLearnLevel, Int>)
 
     public val data: Property<List<StatPoint>> = Property(emptyList())
     public val titles: Map<WordLearnLevel, String> = WordLearnLevel.values().toMap ({ it }, { it.toString() })
-    fun activate() {
-        calcData()
-        controllerRegistry.bringToFront(this)
-    }
 
     private fun calcData() {
         val now = DateTime()

@@ -17,23 +17,21 @@ public class TextPartController(private val part: TextPart, scoreCalc: TextPartS
 public class TextController(private val textsProvider: TextsProvider,
                            private val lifetime: Lifetime,
                            private val scoreCalc: TextPartScoreCalculator,
-                           private val progress: TextProgress,
-                           private val vmRegistry: ControllerRegistry
+                           private val progress: TextProgress
 ) : ReflectionBindableController(R.layout.text) {
     val texts: List<Text> = textsProvider.texts
     public val title: TextViewController = TextViewController(R.id.title, "")
     public val currentParts: Property<List<TextPartController>> = Property(emptyList())
     public val focusedPart: Property<Int> = Property(0)
 
-    public fun open(textId: String): Boolean {
-        val text = textsProvider.texts.firstOrNull () { text -> text.id == textId } ?: return false
+    public fun openText(textId: String): TextController {
+        val text = textsProvider.texts.firstOrNull () { text -> text.id == textId } ?: throw Exception("Text $textId not found")
         val parts = text.parts.map { part -> TextPartController(part, scoreCalc) }
         title.title.value = text.title
         currentParts.value = parts
         focusedPart.value = progress.loadProgress(text)
         focusedPart.bindNotNull(lifetime, { i -> progress.saveProgress(text, i) })
-        vmRegistry.bringToFront(this)
-        return true
+        return this
     }
 
     override fun bind(view: BindableView, bindingLifetime: Lifetime) {
