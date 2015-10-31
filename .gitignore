@@ -1,4 +1,6 @@
-data/Texts
+data/Texts/*
+!data/Texts/Sample/*
+!data/Texts/README.md
 
 #apks
 *.apk
