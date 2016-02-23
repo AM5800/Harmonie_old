@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/HarmonieRoot.iml" filepath="$PROJECT_DIR$/HarmonieRoot.iml" />
-      <module fileurl="file://$PROJECT_DIR$/harmonie/harmonie.iml" filepath="$PROJECT_DIR$/harmonie/harmonie.iml" />
-      <module fileurl="file://$PROJECT_DIR$/textProcessor/textProcessor.iml" filepath="$PROJECT_DIR$/textProcessor/textProcessor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/HarmonieRoot.iml" filepath="$PROJECT_DIR$/.idea/modules/HarmonieRoot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/harmonie/harmonie.iml" filepath="$PROJECT_DIR$/.idea/modules/harmonie/harmonie.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/textProcessor/textProcessor.iml" filepath="$PROJECT_DIR$/.idea/modules/textProcessor/textProcessor.iml" />
     </modules>
   </component>
 </project>
