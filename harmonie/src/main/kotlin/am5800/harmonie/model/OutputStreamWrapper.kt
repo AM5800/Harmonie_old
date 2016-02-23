@@ -3,42 +3,42 @@ package am5800.harmonie.model
 import java.io.DataOutputStream
 import java.io.OutputStream
 
-public class OutputStreamWrapper(stream: OutputStream, private val reverseBytes: Boolean = false) : java.io.Closeable {
-    private val stream = DataOutputStream(stream)
+class OutputStreamWrapper(stream: OutputStream, private val reverseBytes: Boolean = false) : java.io.Closeable {
+  private val stream = DataOutputStream(stream)
 
-    override fun close() {
-        stream.close()
+  override fun close() {
+    stream.close()
+  }
+
+  fun writeInt(int: Int) {
+    if (reverseBytes) stream.writeInt(Integer.reverseBytes(int))
+    else stream.writeInt(int)
+  }
+
+  fun writeString(str: String?) {
+    if (str == null) {
+      writeByte(0)
+      return
     }
 
-    fun writeInt(int: Int) {
-        if (reverseBytes) stream.writeInt(Integer.reverseBytes(int))
-        else stream.writeInt(int)
-    }
+    val bytes = str.toByteArray(Charsets.UTF_8)
+    writeByte(bytes.count())
+    stream.write(bytes)
+  }
 
-    fun writeString(str: String?) {
-        if (str == null) {
-            writeByte(0)
-            return
-        }
+  fun writeLong(long: Long) {
+    stream.writeLong(long)
+  }
 
-        val bytes = str.toByteArray(Charsets.UTF_8)
-        writeByte(bytes.count())
-        stream.write(bytes)
-    }
+  fun writeBool(bool: Boolean) {
+    stream.writeBoolean(bool)
+  }
 
-    fun writeLong(long: Long) {
-        stream.writeLong(long)
-    }
+  fun writeFloat(float: Float) {
+    stream.writeFloat(float)
+  }
 
-    fun writeBool(bool: Boolean) {
-        stream.writeBoolean(bool)
-    }
-
-    fun writeFloat(float: Float) {
-        stream.writeFloat(float)
-    }
-
-    fun writeByte(byte: Int) {
-        stream.writeByte(byte)
-    }
+  fun writeByte(byte: Int) {
+    stream.writeByte(byte)
+  }
 }

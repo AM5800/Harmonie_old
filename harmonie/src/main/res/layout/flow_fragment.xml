@@ -26,7 +26,8 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:id="@+id/placeholder"
-                android:layout_height="wrap_content" android:layout_gravity="center_horizontal" android:gravity="bottom">
+                android:layout_height="wrap_content" android:layout_gravity="center_horizontal"
+                android:gravity="bottom">
         </LinearLayout>
 
     </ScrollView>

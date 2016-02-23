@@ -13,44 +13,44 @@ import android.widget.ListView
 import org.joda.time.DateTime
 import org.joda.time.Minutes
 
-public class StartScreenController(
+class StartScreenController(
         flowController: FlowManager,
         private val textController: TextController,
         statsController: StatsController,
         private val scheduler: EntityScheduler, private val opener: ViewOpener) : ReflectionBindableController(R.layout.start_screen) {
-    private val innerItems = textController.texts
-    val items: List<String> = innerItems.map { part -> part.title }
+  private val innerItems = textController.texts
+  val items: List<String> = innerItems.map { part -> part.title }
 
-    public val openWordsButton: ButtonController = ButtonController(R.id.openWordsBtn, {
-        flowController.start(Minutes.minutes(10).toStandardDuration())
-    }, createButtonTitle())
+  val openWordsButton: ButtonController = ButtonController(R.id.openWordsBtn, {
+    flowController.start(Minutes.minutes(10).toStandardDuration())
+  }, createButtonTitle())
 
-    public val statsButton: ButtonController = ButtonController(R.id.graph, {
-        opener.bringToFront(statsController)
-    }, "статистика")
+  val statsButton: ButtonController = ButtonController(R.id.graph, {
+    opener.bringToFront(statsController)
+  }, "статистика")
 
-    private fun createButtonTitle() : String {
-        val now = DateTime()
-        return "слова (${scheduler.getAllScheduledItems().filter { it.dueDate <= now }.map { it.entity }.count()})"
-    }
+  private fun createButtonTitle(): String {
+    val now = DateTime()
+    return "слова (${scheduler.getAllScheduledItems().filter { it.dueDate <= now }.map { it.entity }.count()})"
+  }
 
-    fun textClicked(index: Int) {
-        val id = innerItems[index].id
-        opener.bringToFront(textController.openText(id))
-    }
+  fun textClicked(index: Int) {
+    val id = innerItems[index].id
+    opener.bringToFront(textController.openText(id))
+  }
 
-    override fun bind(view: BindableView, bindingLifetime: Lifetime) {
-        super.bind(view, bindingLifetime)
-        val textsView = view.getChild<ListView>(R.id.textParts)
-        textsView.adapter = ArrayAdapter(view.activity, android.R.layout.simple_list_item_1, items)
-        textsView.setOnItemClickListener({ a, b, c, d ->
-            textClicked(c)
-        });
-    }
+  override fun bind(view: BindableView, bindingLifetime: Lifetime) {
+    super.bind(view, bindingLifetime)
+    val textsView = view.getChild<ListView>(R.id.textParts)
+    textsView.adapter = ArrayAdapter(view.activity, android.R.layout.simple_list_item_1, items)
+    textsView.setOnItemClickListener({ a, b, c, d ->
+      textClicked(c)
+    });
+  }
 
-    override fun onActivated() {
-        openWordsButton.title.value = createButtonTitle()
-    }
+  override fun onActivated() {
+    openWordsButton.title.value = createButtonTitle()
+  }
 }
 
 

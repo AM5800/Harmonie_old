@@ -2,10 +2,11 @@ package am5800.harmonie.viewBinding
 
 import am5800.harmonie.model.Lifetime
 
-public interface BindableController {
-    public fun bind(view: BindableView, bindingLifetime: Lifetime)
-    public val id : Int
+interface BindableController {
+  fun bind(view: BindableView, bindingLifetime: Lifetime)
+  val id: Int
 
-    fun onActivated() {}
+  fun onActivated() {
+  }
 }
 
