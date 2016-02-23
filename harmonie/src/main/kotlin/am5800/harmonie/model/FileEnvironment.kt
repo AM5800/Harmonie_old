@@ -4,10 +4,10 @@ import java.io.InputStream
 import java.io.OutputStream
 
 
-public interface FileEnvironment {
-    public fun readAsset<T>(path: String, func: (InputStream) -> T): T?
-    public fun enumerateAssets(basePath: String): List<String>
-    public fun tryReadDataFile<T>(path: String, func: (InputStream) -> T?) : T?
-    public fun writeDataFile(path: String, func: (OutputStream) -> Unit)
-    public fun appendDataFile(path: String, func: (OutputStream) -> Unit)
+interface FileEnvironment {
+    fun <T> readAsset(path: String, func: (InputStream) -> T): T?
+    fun enumerateAssets(basePath: String): List<String>
+    fun <T> tryReadDataFile(path: String, func: (InputStream) -> T?): T?
+    fun writeDataFile(path: String, func: (OutputStream) -> Unit)
+    fun appendDataFile(path: String, func: (OutputStream) -> Unit)
 }

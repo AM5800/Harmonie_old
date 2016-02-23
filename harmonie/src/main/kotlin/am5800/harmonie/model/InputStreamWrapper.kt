@@ -5,7 +5,7 @@ import java.io.Closeable
 import java.io.DataInputStream
 import java.io.InputStream
 
-public class InputStreamWrapper(stream: InputStream, private val reverseBytes: Boolean = false) : Closeable {
+class InputStreamWrapper(stream: InputStream, private val reverseBytes: Boolean = false) : Closeable {
     private val stream = DataInputStream(stream)
 
     override fun close() {
@@ -24,8 +24,8 @@ public class InputStreamWrapper(stream: InputStream, private val reverseBytes: B
 
         val result = ByteArray(len)
         stream.readFully(result)
-        val resultingString = String(result, "UTF-8")
-        return resultingString
+        val resultingString = java.lang.String(result, "UTF-8")
+        return resultingString.toString()
     }
 
     fun readLong(): Long {

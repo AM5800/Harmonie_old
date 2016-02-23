@@ -12,23 +12,24 @@ import am5800.harmonie.viewBinding.ReflectionBindableController
 import android.text.Html
 
 
-public class GermanRecallController(private val example : RenderedExample, markError : () -> Unit) : ReflectionBindableController(R.layout.word_recall_view), FlowItemController {
+class GermanRecallController(private val example: RenderedExample, markError: () -> Unit) : ReflectionBindableController(R.layout.word_recall_view), FlowItemController {
     override val result: Property<FlowItemResult> = Property(null)
-    public val dasController: ButtonController = ButtonController(R.id.dasBtn, { submitGender(Gender.Neuter, dasController) }, "das")
-    public val derController: ButtonController = ButtonController(R.id.derBtn, { submitGender(Gender.Masculine, derController) }, "der")
-    public val dieController: ButtonController = ButtonController(R.id.dieBtn, { submitGender(Gender.Feminine, dieController) }, "die")
-    public val rightController: ButtonController = ButtonController(R.id.rightBtn, { submitAnswer(true) }, "�����")
-    public val wrongController: ButtonController = ButtonController(R.id.wrongBtn, { submitAnswer(false) }, "�� �����")
-    public val nextController: ButtonController = ButtonController(R.id.nextBtn, { onNext() }, "�������� �������")
+    val dasController: ButtonController = ButtonController(R.id.dasBtn, { submitGender(Gender.Neuter) }, "das")
+    val derController: ButtonController = ButtonController(R.id.derBtn, { submitGender(Gender.Masculine) }, "der")
+    val dieController: ButtonController = ButtonController(R.id.dieBtn, { submitGender(Gender.Feminine) }, "die")
+    val rightController: ButtonController = ButtonController(R.id.rightBtn, { submitAnswer(true) }, "�����")
+    val wrongController: ButtonController = ButtonController(R.id.wrongBtn, { submitAnswer(false) }, "�� �����")
+    val nextController: ButtonController = ButtonController(R.id.nextBtn, { onNext() }, "�������� �������")
 
-    public val answerController: TextViewController = TextViewController(R.id.answerTextView, "", Visibility.Collapsed)
-    public val hintController: TextViewController = TextViewController(R.id.hintTextView, "", Visibility.Visible)
+    val answerController: TextViewController = TextViewController(R.id.answerTextView, "", Visibility.Collapsed)
+    val hintController: TextViewController = TextViewController(R.id.hintTextView, "", Visibility.Visible)
 
-    public val questionController: TextViewController = TextViewController(R.id.questionTextView)
-    public val gendersController: List<ButtonController> = listOf(derController, dasController, dieController)
-    public val answerButtons: List<ButtonController> = listOf(rightController, wrongController)
+    val questionController: TextViewController = TextViewController(R.id.questionTextView)
+    val gendersController: List<ButtonController> = listOf(derController, dasController, dieController)
+    val answerButtons: List<ButtonController> = listOf(rightController, wrongController)
 
-    public val markErrorButton : ButtonController = ButtonController(R.id.markErrorBtn, markError, "Mark Error")
+    val markErrorButton: ButtonController = ButtonController(R.id.markErrorBtn, markError, "Mark Error")
+    val genderButtons = mapOf(Pair(Gender.Feminine, dieController), Pair(Gender.Masculine, derController), Pair(Gender.Neuter, dasController))
 
     protected var currentScore : Float = 1.0f
     private val genderAnswer = (example.entityId as? GermanWordId)?.gender
@@ -39,13 +40,13 @@ public class GermanRecallController(private val example : RenderedExample, markE
         return success
     }
 
-    fun submitGender(gender: Gender, btn: ButtonController) {
+    fun submitGender(gender: Gender) {
         val success = checkGender(gender)
         if (success) {
             gendersController.forEach { b -> b.visible.value = Visibility.Collapsed }
             onNext()
         } else {
-            btn.enabled.value = false
+            genderButtons[gender]!!.enabled.value = false
         }
     }
 
@@ -69,7 +70,7 @@ public class GermanRecallController(private val example : RenderedExample, markE
         gendersController.forEach { b -> b.visible.value = shouldGuessGender.toVisibilityCollapsed () }
 
         questionController.spannedTitle.value = Html.fromHtml(example.text)
-        answerController.title.value = example.meanings.join("; ")
+        answerController.title.value = example.meanings.joinToString("; ")
         hintController.visible.value = Visibility.Collapsed
     }
 }

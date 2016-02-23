@@ -5,7 +5,7 @@ import am5800.harmonie.viewBinding.BindableFragment
 import android.support.v4.app.FragmentManager
 import java.util.*
 
-public class ControllerRegistry : ViewOpener {
+class ControllerRegistry : ViewOpener {
     private val controllerStack = LinkedList<BindableController>()
 
     fun top(): BindableController {
@@ -31,7 +31,7 @@ public class ControllerRegistry : ViewOpener {
     }
 
     fun back() : Boolean{
-        if (controllerStack.size() <= 1) return false
+        if (controllerStack.size <= 1) return false
         controllerStack.removeLast()
         val fm = fragmentManager!!
         val ft = fm.beginTransaction()

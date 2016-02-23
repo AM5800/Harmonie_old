@@ -2,7 +2,7 @@ package am5800.harmonie.model.logging
 
 import am5800.harmonie.model.Logger
 
-public interface LoggerProvider {
+interface LoggerProvider {
     fun getLogger(name: String): Logger
-    fun getLogger<_>(javaClass: Class<_>): Logger = getLogger(javaClass.name)
+    fun <T> getLogger(javaClass: Class<T>): Logger = getLogger(javaClass.name)
 }

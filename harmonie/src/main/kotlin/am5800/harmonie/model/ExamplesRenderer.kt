@@ -1,12 +1,12 @@
 package am5800.harmonie.model
 
-public data class RenderedExample(public val entityId: EntityId, public val text: String, public val meanings: List<String>) {
+data class RenderedExample(val entityId: EntityId, val text: String, val meanings: List<String>) {
     override fun toString(): String {
-        return "$text -> ${meanings.join(" | ")}"
+        return "$text -> ${meanings.joinToString(" | ")}"
     }
 }
 
-public open class ExamplesRenderer() {
+open class ExamplesRenderer() {
     fun render(example: Example): RenderedExample {
         val ranges = example.ranges.sortedBy { it.start }
         assertNotOverlapping(ranges, example.entityId)
@@ -19,7 +19,7 @@ public open class ExamplesRenderer() {
 
         val start = ranges.first().start - 50
         val end = ranges.last().start + ranges.last().length + 50
-        val text = sb.toString().substring(start.clamp(0, sb.length()), end.clamp(0, sb.length()))
+        val text = sb.toString().substring(start.clamp(0, sb.length), end.clamp(0, sb.length))
 
         return RenderedExample(example.entityId, text, example.meanings)
     }

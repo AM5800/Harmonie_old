@@ -21,17 +21,17 @@ fun InputStream.readFileAsString(): String {
     return sb.toString()
 }
 
-public fun File.readFileAsString(): String {
+fun File.readFileAsString(): String {
     return FileInputStream(this).use { s -> s.readFileAsString () }
 }
 
-public fun String.splitAtLines(): Array<String> {
+fun String.splitAtLines(): Array<String> {
     return this.split("\\r?\\n".toRegex()).toTypedArray()
 }
 
-public fun <T> List<T>.shuffle(): List<T> {
+fun <T> List<T>.shuffle(): List<T> {
     val random = Random()
-    val list = this.toArrayList()
+    val list = this.toMutableList()
     for (i in (list.count() - 1) downTo 1) {
         val j = random.nextInt(i + 1)
         val tmp = list[i]
@@ -41,7 +41,7 @@ public fun <T> List<T>.shuffle(): List<T> {
     return list
 }
 
-public fun Int.clamp(lowerBound: Int, upperBound: Int) : Int {
+fun Int.clamp(lowerBound: Int, upperBound: Int): Int {
     if (this > upperBound) return upperBound
     if (this < lowerBound) return lowerBound
     return this

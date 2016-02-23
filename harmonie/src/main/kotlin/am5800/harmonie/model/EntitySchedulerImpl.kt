@@ -1,11 +1,11 @@
 package am5800.harmonie.model
 
 import org.joda.time.DateTime
-import java.util.LinkedHashMap
+import java.util.*
 
-public class EntitySchedulerImpl(private val settings: AppSettings,
-                                 private val env: FileEnvironment,
-                                 private val deserializers : List<EntityIdDeserializer>) : EntityScheduler {
+class EntitySchedulerImpl(private val settings: AppSettings,
+                          private val env: FileEnvironment,
+                          private val deserializers : List<EntityIdDeserializer>) : EntityScheduler {
     override fun remove(items: List<EntityId>) {
         var removed = false
         for (item in items) {
@@ -36,17 +36,17 @@ public class EntitySchedulerImpl(private val settings: AppSettings,
     }
 
     override fun getAllScheduledItems(): List<EntitySchedule> {
-        return map.map({ kvp -> EntitySchedule(kvp.getKey(), kvp.getValue()) })
+        return map.map({ kvp -> EntitySchedule(kvp.key, kvp.value) })
     }
 
     private fun save() {
         if (settings.readonlyMode) return
         env.writeDataFile(dataFileName, {
             val writer = OutputStreamWrapper(it)
-            writer.writeInt(map.size())
+            writer.writeInt(map.size)
             for (kvp in map) {
-                writer.writeString(kvp.getKey().serialize())
-                writer.writeLong(kvp.getValue().millis)
+                writer.writeString(kvp.key.serialize())
+                writer.writeLong(kvp.value.millis)
             }
         })
     }

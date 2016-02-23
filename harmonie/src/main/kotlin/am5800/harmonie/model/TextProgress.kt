@@ -1,9 +1,9 @@
 package am5800.harmonie.model
 
-import java.util.LinkedHashMap
+import java.util.*
 
 
-public class TextProgress(private val env: FileEnvironment) {
+class TextProgress(private val env: FileEnvironment) {
     private val fileName = "textProgress.dat"
     private val textToPartIndex = LinkedHashMap<String, Int>()
 
@@ -28,7 +28,7 @@ public class TextProgress(private val env: FileEnvironment) {
     private fun save() {
         env.writeDataFile(fileName, {s ->
             val writer = OutputStreamWrapper(s)
-            writer.writeInt(textToPartIndex.size())
+            writer.writeInt(textToPartIndex.size)
             for (entry in textToPartIndex) {
                 writer.writeString(entry.key)
                 writer.writeInt(entry.value)

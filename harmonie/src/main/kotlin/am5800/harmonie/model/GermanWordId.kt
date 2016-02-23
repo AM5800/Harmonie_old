@@ -3,9 +3,9 @@ package am5800.harmonie.model
 import am5800.harmonie.model.words.PartOfSpeech
 import com.google.common.base.Objects
 
-public class GermanWordId(public val word: String, public val partOfSpeech: PartOfSpeech, public val gender: Gender?) : EntityId {
+class GermanWordId(val word: String, val partOfSpeech: PartOfSpeech, val gender: Gender?) : EntityId {
     init {
-        if (word.length() < 2) throw Exception("Too short word:" + word)
+        if (word.length < 2) throw Exception("Too short word:" + word)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -43,7 +43,7 @@ public class GermanWordId(public val word: String, public val partOfSpeech: Part
         return "de:" + word + "|" + partOfSpeech.short() + gender.short()
     }
 
-    public fun PartOfSpeech.short(): String {
+    fun PartOfSpeech.short(): String {
         return when (this) {
             PartOfSpeech.Noun -> "n"
             PartOfSpeech.Adjective -> "j"

@@ -4,7 +4,7 @@ import am5800.harmonie.model.Logger
 import android.util.Log
 
 
-public class AndroidLogger(private val tag: String) : Logger {
+class AndroidLogger(private val tag: String) : Logger {
     override fun catch(function: () -> Unit) {
         try {
             function()
@@ -14,7 +14,7 @@ public class AndroidLogger(private val tag: String) : Logger {
     }
 
     override fun exception(e: Exception) {
-        Log.e(tag, "EXCEPTION ${e.getMessage()}", e)
+        Log.e(tag, "EXCEPTION ${e.message}", e)
     }
 
     override fun verbose(message: String) {

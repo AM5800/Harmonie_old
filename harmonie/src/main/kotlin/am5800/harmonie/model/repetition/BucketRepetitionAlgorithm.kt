@@ -6,9 +6,9 @@ import am5800.harmonie.model.WordLearnLevel
 import org.joda.time.*
 
 
-public class BucketRepetitionAlgorithm : RepetitionAlgorithm {
+class BucketRepetitionAlgorithm : RepetitionAlgorithm {
 
-    public val buckets : List<Period> = listOf(Hours.ONE.toPeriod(), Days.ONE.toPeriod(), Weeks.TWO.toPeriod(), Months.TWO.toPeriod(), Months.SIX.toPeriod())
+    val buckets: List<Period> = listOf(Hours.ONE.toPeriod(), Days.ONE.toPeriod(), Weeks.TWO.toPeriod(), Months.TWO.toPeriod(), Months.SIX.toPeriod())
 
     override fun computeLevel(attempts: List<Attempt>): WordLearnLevel {
         val bucket = compute(attempts.sortedBy { it.date }).first
@@ -48,7 +48,7 @@ public class BucketRepetitionAlgorithm : RepetitionAlgorithm {
                 }
             }
         }
-        val delta = if (bucket < buckets.size()) buckets[bucket] else buckets.last()
+        val delta = if (bucket < buckets.size) buckets[bucket] else buckets.last()
         val lastAttempt = sortedAttempts.last()
 
         if (!isSuccessful(lastAttempt)) base = lastAttempt

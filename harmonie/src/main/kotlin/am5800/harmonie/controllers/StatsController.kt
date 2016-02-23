@@ -1,8 +1,10 @@
 package am5800.harmonie.controllers
 
-import am5800.harmonie.ControllerRegistry
 import am5800.harmonie.R
-import am5800.harmonie.model.*
+import am5800.harmonie.model.AttemptsHistoryManager
+import am5800.harmonie.model.Lifetime
+import am5800.harmonie.model.RepetitionAlgorithm
+import am5800.harmonie.model.WordLearnLevel
 import am5800.harmonie.model.util.Property
 import am5800.harmonie.viewBinding.BindableController
 import am5800.harmonie.viewBinding.BindableView
@@ -13,10 +15,10 @@ import com.jjoe64.graphview.series.LineGraphSeries
 import org.joda.time.DateMidnight
 import org.joda.time.DateTime
 import org.joda.time.Days
-import java.util.LinkedHashMap
+import java.util.*
 
-public class StatsController(private val histMan: AttemptsHistoryManager,
-                             private val repetitionAlg: RepetitionAlgorithm) : BindableController {
+class StatsController(private val histMan: AttemptsHistoryManager,
+                      private val repetitionAlg: RepetitionAlgorithm) : BindableController {
     override fun bind(view: BindableView, bindingLifetime: Lifetime) {
         val graph = view.getChild<GraphView>(R.id.graph)
 
@@ -31,13 +33,13 @@ public class StatsController(private val histMan: AttemptsHistoryManager,
 
         data.bindNotNull(bindingLifetime, {
             graph.removeAllSeries()
-            val dataPoints = WordLearnLevel.values().filter {it != WordLearnLevel.NotStarted}.toMap ({ it }, { arrayListOf<DataPoint>() })
+            val dataPoints = WordLearnLevel.values().filter { it != WordLearnLevel.NotStarted }.map { Pair(it, arrayListOf<DataPoint>()) }.toMap()
 
             it.forEachIndexed { i, statPoint ->
                 for (level in statPoint.data) {
-                    if (level.getKey() == WordLearnLevel.NotStarted) continue
-                    val s = dataPoints.get(level.getKey())!!
-                    val dataPoint = DataPoint(i.toDouble(), level.getValue().toDouble())
+                    if (level.key == WordLearnLevel.NotStarted) continue
+                    val s = dataPoints.get(level.key)!!
+                    val dataPoint = DataPoint(i.toDouble(), level.value.toDouble())
                     s.add(dataPoint)
                 }
             }
@@ -60,10 +62,10 @@ public class StatsController(private val histMan: AttemptsHistoryManager,
 
     override val id: Int = R.layout.statistics
 
-    public class StatPoint(public val data: Map<WordLearnLevel, Int>)
+    class StatPoint(val data: Map<WordLearnLevel, Int>)
 
-    public val data: Property<List<StatPoint>> = Property(emptyList())
-    public val titles: Map<WordLearnLevel, String> = WordLearnLevel.values().toMap ({ it }, { it.toString() })
+    val data: Property<List<StatPoint>> = Property(emptyList())
+    val titles: Map<WordLearnLevel, String> = WordLearnLevel.values().map { Pair(it, it.toString()) }.toMap()
 
     private fun calcData() {
         val now = DateTime()
@@ -81,7 +83,6 @@ public class StatsController(private val histMan: AttemptsHistoryManager,
                 map[level] = map[level]!! + 1
             }
             result.add(StatPoint(map))
-
         }
 
         data.value = result

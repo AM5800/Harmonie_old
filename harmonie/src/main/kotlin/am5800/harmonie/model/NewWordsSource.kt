@@ -3,8 +3,8 @@ package am5800.harmonie.model
 import java.util.*
 
 
-public class NewEntitiesSource (private val textsProvider : TextsProvider,
-                                private val historyManager : AttemptsHistoryManager) {
+class NewEntitiesSource(private val textsProvider: TextsProvider,
+                        private val historyManager : AttemptsHistoryManager) {
     fun getNewEntities(amount: Int, deprecatedItems: Set<EntityId>): List<EntityId> {
         if (amount == 0) return emptyList()
         val used = historyManager.getKeys().plus(deprecatedItems).toSet()
@@ -16,7 +16,7 @@ public class NewEntitiesSource (private val textsProvider : TextsProvider,
             for (entity in part.entities) {
                 if (!used.contains(entity)) {
                     result.add(entity)
-                    if (result.size() >= amount) return result
+                    if (result.size >= amount) return result
                 }
             }
         }
