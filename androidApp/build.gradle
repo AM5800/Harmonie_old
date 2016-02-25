@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.3'
+        classpath 'com.android.tools.build:gradle:1.5.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -25,7 +25,7 @@ android {
         minSdkVersion 9
         targetSdkVersion 22
         versionCode 1
-        versionName "1.0"
+        versionName "0.1"
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_6
@@ -47,7 +47,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:22.2.1'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile group: 'com.google.guava', name: 'guava', version: '18.0'
-    compile "joda-time:joda-time:2.2"
+    compile 'com.google.guava:guava:18.0'
+    compile 'joda-time:joda-time:2.2'
     compile 'com.jjoe64:graphview:4.0.1'
 }

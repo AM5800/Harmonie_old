@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/HarmonieRoot.iml" filepath="$PROJECT_DIR$/.idea/modules/HarmonieRoot.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/harmonie/harmonie.iml" filepath="$PROJECT_DIR$/.idea/modules/harmonie/harmonie.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/androidApp/androidApp.iml" filepath="$PROJECT_DIR$/.idea/modules/androidApp/androidApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/textProcessor/textProcessor.iml" filepath="$PROJECT_DIR$/.idea/modules/textProcessor/textProcessor.iml" />
     </modules>
   </component>

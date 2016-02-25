@@ -1,1 +1,1 @@
-include ':harmonie', ':textProcessor'
+include ':androidApp', ':textProcessor'

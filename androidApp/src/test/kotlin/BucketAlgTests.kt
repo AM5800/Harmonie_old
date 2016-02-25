@@ -5,47 +5,42 @@ import am5800.harmonie.model.repetition.BucketRepetitionAlgorithm
 import am5800.harmonie.model.words.PartOfSpeech
 import org.joda.time.DateTime
 import org.joda.time.Period
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.util.*
-import kotlin.test.assertEquals
 
-public class BucketAlgTests {
+class BucketAlgTests {
   private val now = DateTime(2015, 1, 1, 0, 0, 0, 0)
   private val alg = BucketRepetitionAlgorithm()
   private val id = GermanWordId("word", PartOfSpeech.Noun, null)
 
-  @Test
-  public fun testKnown() {
+  @Test fun testKnown() {
     val attempts = listOf(mkAttempt(true))
     val level = alg.computeLevel(attempts)
     assertEquals(WordLearnLevel.Confident, level)
   }
 
-  @Test
-  public fun secondBeforeDueDate() {
+  @Test fun secondBeforeDueDate() {
     val attempts = listOf(mkAttempt(false), mkAttempt(true, alg.buckets[0].minusMinutes(2)))
     val dueDate = alg.getNextDueDate(attempts)
     assertEquals(now.plus(alg.buckets[0]), dueDate)
   }
 
-  @Test
-  public fun secondBeforeDueDateWrong() {
+  @Test fun secondBeforeDueDateWrong() {
     val secondAttempt = mkAttempt(false, alg.buckets[0].minusMinutes(2))
     val attempts = listOf(mkAttempt(false), secondAttempt)
     val dueDate = alg.getNextDueDate(attempts)
     assertEquals(secondAttempt.date.plus(alg.buckets[0]), dueDate)
   }
 
-  @Test
-  public fun secondAfterDueDate() {
+  @Test fun secondAfterDueDate() {
     val secondAttempt = mkAttempt(true, alg.buckets[0].plusMinutes(10))
     val attempts = listOf(mkAttempt(false), secondAttempt)
     val dueDate = alg.getNextDueDate(attempts)
     assertEquals(secondAttempt.date.plus(alg.buckets[1]), dueDate)
   }
 
-  @Test
-  public fun secondAfterDueDateWrong() {
+  @Test fun secondAfterDueDateWrong() {
     val secondAttempt = mkAttempt(false, alg.buckets[0].plusMinutes(10))
     val attempts = listOf(mkAttempt(false), secondAttempt)
     val dueDate = alg.getNextDueDate(attempts)
@@ -53,16 +48,14 @@ public class BucketAlgTests {
   }
 
 
-  @Test
-  public fun testAlmostIdealSequence() {
+  @Test fun testAlmostIdealSequence() {
     val attempts = mkAlmostIdealSequence()
     val level = alg.computeLevel(attempts)
     assertEquals(WordLearnLevel.Known, level)
   }
 
 
-  @Test
-  public fun testAlmostIdealSequenceWrong() {
+  @Test fun testAlmostIdealSequenceWrong() {
     val sequence = mkAlmostIdealSequence().take(4)
     val attempts = sequence.plus(mkAttempt(false, sequence.last().date))
     val level = alg.computeLevel(attempts)
@@ -71,8 +64,7 @@ public class BucketAlgTests {
     assertEquals(attempts.last().date.plus(alg.buckets[0]), dueDate)
   }
 
-  @Test
-  public fun testAlmostIdealSequenceWrongRight() {
+  @Test fun testAlmostIdealSequenceWrongRight() {
     val sequence = mkAlmostIdealSequence().take(4)
     val attempt1 = mkAttempt(false, sequence.last().date.plusMinutes(5))
     val attempt2 = mkAttempt(true, attempt1.date.plusMinutes(5))
