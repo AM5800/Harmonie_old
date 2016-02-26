@@ -1,11 +1,11 @@
 package am5800.harmonie.controllers
 
+import Lifetime
 import am5800.harmonie.R
 import am5800.harmonie.ViewOpener
 import am5800.harmonie.controllers.defaultControls.ButtonController
 import am5800.harmonie.model.EntityScheduler
 import am5800.harmonie.model.FlowManager
-import am5800.harmonie.model.Lifetime
 import am5800.harmonie.viewBinding.BindableView
 import am5800.harmonie.viewBinding.ReflectionBindableController
 import android.widget.ArrayAdapter

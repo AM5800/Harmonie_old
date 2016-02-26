@@ -1,5 +1,3 @@
-package am5800.harmonie.model
-
 import java.util.*
 
 class Lifetime {

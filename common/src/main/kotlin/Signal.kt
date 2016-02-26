@@ -1,6 +1,3 @@
-package am5800.harmonie.model.util
-
-import am5800.harmonie.model.Lifetime
 import java.util.*
 
 class Signal <T>(private val lifetime: Lifetime) {

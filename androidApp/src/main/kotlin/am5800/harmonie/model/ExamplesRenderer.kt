@@ -1,5 +1,7 @@
 package am5800.harmonie.model
 
+import utilityFunctions.clamp
+
 data class RenderedExample(val entityId: EntityId, val text: String, val meanings: List<String>) {
   override fun toString(): String {
     return "$text -> ${meanings.joinToString(" | ")}"

@@ -1,7 +1,8 @@
 package am5800.harmonie.model
 
+import Lifetime
+import Property
 import am5800.harmonie.model.logging.LoggerProvider
-import am5800.harmonie.model.util.Property
 import org.joda.time.DateTime
 import org.joda.time.Duration
 import org.joda.time.Seconds

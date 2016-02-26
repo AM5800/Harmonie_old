@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/androidApp/androidApp.iml" filepath="$PROJECT_DIR$/.idea/modules/androidApp/androidApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/common.iml" filepath="$PROJECT_DIR$/.idea/modules/common/common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/dataProcessor/dataProcessor.iml" filepath="$PROJECT_DIR$/.idea/modules/dataProcessor/dataProcessor.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/harmonie.iml" filepath="$PROJECT_DIR$/.idea/modules/harmonie.iml" />
     </modules>
   </component>

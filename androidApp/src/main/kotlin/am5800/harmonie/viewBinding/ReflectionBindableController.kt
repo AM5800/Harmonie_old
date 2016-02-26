@@ -1,6 +1,6 @@
 package am5800.harmonie.viewBinding
 
-import am5800.harmonie.model.Lifetime
+import Lifetime
 
 open class ReflectionBindableController(override val id: Int) : BindableController {
   override fun bind(view: BindableView, bindingLifetime: Lifetime) {

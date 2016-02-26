@@ -106,5 +106,6 @@
     <orderEntry type="library" exported="" name="kotlin-runtime-1.0.0" level="project" />
     <orderEntry type="library" exported="" name="kotlin-stdlib-1.0.0" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-22.2.1" level="project" />
+    <orderEntry type="module" module-name="common" exported="" />
   </component>
 </module>

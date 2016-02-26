@@ -1,6 +1,6 @@
 package am5800.harmonie
 
-import am5800.harmonie.model.Lifetime
+import Lifetime
 import am5800.harmonie.model.logging.LoggerProvider
 import android.content.Context
 import android.database.Cursor

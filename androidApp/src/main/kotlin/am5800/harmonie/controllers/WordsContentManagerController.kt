@@ -1,6 +1,10 @@
 package am5800.harmonie.controllers
 
-import am5800.harmonie.model.*
+import am5800.harmonie.model.EntityId
+import am5800.harmonie.model.ExamplesRenderer
+import am5800.harmonie.model.GermanEntityManager
+import am5800.harmonie.model.MarkErrorHelper
+import utilityFunctions.shuffle
 
 
 class WordsContentManagerController(private val renderer: ExamplesRenderer,

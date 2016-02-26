@@ -1,6 +1,6 @@
 package am5800.harmonie.viewBinding
 
-import am5800.harmonie.model.Lifetime
+import Lifetime
 import android.app.Activity
 import android.view.View
 

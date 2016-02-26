@@ -1,11 +1,11 @@
 package am5800.harmonie.controllers
 
+import Lifetime
+import Property
 import am5800.harmonie.R
 import am5800.harmonie.model.AttemptsHistoryManager
-import am5800.harmonie.model.Lifetime
 import am5800.harmonie.model.RepetitionAlgorithm
 import am5800.harmonie.model.WordLearnLevel
-import am5800.harmonie.model.util.Property
 import am5800.harmonie.viewBinding.BindableController
 import am5800.harmonie.viewBinding.BindableView
 import android.graphics.Color

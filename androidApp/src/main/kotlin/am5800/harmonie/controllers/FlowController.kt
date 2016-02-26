@@ -1,14 +1,14 @@
 package am5800.harmonie.controllers
 
+import Lifetime
+import Property
+import SequentialLifetime
 import am5800.harmonie.ControllerRegistry
 import am5800.harmonie.R
 import am5800.harmonie.controllers.defaultControls.TextViewController
 import am5800.harmonie.model.Flow
 import am5800.harmonie.model.FlowManager
 import am5800.harmonie.model.FlowType
-import am5800.harmonie.model.Lifetime
-import am5800.harmonie.model.util.Property
-import am5800.harmonie.model.util.SequentialLifetime
 import am5800.harmonie.viewBinding.BindableView
 import am5800.harmonie.viewBinding.ReflectionBindableController
 import android.widget.LinearLayout

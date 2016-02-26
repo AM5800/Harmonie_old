@@ -1,4 +1,4 @@
-package am5800.harmonie.model
+package am5800.harmonie.model.logging
 
 
 interface Logger {

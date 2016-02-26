@@ -1,5 +1,6 @@
 package am5800.harmonie
 
+import Lifetime
 import am5800.harmonie.controllers.*
 import am5800.harmonie.logging.AndroidLoggerProvider
 import am5800.harmonie.model.*
@@ -10,7 +11,6 @@ import android.content.res.AssetManager
 import java.io.FileNotFoundException
 import java.io.InputStream
 import java.io.OutputStream
-
 
 class HarmonieApplication : Application() {
   var lifetime: Lifetime? = null

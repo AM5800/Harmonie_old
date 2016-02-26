@@ -1,8 +1,8 @@
 package am5800.harmonie.controllers
 
+import Lifetime
 import am5800.harmonie.R
 import am5800.harmonie.controllers.defaultControls.ButtonController
-import am5800.harmonie.model.Lifetime
 import am5800.harmonie.toVisible
 import android.content.Context
 import android.view.LayoutInflater

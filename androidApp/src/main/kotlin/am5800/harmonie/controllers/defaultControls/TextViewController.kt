@@ -1,8 +1,8 @@
 package am5800.harmonie.controllers.defaultControls
 
+import Lifetime
+import Property
 import am5800.harmonie.controllers.Visibility
-import am5800.harmonie.model.Lifetime
-import am5800.harmonie.model.util.Property
 import am5800.harmonie.toVisible
 import am5800.harmonie.viewBinding.BindableController
 import am5800.harmonie.viewBinding.BindableView

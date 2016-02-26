@@ -1,8 +1,8 @@
 package am5800.harmonie.viewBinding
 
+import Lifetime
 import am5800.harmonie.ControllerRegistry
 import am5800.harmonie.MainActivity
-import am5800.harmonie.model.Lifetime
 import android.app.Activity
 import android.os.Bundle
 import android.support.v4.app.Fragment

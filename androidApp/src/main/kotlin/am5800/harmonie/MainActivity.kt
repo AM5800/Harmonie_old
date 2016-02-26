@@ -1,6 +1,6 @@
 package am5800.harmonie
 
-import am5800.harmonie.model.Lifetime
+import Lifetime
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
