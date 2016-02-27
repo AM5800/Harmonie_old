@@ -4,11 +4,10 @@ import corpus.CorpusInfo
 import corpus.CorpusRepository
 import corpus.parsing.CorpusParsersSet
 import corpus.parsing.NegraParser
-import ml.sentenceBreaking.SentenceBreakerUtils
 import ml.sentenceBreaking.splitWords
 import java.io.File
 
-fun getParallelSentences(infos: List<CorpusInfo>): List<SentenceGroup> {
+fun computeParallelSentences(infos: List<CorpusInfo>): List<SentenceGroup> {
   val sentences = mutableListOf<SentenceGroup>()
 
   val sxmlCorpusParser = SxmlCorpusParser()
@@ -37,14 +36,19 @@ fun main(args: Array<String>) {
   val parsersSet = CorpusParsersSet()
   parsersSet.registerParser(NegraParser())
 
-  val sentences = getParallelSentences(repository.getCorpuses().filter { it.formatId.equals("parallel", true) })
-  val occurrences = getWordOccurrences(sentences)
+  val sentences = computeParallelSentences(repository.getCorpuses().filter { it.formatId.equals("parallel", true) })
+  val occurrences = computeWordOccurrences(sentences)
+
+  val frequencyHandler = WordsFrequencyHandler(occurrences.keySet())
+  parsersSet.parse(repository.getCorpuses().filter { !it.formatId.equals("parallel", true) }, frequencyHandler)
 
   println("Sentences: ${sentences.size}")
   println("Unique words: ${occurrences.keySet().size}")
+  val maxBy = frequencyHandler.result.maxBy { it.value }!!
+  println("Top used word: '${maxBy.key}' with ${maxBy.value} usages")
 }
 
-fun getWordOccurrences(sentences: List<SentenceGroup>): Multimap<String, Int> {
+fun computeWordOccurrences(sentences: List<SentenceGroup>): Multimap<String, Int> {
   val result = LinkedHashMultimap.create<String, Int>()
 
   sentences.forEachIndexed { i, sentenceGroup ->
@@ -53,7 +57,7 @@ fun getWordOccurrences(sentences: List<SentenceGroup>): Multimap<String, Int> {
     val words = splitWords(german)
         .filter {
           IntRange(it.start, it.end - 1).all { index ->
-            !SentenceBreakerUtils.isPunctuation(german[index])
+            german[index].isLetter()
           }
         }
         .map { german.substring(it.start, it.end).toLowerCase() }
