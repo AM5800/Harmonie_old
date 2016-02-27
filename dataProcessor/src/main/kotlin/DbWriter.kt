@@ -9,13 +9,13 @@ class DbWriter {
   private val wordsTableName = "words"
   private val wordOccurrencesTableName = "wordOccurrences"
 
-  fun write(path: File, sentencesData: Pair<Map<Long, Long>, List<Sentence>>, occurrences: Multimap<Word, Long>, frequencies: Map<Word, Double>) {
+  fun write(path: File, data: Data) {
     path.delete()
     val database = SqlJetDb.open(path, true)
     database.runTransaction({ db ->
       createDbSchema(db)
-      val sentenceMapping = writeSentences(sentencesData, db)
-      writeWords(occurrences, frequencies, sentenceMapping, db)
+      val sentenceMapping = writeSentences(data.sentences, data.sentenceTranslations, db)
+      writeWords(data.wordOccurrences, data.wordFrequencies, sentenceMapping, db)
     }, SqlJetTransactionMode.WRITE)
   }
 
@@ -36,10 +36,8 @@ class DbWriter {
     }
   }
 
-  private fun writeSentences(sentencesData: Pair<Map<Long, Long>, List<Sentence>>, db: SqlJetDb): Map<Long, Long> {
+  private fun writeSentences(sentences: List<Sentence>, translations: Map<Long, Long>, db: SqlJetDb): Map<Long, Long> {
     val result = mutableMapOf<Long, Long>()
-    val sentences = sentencesData.second
-    val translations = sentencesData.first
 
     val sentencesTable = db.getTable(sentencesTableName)
     sentences.forEachIndexed { i, sentence ->
