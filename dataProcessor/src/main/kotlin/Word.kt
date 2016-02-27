@@ -1,0 +1,1 @@
+data class Word(val language: Language, val word: String)

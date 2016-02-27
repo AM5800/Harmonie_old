@@ -2,6 +2,7 @@ buildscript {
   ext.kotlin_version = '1.0.0'
   repositories {
     mavenCentral()
+    maven { url "http://maven.tmatesoft.com/content/repositories/releases" }
   }
   dependencies {
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -21,6 +22,7 @@ dependencies {
   compile group: 'com.google.guava', name: 'guava', version: '12.0'
   compile project(':common')
   compile 'com.github.AM5800:NLP-Experimental:882e11b7cc'
+  compile "org.tmatesoft.sqljet:sqljet:1.1.10"
 }
 sourceSets {
   main.java.srcDirs += 'src/main/kotlin'

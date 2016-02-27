@@ -6,9 +6,11 @@ import corpus.parsing.CorpusParsersSet
 import corpus.parsing.NegraParser
 import ml.sentenceBreaking.splitWords
 import java.io.File
+import java.util.*
 
-fun computeParallelSentences(infos: List<CorpusInfo>): List<SentenceGroup> {
-  val sentences = mutableListOf<SentenceGroup>()
+fun computeParallelSentences(infos: List<CorpusInfo>, sentenceMinSize: Int = 50): Pair<Map<Long, Long>, List<Sentence>> {
+  val sentences = mutableListOf<Sentence>()
+  val translation = mutableMapOf<Long, Long>()
 
   val sxmlCorpusParser = SxmlCorpusParser()
   for (corpus in infos) {
@@ -17,18 +19,22 @@ fun computeParallelSentences(infos: List<CorpusInfo>): List<SentenceGroup> {
     val enData = sxmlCorpusParser.parse(enPath)
     val deData = sxmlCorpusParser.parse(dePath)
 
-    val newSentences = enData.map { en ->
+    for (en in enData) {
       val de = deData[en.key]!!
-      SentenceGroup.create {
-        sentence(Language.English, en.value)
-        sentence(Language.German, de)
-      }
-    }
 
-    sentences.addAll(newSentences)
+      if (de.length < sentenceMinSize || en.value.length < sentenceMinSize) continue
+
+      sentences.add(Sentence(Language.English, en.value))
+      sentences.add(Sentence(Language.German, de))
+      val gi = (sentences.size - 1).toLong()
+      val ei = (sentences.size - 2).toLong()
+
+      translation.put(gi, ei)
+      translation.put(ei, gi)
+    }
   }
 
-  return sentences
+  return Pair(translation, sentences)
 }
 
 fun main(args: Array<String>) {
@@ -37,33 +43,51 @@ fun main(args: Array<String>) {
   parsersSet.registerParser(NegraParser())
 
   val sentences = computeParallelSentences(repository.getCorpuses().filter { it.formatId.equals("parallel", true) })
-  val occurrences = computeWordOccurrences(sentences)
+  val occurrences = computeWordOccurrences(sentences.second)
 
   val frequencyHandler = WordsFrequencyHandler(occurrences.keySet())
   parsersSet.parse(repository.getCorpuses().filter { !it.formatId.equals("parallel", true) }, frequencyHandler)
 
-  println("Sentences: ${sentences.size}")
+  println("Sentences: ${sentences.second.size}")
   println("Unique words: ${occurrences.keySet().size}")
   val maxBy = frequencyHandler.result.maxBy { it.value }!!
   println("Top used word: '${maxBy.key}' with ${maxBy.value} usages")
+
+  DbWriter().write(File("data\\db\\content.db"), sentences, occurrences, computeFrequencies(frequencyHandler.result, occurrences))
 }
 
-fun computeWordOccurrences(sentences: List<SentenceGroup>): Multimap<String, Int> {
-  val result = LinkedHashMultimap.create<String, Int>()
+fun computeFrequencies(corpusFrequencies: LinkedHashMap<Word, Long>, occurrences: Multimap<Word, Long>): Map<Word, Double> {
+  val totalByLang = mutableMapOf<Language, Long>()
+  val result = mutableMapOf<Word, Long>()
 
-  sentences.forEachIndexed { i, sentenceGroup ->
-    val german = sentenceGroup.byLang(Language.German) ?: return@forEachIndexed
+  for (occurrence in occurrences.asMap()) {
+    val word = occurrence.key
+    val corpusCount = corpusFrequencies[word] ?: 0L
+    val totalCount = occurrence.value.size.toLong() + corpusCount
+    totalByLang[word.language] = totalByLang[word.language] ?: 0 + totalCount
 
-    val words = splitWords(german)
+  }
+
+  return result.map { Pair(it.key, it.value.toDouble() / totalByLang[it.key.language]!!) }.toMap()
+}
+
+fun computeWordOccurrences(sentences: List<Sentence>): Multimap<Word, Long> {
+  val result = LinkedHashMultimap.create<Word, Long>()
+
+  sentences.forEachIndexed { i, sentence ->
+    val language = sentence.language
+    val text = sentence.text
+
+    val words = splitWords(text)
         .filter {
           IntRange(it.start, it.end - 1).all { index ->
-            german[index].isLetter()
+            text[index].isLetter()
           }
         }
-        .map { german.substring(it.start, it.end).toLowerCase() }
+        .map { text.substring(it.start, it.end).toLowerCase() }
 
     for (word in words) {
-      result.put(word, i)
+      result.put(Word(language, word), i.toLong())
     }
   }
 
