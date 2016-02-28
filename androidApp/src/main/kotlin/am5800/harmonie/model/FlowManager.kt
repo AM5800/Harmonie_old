@@ -1,4 +1,4 @@
-package am5800.harmonie.model.newest
+package am5800.harmonie.model
 
 import org.joda.time.Duration
 import org.joda.time.Seconds

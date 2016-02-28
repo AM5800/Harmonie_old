@@ -1,4 +1,4 @@
-package am5800.harmonie.model.newest
+package am5800.harmonie.model
 
 import utils.Lifetime
 import utils.Signal

@@ -2,9 +2,9 @@ package am5800.harmonie
 
 import am5800.harmonie.logging.AndroidLoggerProvider
 import am5800.harmonie.model.FileEnvironment
-import am5800.harmonie.model.newest.FlowItemProviderRegistrar
-import am5800.harmonie.model.newest.FlowManager
-import am5800.harmonie.model.newest.ParallelSentenceFlowManager
+import am5800.harmonie.model.FlowItemProviderRegistrar
+import am5800.harmonie.model.FlowManager
+import am5800.harmonie.model.ParallelSentenceFlowManager
 import android.app.Application
 import android.content.Context
 import android.content.res.AssetManager
@@ -33,9 +33,8 @@ class HarmonieApplication : Application() {
       val env = AndroidEnvironment(assets, this)
       container.register(env)
 
-
-      //val settingsDb = PermanentDb(this)
-      //val harmonieDb = ContentDb(this, lt, settingsDb, loggerProvider)
+      val permanentDb = PermanentDb(this)
+      val contentDb = ContentDb(this, permanentDb, loggerProvider, emptyList())
 
       val flowManager = FlowManager(lt)
       val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt)
@@ -45,8 +44,8 @@ class HarmonieApplication : Application() {
       container.register(flowManager)
       container.register(parallelSentenceFlowManager)
       container.register(ControllerStack())
-
-
+      container.register(permanentDb)
+      container.register(contentDb)
     } catch (e: Exception) {
       logger.exception(e)
       throw e

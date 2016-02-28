@@ -4,9 +4,9 @@ import am5800.harmonie.controllers.DefaultFlowController
 import am5800.harmonie.controllers.EmptyFlowContentController
 import am5800.harmonie.controllers.ParallelSentenceController
 import am5800.harmonie.controllers.StartScreenController
-import am5800.harmonie.model.newest.FlowItemProviderRegistrar
-import am5800.harmonie.model.newest.FlowManager
-import am5800.harmonie.model.newest.ParallelSentenceFlowManager
+import am5800.harmonie.model.FlowItemProviderRegistrar
+import am5800.harmonie.model.FlowManager
+import am5800.harmonie.model.ParallelSentenceFlowManager
 import am5800.harmonie.viewBinding.BindableController
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity

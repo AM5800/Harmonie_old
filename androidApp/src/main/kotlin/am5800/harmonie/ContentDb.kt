@@ -1,5 +1,6 @@
 package am5800.harmonie
 
+import am5800.harmonie.model.logging.Logger
 import am5800.harmonie.model.logging.LoggerProvider
 import android.content.Context
 import android.database.Cursor
@@ -7,55 +8,73 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.google.common.hash.Hashing
 import com.google.common.io.ByteStreams
-import utils.Lifetime
 import java.io.FileOutputStream
 
-class ContentDb(private val context: Context, lifetime: Lifetime, private val settingsDb: PermanentDb, loggerProvider: LoggerProvider) : SQLiteOpenHelper(context, "Harmonie.db", null, 1) {
-  companion object {
-    private val DbLocation: String = "/data/data/am5800.harmonie/databases/Harmonie.db"
-  }
+interface ContentDbConsumer {
+  fun dbMigrationPhase1(oldDb: ContentDb)
+  fun dbMigrationPhase2(newDb: ContentDb)
+  fun dbInitialized(db: ContentDb)
+}
+
+class ContentDb(private val context: Context,
+                private val permanentDb: PermanentDb,
+                loggerProvider: LoggerProvider,
+                dbConsumers: List<ContentDbConsumer>) {
 
   private val logger = loggerProvider.getLogger(javaClass)
 
-  override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-  }
+  private val db = DbInstance(context, permanentDb, logger, dbConsumers, this)
 
-  override fun onCreate(db: SQLiteDatabase) {
-  }
+  private class DbInstance(private val context: Context,
+                           private val permanentDb: PermanentDb,
+                           private val logger: Logger,
+                           dbConsumers: List<ContentDbConsumer>,
+                           db: ContentDb) : SQLiteOpenHelper(context, DbName, null, 1) {
 
-  val dbIsUpdatedThisLaunch: Boolean
-
-  init {
-    if (checkDbUpdateNeeded()) {
-      logger.info("Performing db update")
-      close()
-      context.assets.open("Harmonie.db").use { inStream ->
-        FileOutputStream(DbLocation).use { outStream ->
-          inStream.copyTo(outStream)
+    init {
+      if (checkDbUpdateNeeded()) {
+        dbConsumers.forEach { it.dbMigrationPhase1(db) }
+        logger.info("Performing db update")
+        close()
+        context.assets.open(DbName).use { inStream ->
+          FileOutputStream(DbLocation).use { outStream ->
+            inStream.copyTo(outStream)
+          }
         }
+        writableDatabase.close()
+        dbConsumers.forEach { it.dbMigrationPhase2(db) }
       }
-      writableDatabase.close()
-      dbIsUpdatedThisLaunch = true
-    } else dbIsUpdatedThisLaunch = false
+
+      dbConsumers.forEach { it.dbInitialized(db) }
+    }
+
+    private fun checkDbUpdateNeeded(): Boolean {
+      val dbKey = "ContentDbChecksum"
+      val previousChecksum = permanentDb.getValue(dbKey, "0")
+
+      val dbStream = context.assets.open(DbName)
+      val bytes = ByteStreams.toByteArray(dbStream)
+      val checksum = Hashing.md5().hashBytes(bytes).toString()
+      permanentDb.setValue(dbKey, checksum)
+
+      return checksum != previousChecksum
+    }
+
+    override fun onCreate(p0: SQLiteDatabase?) {
+    }
+
+    override fun onUpgrade(p0: SQLiteDatabase?, p1: Int, p2: Int) {
+    }
   }
 
-  private fun checkDbUpdateNeeded(): Boolean {
-    val dbKey = "HarmonieDbHash"
-    val previousHash = settingsDb.getValue(dbKey, "0")
-
-    val dbStream = context.assets.open("Harmonie.db")
-    val bytes = ByteStreams.toByteArray(dbStream)
-    val hash = Hashing.md5().hashBytes(bytes).toString()
-    settingsDb.setValue(dbKey, hash)
-
-    return hash != previousHash
+  companion object {
+    private val DbName = "content.db"
+    private val DbLocation: String = "/data/data/am5800.harmonie/databases/" + DbName
   }
 
   fun rawQuery(sql: String, selectionArgs: Array<String>): Cursor {
-    return readableDatabase.rawQuery(sql, selectionArgs)
+    return db.readableDatabase.rawQuery(sql, selectionArgs)
   }
-
-
 }
 
 

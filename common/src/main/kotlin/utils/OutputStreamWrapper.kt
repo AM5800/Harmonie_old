@@ -1,4 +1,4 @@
-package am5800.harmonie.model
+package utils
 
 import java.io.DataOutputStream
 import java.io.OutputStream
