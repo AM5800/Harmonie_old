@@ -1,22 +1,24 @@
 package am5800.harmonie
 
-import Lifetime
-import am5800.harmonie.controllers.*
 import am5800.harmonie.logging.AndroidLoggerProvider
-import am5800.harmonie.model.*
-import am5800.harmonie.model.repetition.BucketRepetitionAlgorithm
+import am5800.harmonie.model.FileEnvironment
+import am5800.harmonie.model.newest.FlowItemProviderRegistrar
+import am5800.harmonie.model.newest.FlowManager
+import am5800.harmonie.model.newest.ParallelSentenceFlowManager
 import android.app.Application
 import android.content.Context
 import android.content.res.AssetManager
+import componentContainer.ComponentContainer
+import utils.Lifetime
 import java.io.FileNotFoundException
 import java.io.InputStream
 import java.io.OutputStream
 
 class HarmonieApplication : Application() {
-  var lifetime: Lifetime? = null
-  var controllerRegistry: ControllerRegistry? = null
+  var modelContainer: ComponentContainer? = null
+
   override fun onTerminate() {
-    lifetime?.terminate()
+    modelContainer?.lifetime?.terminate()
   }
 
   override fun onCreate() {
@@ -25,38 +27,24 @@ class HarmonieApplication : Application() {
 
     try {
       val lt = Lifetime()
-      lifetime = lt
+      val container = ComponentContainer(lt, null)
+      modelContainer = container
 
       val env = AndroidEnvironment(assets, this)
-
-      val settingsDb = SettingsDb(this)
-      val harmonieDb = HarmonieDb(this, lt, settingsDb, loggerProvider)
-
-      val settings = AppSettings()
-
-      val germanEntityManager = GermanEntityManager(harmonieDb)
-      val deserializers = listOf(germanEntityManager)
-      val textsProvider = TextsProvider(loggerProvider, harmonieDb, deserializers)
-      val historyManager = AttemptsHistoryManagerImpl(env, settings, deserializers)
-      val scheduler = EntitySchedulerImpl(settings, env, deserializers)
-      val examplesManager = ExamplesRenderer()
-      val bucketsAlg = BucketRepetitionAlgorithm()
-      val newEntitiesSource = NewEntitiesSource(textsProvider, historyManager)
-      val flowManager = FlowManager(loggerProvider, lt, historyManager, scheduler, bucketsAlg, newEntitiesSource)
-      val registry = ControllerRegistry()
-      controllerRegistry = registry
-      DbSynchronizer(historyManager, scheduler, deserializers, harmonieDb)
+      container.register(env)
 
 
+      //val settingsDb = PermanentDb(this)
+      //val harmonieDb = ContentDb(this, lt, settingsDb, loggerProvider)
 
-      // Creating controllers
-      val statsController = StatsController(historyManager, bucketsAlg)
-      val textController = TextController(textsProvider, lt, TextPartScoreCalculator(bucketsAlg, historyManager), TextProgress(env))
-      val startController = StartScreenController(flowManager, textController, statsController, scheduler, registry)
-      val markErrorHelper = MarkErrorHelper(settingsDb.writableDatabase, loggerProvider)
-      val flowController = FlowController(lt, flowManager, listOf(WordsContentManagerController(examplesManager, germanEntityManager, markErrorHelper)), registry)
+      val flowManager = FlowManager(lt)
+      val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt)
+      val flowItemProviderRegistrar = FlowItemProviderRegistrar(parallelSentenceFlowManager)
 
-      registry.bringToFront(startController)
+      container.register(flowItemProviderRegistrar)
+      container.register(flowManager)
+      container.register(parallelSentenceFlowManager)
+
 
     } catch (e: Exception) {
       logger.exception(e)

@@ -1,3 +1,5 @@
+package utils
+
 import java.util.*
 
 class Signal <T>(private val lifetime: Lifetime) {

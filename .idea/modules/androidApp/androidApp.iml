@@ -77,7 +77,6 @@
       <excludeFolder url="file://$MODULE_DIR$/../../../androidApp/build/intermediates/dex" />
       <excludeFolder url="file://$MODULE_DIR$/../../../androidApp/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.2.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/../../../androidApp/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.1/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/../../../androidApp/build/intermediates/exploded-aar/com.jjoe64/graphview/4.0.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/../../../androidApp/build/intermediates/incremental" />
       <excludeFolder url="file://$MODULE_DIR$/../../../androidApp/build/intermediates/jniLibs" />
       <excludeFolder url="file://$MODULE_DIR$/../../../androidApp/build/intermediates/manifests" />
@@ -101,7 +100,6 @@
     <orderEntry type="library" exported="" scope="TEST" name="hamcrest-core-1.3" level="project" />
     <orderEntry type="library" exported="" name="support-v4-22.2.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="junit-4.12" level="project" />
-    <orderEntry type="library" exported="" name="graphview-4.0.1" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-22.2.1" level="project" />
     <orderEntry type="library" exported="" name="kotlin-runtime-1.0.0" level="project" />
     <orderEntry type="library" exported="" name="kotlin-stdlib-1.0.0" level="project" />

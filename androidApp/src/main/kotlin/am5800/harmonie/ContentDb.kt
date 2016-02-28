@@ -1,6 +1,5 @@
 package am5800.harmonie
 
-import Lifetime
 import am5800.harmonie.model.logging.LoggerProvider
 import android.content.Context
 import android.database.Cursor
@@ -8,9 +7,10 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.google.common.hash.Hashing
 import com.google.common.io.ByteStreams
+import utils.Lifetime
 import java.io.FileOutputStream
 
-class HarmonieDb(private val context: Context, lifetime: Lifetime, private val settingsDb: SettingsDb, loggerProvider: LoggerProvider) : SQLiteOpenHelper(context, "Harmonie.db", null, 1) {
+class ContentDb(private val context: Context, lifetime: Lifetime, private val settingsDb: PermanentDb, loggerProvider: LoggerProvider) : SQLiteOpenHelper(context, "Harmonie.db", null, 1) {
   companion object {
     private val DbLocation: String = "/data/data/am5800.harmonie/databases/Harmonie.db"
   }

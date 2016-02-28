@@ -5,7 +5,7 @@ import am5800.harmonie.viewBinding.BindableFragment
 import android.support.v4.app.FragmentManager
 import java.util.*
 
-class ControllerRegistry : ViewOpener {
+class ControllerStack {
   private val controllerStack = LinkedList<BindableController>()
 
   fun top(): BindableController {
@@ -18,7 +18,7 @@ class ControllerRegistry : ViewOpener {
     return controllerStack.last()
   }
 
-  override fun bringToFront(controller: BindableController) {
+  fun bringToFront(controller: BindableController) {
     controllerStack.addLast(controller)
     val fm = fragmentManager ?: return
     val ft = fm.beginTransaction()
@@ -42,7 +42,8 @@ class ControllerRegistry : ViewOpener {
 
   private var fragmentManager: FragmentManager? = null
 
-  fun start(supportFragmentManager: FragmentManager) {
+  fun start(supportFragmentManager: FragmentManager, rootController: BindableController) {
+    controllerStack.addLast(rootController)
     fragmentManager = supportFragmentManager
 
     val transaction = supportFragmentManager.beginTransaction()

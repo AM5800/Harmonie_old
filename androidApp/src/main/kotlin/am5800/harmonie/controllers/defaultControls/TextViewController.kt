@@ -1,16 +1,17 @@
 package am5800.harmonie.controllers.defaultControls
 
-import Lifetime
-import Property
 import am5800.harmonie.controllers.Visibility
 import am5800.harmonie.toVisible
 import am5800.harmonie.viewBinding.BindableController
 import am5800.harmonie.viewBinding.BindableView
 import android.text.Spanned
 import android.widget.TextView
+import utils.Lifetime
+import utils.Property
 
 
 class TextViewController(override val id: Int,
+                         lifetime: Lifetime,
                          title: String = "",
                          visible: Visibility = Visibility.Visible,
                          enabled: Boolean = true) : BindableController {
@@ -22,8 +23,8 @@ class TextViewController(override val id: Int,
     visible.bindNotNull(bindingLifetime, { view.runOnUiThread ({ tv.visibility = it.toVisible() }) })
   }
 
-  val visible: Property<Visibility> = Property(visible)
-  val enabled: Property<Boolean> = Property(enabled)
-  val title: Property<String> = Property(title)
-  val spannedTitle: Property<Spanned> = Property(null)
+  val visible: Property<Visibility> = Property(lifetime, visible)
+  val enabled: Property<Boolean> = Property(lifetime, enabled)
+  val title: Property<String> = Property(lifetime, title)
+  val spannedTitle: Property<Spanned?> = Property(lifetime, null)
 }

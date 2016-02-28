@@ -1,3 +1,5 @@
+package utils
+
 import java.util.*
 
 class PropertyChangedArg<T>(private val old: T, val newValue: T?, val hasOld: Boolean) {
@@ -7,7 +9,10 @@ class PropertyChangedArg<T>(private val old: T, val newValue: T?, val hasOld: Bo
   var handled = false
 }
 
-class Property<T>(value: T?) {
+class Property<T>(lifetime: Lifetime, value: T) {
+  init {
+    lifetime.addAction { binders.clear() }
+  }
   private val binders: ArrayList<(PropertyChangedArg<T?>) -> Unit> = ArrayList()
   var value: T? = value
     get() = field

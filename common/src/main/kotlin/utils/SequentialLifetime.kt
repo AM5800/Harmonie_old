@@ -1,3 +1,5 @@
+package utils
+
 class SequentialLifetime(private val parentLifetime: Lifetime) {
   var current: Lifetime? = Lifetime()
   fun next(): Lifetime? {

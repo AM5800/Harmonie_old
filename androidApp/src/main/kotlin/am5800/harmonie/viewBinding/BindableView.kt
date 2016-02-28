@@ -1,8 +1,8 @@
 package am5800.harmonie.viewBinding
 
-import Lifetime
 import android.app.Activity
 import android.view.View
+import utils.Lifetime
 
 interface BindableView {
   val activity: Activity

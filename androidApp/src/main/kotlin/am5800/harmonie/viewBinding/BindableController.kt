@@ -1,6 +1,6 @@
 package am5800.harmonie.viewBinding
 
-import Lifetime
+import utils.Lifetime
 
 interface BindableController {
   fun bind(view: BindableView, bindingLifetime: Lifetime)

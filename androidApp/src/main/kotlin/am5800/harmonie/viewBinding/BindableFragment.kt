@@ -1,7 +1,6 @@
 package am5800.harmonie.viewBinding
 
-import Lifetime
-import am5800.harmonie.ControllerRegistry
+import am5800.harmonie.ControllerStack
 import am5800.harmonie.MainActivity
 import android.app.Activity
 import android.os.Bundle
@@ -9,10 +8,11 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import utils.Lifetime
 
 class BindableFragment : Fragment() {
   private val fragmentLifetime: Lifetime = Lifetime()
-  private var controllerRegistry: ControllerRegistry? = null
+  private var controllerRegistry: ControllerStack? = null
   private var layoutId: Int = -1
   private val idTag = "LAYOUT_ID"
 
@@ -43,7 +43,7 @@ class BindableFragment : Fragment() {
     super.onAttach(activity)
     if (activity !is MainActivity) return
 
-    controllerRegistry = activity.controllerRegistry
+    controllerRegistry = activity.controllerStack
     activity.mainActivityLifetime?.addAction { fragmentLifetime.terminate () }
   }
 

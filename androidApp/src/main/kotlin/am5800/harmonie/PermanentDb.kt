@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
 
-class SettingsDb(context: Context) : SQLiteOpenHelper(context, "Settings.db", null, 1) {
+class PermanentDb(context: Context) : SQLiteOpenHelper(context, "Settings.db", null, 1) {
   override fun onCreate(db: SQLiteDatabase) {
     db.execSQL("CREATE TABLE errors (error TEXT)")
     db.execSQL("CREATE TABLE simpleSettings (key TEXT PRIMARY KEY, value TEXT)")
