@@ -44,6 +44,7 @@ class HarmonieApplication : Application() {
       container.register(flowItemProviderRegistrar)
       container.register(flowManager)
       container.register(parallelSentenceFlowManager)
+      container.register(ControllerStack())
 
 
     } catch (e: Exception) {

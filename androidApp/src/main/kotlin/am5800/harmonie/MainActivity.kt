@@ -23,17 +23,18 @@ class MainActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     val app = application as HarmonieApplication
+    val modelContainer = app.modelContainer!!
 
     val lt = Lifetime() // TODO: nested lifetimes?
     mainActivityLifetime = lt
 
-    val stack = ControllerStack()
+    val stack = modelContainer.getComponent<ControllerStack>()
     controllerStack = stack
 
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
 
-    val rootController = initComponents(app.modelContainer!!, lt, stack)
+    val rootController = initComponents(modelContainer, lt, stack)
 
     if (savedInstanceState != null) {
       stack.restore(supportFragmentManager)
