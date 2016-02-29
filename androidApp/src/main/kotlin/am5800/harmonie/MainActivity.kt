@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     val app = application as HarmonieApplication
     val modelContainer = app.modelContainer!!
 
-    val lt = Lifetime() // TODO: nested lifetimes?
+    val lt = Lifetime(modelContainer.lifetime)
     mainActivityLifetime = lt
 
     val stack = modelContainer.getComponent<ControllerStack>()

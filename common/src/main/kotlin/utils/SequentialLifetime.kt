@@ -1,12 +1,19 @@
 package utils
 
 class SequentialLifetime(private val parentLifetime: Lifetime) {
-  // TODO: lifetime nesting
-  var current: Lifetime? = Lifetime()
-  fun next(): Lifetime? {
-    if (parentLifetime.isTerminated) return null
-    current?.terminate()
-    current = Lifetime()
-    return current
+  private val lockObject = Any()
+
+  var current: Lifetime = Lifetime(parentLifetime)
+    get() = synchronized(lockObject) { field }
+    private set(value) {
+      field = value
+    }
+
+  fun next(): Lifetime {
+    return synchronized(lockObject) {
+      current.terminate()
+      current = Lifetime(parentLifetime)
+      current
+    }
   }
 }

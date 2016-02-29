@@ -2,27 +2,27 @@ package utils
 
 import java.util.*
 
-class PropertyChangedArg<T>(private val old: T, val newValue: T?, val hasOld: Boolean) {
-  val oldValue: T
-    get() = if (!hasOld) throw Exception("Old value does not exist") else old
-
-  var handled = false
+class PropertyChangedArg<T>(private val old: T?, val newValue: T?, val hasOld: Boolean) {
+  val oldValue: T?
+    get() = if (hasOld) old else throw Exception("Old value is not available")
 }
 
-class Property<T>(lifetime: Lifetime, value: T) {
+class Property<T>(lifetime: Lifetime, initialValue: T?) {
   init {
     lifetime.addAction { binders.clear() }
   }
+
   private val binders: ArrayList<(PropertyChangedArg<T?>) -> Unit> = ArrayList()
   private val valueLifetime = SequentialLifetime(lifetime)
-  var value: T? = value
+
+  var value: T? = initialValue
     get() = field
-    set(v) {
-      if (field == v) return
+    set(newValue) {
+      if (field == newValue) return
       valueLifetime.next()
-      val arg = PropertyChangedArg(field, v, true)
-      field = v
-      binders.forEach { b -> if (!arg.handled) b(arg) }
+      val arg: PropertyChangedArg<T?> = PropertyChangedArg(field, newValue, true)
+      field = newValue
+      binders.forEach { b -> b(arg) }
     }
 
   fun bind(lifetime: Lifetime, binder: (PropertyChangedArg<T?>) -> Unit) {
@@ -35,15 +35,9 @@ class Property<T>(lifetime: Lifetime, value: T) {
     bind(lifetime, { arg -> if (arg.newValue != null) binder(arg.newValue) })
   }
 
-  fun bindHasOld(lifetime: Lifetime, binder: (T?) -> Unit) {
-    bind(lifetime, { arg ->
-      if (arg.hasOld) binder(arg.newValue)
-    })
-  }
-
   fun forEachValue(lifetime: Lifetime, binder: (T, Lifetime) -> Unit) {
     bindNotNull(lifetime, { args ->
-      binder(args, valueLifetime.current!!)
+      binder(args, valueLifetime.current)
     })
   }
 }
