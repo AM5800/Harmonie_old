@@ -3,7 +3,7 @@ package am5800.harmonie.model
 import utils.Lifetime
 import utils.Property
 
-data class ParallelSentencePresentation(val question: String, val answer: String)
+class ParallelSentencePresentation(val question: String, val answer: String)
 
 class ParallelSentenceFlowManager(lifetime: Lifetime) : FlowItemProvider {
   val question = Property<ParallelSentencePresentation?>(lifetime, null)
