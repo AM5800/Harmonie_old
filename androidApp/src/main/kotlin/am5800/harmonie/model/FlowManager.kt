@@ -22,7 +22,7 @@ class FlowManager(private val lifetime: Lifetime) {
     else {
       timeLeft.value = duration
 
-      val timerLifetime = lifetimes.next() ?: return
+      val timerLifetime = lifetimes.next()
       val timer = Timer(true)
       timerLifetime.addAction { timer.cancel() }
 
