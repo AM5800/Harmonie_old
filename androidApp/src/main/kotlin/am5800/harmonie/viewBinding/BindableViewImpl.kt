@@ -15,11 +15,13 @@ class BindableViewImpl(private val layoutInflater: LayoutInflater, layoutId: Int
 
   override fun createViewAndBind(vm: BindableController, bindingLifetime: Lifetime): View {
     val result = BindableViewImpl(layoutInflater, vm.id, activity)
+    result.view.setOnClickListener({ vm.onClicked() })
     vm.bind(result, bindingLifetime)
     return result.view
   }
 
   override fun <T> getChild(layoutId: Int): T {
+    if (view.id == layoutId) return view as T
     return view.findViewById(layoutId) as T
   }
 }

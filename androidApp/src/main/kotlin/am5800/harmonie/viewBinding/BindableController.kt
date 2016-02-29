@@ -8,5 +8,9 @@ interface BindableController {
 
   fun onActivated() {
   }
+
+  fun onClicked() {
+
+  }
 }
 

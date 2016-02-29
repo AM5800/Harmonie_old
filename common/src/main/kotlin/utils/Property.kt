@@ -14,10 +14,12 @@ class Property<T>(lifetime: Lifetime, value: T) {
     lifetime.addAction { binders.clear() }
   }
   private val binders: ArrayList<(PropertyChangedArg<T?>) -> Unit> = ArrayList()
+  private val valueLifetime = SequentialLifetime(lifetime)
   var value: T? = value
     get() = field
     set(v) {
       if (field == v) return
+      valueLifetime.next()
       val arg = PropertyChangedArg(field, v, true)
       field = v
       binders.forEach { b -> if (!arg.handled) b(arg) }
@@ -36,6 +38,12 @@ class Property<T>(lifetime: Lifetime, value: T) {
   fun bindHasOld(lifetime: Lifetime, binder: (T?) -> Unit) {
     bind(lifetime, { arg ->
       if (arg.hasOld) binder(arg.newValue)
+    })
+  }
+
+  fun forEachValue(lifetime: Lifetime, binder: (T, Lifetime) -> Unit) {
+    bindNotNull(lifetime, { args ->
+      binder(args, valueLifetime.current!!)
     })
   }
 }

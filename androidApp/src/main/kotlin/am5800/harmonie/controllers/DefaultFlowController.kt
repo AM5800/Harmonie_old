@@ -10,7 +10,6 @@ import utils.Lifetime
 import utils.Property
 
 class DefaultFlowController(private val stack: ControllerStack, lifetime: Lifetime) : FlowController, ReflectionBindableController(R.layout.flow_fragment) {
-
   private val content = Property<BindableController?>(lifetime, null)
 
   override fun setContent(controller: BindableController) {

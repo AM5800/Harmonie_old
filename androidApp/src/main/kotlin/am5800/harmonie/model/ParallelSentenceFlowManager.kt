@@ -1,15 +1,15 @@
 package am5800.harmonie.model
 
 import utils.Lifetime
-import utils.Signal
+import utils.Property
 
-data class ParallelSentencePresentation(val question: String)
+data class ParallelSentencePresentation(val question: String, val answer: String)
 
 class ParallelSentenceFlowManager(lifetime: Lifetime) : FlowItemProvider {
-  val presentationRequested = Signal<ParallelSentencePresentation>(lifetime)
+  val question = Property<ParallelSentencePresentation?>(lifetime, null)
 
   override fun tryPresentNextItem(flowSettings: FlowSettings): Boolean {
-    presentationRequested.fire(ParallelSentencePresentation("Hello world"))
+    question.value = ParallelSentencePresentation("Hello world", "Привет мир")
     return true
   }
 }

@@ -20,3 +20,7 @@ class Signal <T>(private val lifetime: Lifetime) {
     lt.addAction { -> handlers.remove (handler) }
   }
 }
+
+fun Signal<Unit>.fire() {
+  this.fire(Unit)
+}
