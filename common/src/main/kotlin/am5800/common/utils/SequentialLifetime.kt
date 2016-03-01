@@ -1,4 +1,4 @@
-package utils
+package am5800.common.utils
 
 class SequentialLifetime(private val parentLifetime: Lifetime) {
   private val lockObject = Any()

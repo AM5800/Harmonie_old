@@ -1,5 +1,6 @@
 package am5800.harmonie.viewBinding
 
+import am5800.common.utils.Lifetime
 import am5800.harmonie.ControllerStack
 import am5800.harmonie.MainActivity
 import android.app.Activity
@@ -8,7 +9,6 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import utils.Lifetime
 
 class BindableFragment : Fragment() {
   private val fragmentLifetime: Lifetime = Lifetime()

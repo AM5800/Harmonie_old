@@ -1,5 +1,8 @@
 package am5800.harmonie
 
+import am5800.common.componentContainer.ComponentContainer
+import am5800.common.componentContainer.getComponent
+import am5800.common.utils.Lifetime
 import am5800.harmonie.controllers.DefaultFlowController
 import am5800.harmonie.controllers.EmptyFlowContentController
 import am5800.harmonie.controllers.ParallelSentenceController
@@ -12,9 +15,6 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import componentContainer.ComponentContainer
-import componentContainer.getComponent
-import utils.Lifetime
 
 
 class MainActivity : AppCompatActivity() {

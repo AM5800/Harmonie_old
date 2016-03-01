@@ -1,8 +1,8 @@
 //package am5800.harmonie.controllers
 //
-//import utils.Lifetime
-//import utils.Property
-//import utils.SequentialLifetime
+//import am5800.common.Lifetime
+//import am5800.common.Property
+//import am5800.common.SequentialLifetime
 //import am5800.harmonie.ControllerStack
 //import am5800.harmonie.R
 //import am5800.harmonie.controllers.defaultControls.TextViewController

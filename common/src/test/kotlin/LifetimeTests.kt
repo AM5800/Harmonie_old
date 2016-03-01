@@ -1,6 +1,6 @@
+import am5800.common.utils.Lifetime
 import org.junit.Assert
 import org.junit.Test
-import utils.Lifetime
 
 class LifetimeTests {
   @Test

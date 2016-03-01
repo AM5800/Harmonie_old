@@ -1,3 +1,5 @@
+package am5800.common
+
 enum class Language {
   English,
   German

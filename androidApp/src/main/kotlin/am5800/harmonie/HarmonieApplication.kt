@@ -1,15 +1,16 @@
 package am5800.harmonie
 
+import am5800.common.componentContainer.ComponentContainer
+import am5800.common.utils.Lifetime
 import am5800.harmonie.logging.AndroidLoggerProvider
 import am5800.harmonie.model.FileEnvironment
 import am5800.harmonie.model.FlowItemProviderRegistrar
 import am5800.harmonie.model.FlowManager
 import am5800.harmonie.model.ParallelSentenceFlowManager
+import am5800.harmonie.model.dbAccess.SentenceProviderImpl
 import android.app.Application
 import android.content.Context
 import android.content.res.AssetManager
-import componentContainer.ComponentContainer
-import utils.Lifetime
 import java.io.FileNotFoundException
 import java.io.InputStream
 import java.io.OutputStream
@@ -33,11 +34,14 @@ class HarmonieApplication : Application() {
       val env = AndroidEnvironment(assets, this)
       container.register(env)
 
+      val sentenceProvider = SentenceProviderImpl()
+
+
       val permanentDb = PermanentDb(this)
-      val contentDb = ContentDb(this, permanentDb, loggerProvider, emptyList())
+      val contentDb = ContentDb(this, permanentDb, loggerProvider, listOf(sentenceProvider))
 
       val flowManager = FlowManager(lt, loggerProvider)
-      val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt)
+      val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceProvider)
       val flowItemProviderRegistrar = FlowItemProviderRegistrar(parallelSentenceFlowManager)
 
       container.register(flowItemProviderRegistrar)

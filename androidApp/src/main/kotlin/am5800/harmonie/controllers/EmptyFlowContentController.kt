@@ -1,9 +1,9 @@
 package am5800.harmonie.controllers
 
+import am5800.common.utils.Lifetime
 import am5800.harmonie.R
 import am5800.harmonie.model.FlowManager
 import am5800.harmonie.viewBinding.ReflectionBindableController
-import utils.Lifetime
 
 
 class EmptyFlowContentController(flowController: FlowController,

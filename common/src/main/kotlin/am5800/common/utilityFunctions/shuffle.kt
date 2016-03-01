@@ -1,4 +1,4 @@
-package utilityFunctions
+package am5800.common.utilityFunctions
 
 import java.util.*
 

@@ -1,4 +1,4 @@
-package utilityFunctions
+package am5800.common.utilityFunctions
 
 fun String.splitAtLines(): Array<String> {
   return this.split("\\r?\\n".toRegex()).toTypedArray()

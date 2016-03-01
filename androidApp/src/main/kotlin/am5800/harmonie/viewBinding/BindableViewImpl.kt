@@ -1,9 +1,9 @@
 package am5800.harmonie.viewBinding
 
+import am5800.common.utils.Lifetime
 import android.app.Activity
 import android.view.LayoutInflater
 import android.view.View
-import utils.Lifetime
 
 
 class BindableViewImpl(private val layoutInflater: LayoutInflater, layoutId: Int, override val activity: Activity) : BindableView {

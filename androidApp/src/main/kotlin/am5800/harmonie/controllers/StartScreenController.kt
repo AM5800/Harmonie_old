@@ -1,5 +1,6 @@
 package am5800.harmonie.controllers
 
+import am5800.common.utils.Lifetime
 import am5800.harmonie.R
 import am5800.harmonie.controllers.defaultControls.ButtonController
 import am5800.harmonie.model.FlowItemProviderRegistrar
@@ -7,7 +8,6 @@ import am5800.harmonie.model.FlowManager
 import am5800.harmonie.model.FlowSettings
 import am5800.harmonie.viewBinding.ReflectionBindableController
 import org.joda.time.Minutes
-import utils.Lifetime
 
 class StartScreenController(
     flowManager: FlowManager,

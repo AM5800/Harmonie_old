@@ -1,13 +1,13 @@
 package am5800.harmonie.controllers
 
+import am5800.common.utils.Lifetime
+import am5800.common.utils.Property
 import am5800.harmonie.ControllerStack
 import am5800.harmonie.R
 import am5800.harmonie.viewBinding.BindableController
 import am5800.harmonie.viewBinding.BindableView
 import am5800.harmonie.viewBinding.ReflectionBindableController
 import android.widget.LinearLayout
-import utils.Lifetime
-import utils.Property
 
 class DefaultFlowController(private val stack: ControllerStack, lifetime: Lifetime) : FlowController, ReflectionBindableController(R.layout.flow_fragment) {
   private val content = Property<BindableController?>(lifetime, null)

@@ -1,13 +1,13 @@
 package am5800.harmonie.controllers.defaultControls
 
+import am5800.common.utils.Lifetime
+import am5800.common.utils.Property
 import am5800.harmonie.controllers.Visibility
 import am5800.harmonie.toVisible
 import am5800.harmonie.viewBinding.BindableController
 import am5800.harmonie.viewBinding.BindableView
 import android.text.Spanned
 import android.widget.TextView
-import utils.Lifetime
-import utils.Property
 
 
 class TextViewController(override val id: Int,

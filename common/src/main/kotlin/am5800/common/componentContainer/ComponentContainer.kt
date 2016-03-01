@@ -1,6 +1,6 @@
-package componentContainer
+package am5800.common.componentContainer
 
-import utils.Lifetime
+import am5800.common.utils.Lifetime
 import java.util.*
 
 

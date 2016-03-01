@@ -1,3 +1,5 @@
+import am5800.common.Language
+import am5800.common.Sentence
 import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.Multimap
 import corpus.CorpusInfo

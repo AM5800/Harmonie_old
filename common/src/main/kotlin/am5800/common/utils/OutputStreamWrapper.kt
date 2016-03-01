@@ -1,4 +1,4 @@
-package utils
+package am5800.common.utils
 
 import java.io.DataOutputStream
 import java.io.OutputStream

@@ -1,12 +1,12 @@
 package am5800.harmonie.model
 
+import am5800.common.utils.Lifetime
+import am5800.common.utils.Property
+import am5800.common.utils.SequentialLifetime
+import am5800.common.utils.Signal
 import am5800.harmonie.model.logging.LoggerProvider
 import org.joda.time.Duration
 import org.joda.time.Seconds
-import utils.Lifetime
-import utils.Property
-import utils.SequentialLifetime
-import utils.Signal
 import java.util.*
 import kotlin.concurrent.schedule
 

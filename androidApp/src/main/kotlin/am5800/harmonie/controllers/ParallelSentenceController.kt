@@ -1,13 +1,13 @@
 package am5800.harmonie.controllers
 
+import am5800.common.utils.Lifetime
+import am5800.common.utils.Property
 import am5800.harmonie.R
 import am5800.harmonie.controllers.defaultControls.ButtonController
 import am5800.harmonie.controllers.defaultControls.TextViewController
 import am5800.harmonie.model.FlowManager
 import am5800.harmonie.model.ParallelSentenceFlowManager
 import am5800.harmonie.viewBinding.ReflectionBindableController
-import utils.Lifetime
-import utils.Property
 
 class ParallelSentenceController(parallelSentenceFlowManager: ParallelSentenceFlowManager,
                                  lifetime: Lifetime,
