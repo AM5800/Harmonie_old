@@ -26,7 +26,7 @@ class DbWriter {
     for (pair in wordsOccurrences.asMap()) {
       val word = pair.key
       val frequency = frequencies[word] ?: 0
-      val lang = LanguageParser.toShort(word.language)
+      val lang = LanguageParser.toShortString(word.language)
 
       val wordId = wordsTable.insert(lang, word.word, frequency)
       val occurrences = pair.value.map { sentenceMapping[it]!! }
@@ -41,7 +41,7 @@ class DbWriter {
 
     val sentencesTable = db.getTable(ContentDbConstants.sentencesTableName)
     sentences.forEachIndexed { i, sentence ->
-      val id = sentencesTable.insert(LanguageParser.toShort(sentence.language), sentence.text)
+      val id = sentencesTable.insert(LanguageParser.toShortString(sentence.language), sentence.text)
       result.put(i.toLong(), id)
     }
 

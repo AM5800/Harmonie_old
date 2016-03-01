@@ -15,7 +15,7 @@ class LanguageParser {
       }
     }
 
-    fun toShort(language: Language): String {
+    fun toShortString(language: Language): String {
       return when (language) {
         Language.English -> "en"
         Language.German -> "de"

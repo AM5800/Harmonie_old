@@ -5,6 +5,7 @@ import am5800.common.Language
 import am5800.common.LanguageParser
 import am5800.harmonie.ContentDb
 import am5800.harmonie.ContentDbConsumer
+import am5800.harmonie.query
 
 class SentenceProviderImpl : SentenceProvider, ContentDbConsumer {
   var database: ContentDb? = null
@@ -23,8 +24,8 @@ class SentenceProviderImpl : SentenceProvider, ContentDbConsumer {
     val db = database!!
     val map = ContentDbConstants.sentenceMappingTableName
     val sentences = ContentDbConstants.sentencesTableName
-    val langFrom = LanguageParser.toShort(languageFrom)
-    val langTo = LanguageParser.toShort(languageTo)
+    val langFrom = LanguageParser.toShortString(languageFrom)
+    val langTo = LanguageParser.toShortString(languageTo)
 
     val query = """
         SELECT s1.text, s2.text
@@ -35,16 +36,7 @@ class SentenceProviderImpl : SentenceProvider, ContentDbConsumer {
             ON $map.value = s2.id
         WHERE s1.lang='$langFrom' AND s2.lang='$langTo'"""
 
-    val cursor = db.rawQuery(query, emptyArray())
-
-    val result = mutableListOf<Pair<String, String>>()
-
-    while (cursor.moveToNext()) {
-      val s1 = cursor.getString(0)
-      val s2 = cursor.getString(1)
-      result.add(Pair(s1, s2))
-    }
-
+    val result = db.query<String, String>(query)
 
     return result
   }

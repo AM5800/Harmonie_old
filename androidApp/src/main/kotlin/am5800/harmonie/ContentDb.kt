@@ -77,4 +77,26 @@ class ContentDb(private val context: Context,
   }
 }
 
+inline fun <reified T> valueFromCursor(index: Int, cursor: Cursor): T {
+  if ("" is T) {
+    return cursor.getString(index) as T
+  }
+  if (0 is T) {
+    return cursor.getInt(index) as T
+  }
+
+  throw Exception("Unsupported type: ${T::class.simpleName}")
+}
+
+inline fun <reified T1, reified T2> ContentDb.query(query: String): List<Pair<T1, T2>> {
+  val cursor = this.rawQuery(query, emptyArray())
+  val result = mutableListOf<Pair<T1, T2>>()
+  while (cursor.moveToNext()) {
+    val value1 = valueFromCursor<T1>(0, cursor)
+    val value2 = valueFromCursor<T2>(1, cursor)
+    result.add(Pair(value1, value2))
+  }
+
+  return result
+}
 
