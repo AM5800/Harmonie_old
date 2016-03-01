@@ -6,6 +6,7 @@ import am5800.harmonie.model.FlowItemProviderRegistrar
 import am5800.harmonie.model.FlowManager
 import am5800.harmonie.model.FlowSettings
 import am5800.harmonie.viewBinding.ReflectionBindableController
+import org.joda.time.Minutes
 import utils.Lifetime
 
 class StartScreenController(
@@ -16,7 +17,7 @@ class StartScreenController(
 
   init {
     startLearningButton.clickedSignal.subscribe(lifetime, {
-      flowManager.start(providerRegistrar.all, FlowSettings(), null/*Minutes.minutes(10).toStandardDuration()*/)
+      flowManager.start(providerRegistrar.all, FlowSettings(), Minutes.minutes(10).toStandardDuration())
     })
   }
 }

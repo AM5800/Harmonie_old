@@ -1,5 +1,6 @@
 package am5800.harmonie.model
 
+import am5800.harmonie.model.logging.LoggerProvider
 import org.joda.time.Duration
 import org.joda.time.Seconds
 import utils.Lifetime
@@ -10,14 +11,16 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 
-class FlowManager(private val lifetime: Lifetime) {
+class FlowManager(private val lifetime: Lifetime, private val loggerProvider: LoggerProvider) {
   private val providersQueue = LinkedList<FlowItemProvider>()
   private val lifetimes = SequentialLifetime(lifetime)
+  private val logger = loggerProvider.getLogger(javaClass)
 
   private var currentSettings: FlowSettings? = null
   val isEmptySignal = Signal<Unit>(lifetime)
 
   fun start(providers: List<FlowItemProvider>, settings: FlowSettings, duration: Duration?) {
+    logger.info("Flow started")
     if (duration == null) timeLeft.value = null
     else {
       timeLeft.value = duration

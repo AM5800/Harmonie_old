@@ -36,7 +36,7 @@ class HarmonieApplication : Application() {
       val permanentDb = PermanentDb(this)
       val contentDb = ContentDb(this, permanentDb, loggerProvider, emptyList())
 
-      val flowManager = FlowManager(lt)
+      val flowManager = FlowManager(lt, loggerProvider)
       val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt)
       val flowItemProviderRegistrar = FlowItemProviderRegistrar(parallelSentenceFlowManager)
 
@@ -46,6 +46,7 @@ class HarmonieApplication : Application() {
       container.register(ControllerStack())
       container.register(permanentDb)
       container.register(contentDb)
+      container.register(loggerProvider)
     } catch (e: Exception) {
       logger.exception(e)
       throw e
