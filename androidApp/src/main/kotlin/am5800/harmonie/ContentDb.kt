@@ -84,6 +84,12 @@ inline fun <reified T> valueFromCursor(index: Int, cursor: Cursor): T {
   if (0 is T) {
     return cursor.getInt(index) as T
   }
+  if (0.0 is T) {
+    return cursor.getDouble(index) as T
+  }
+  if (0L is T) {
+    return cursor.getLong(index) as T
+  }
 
   throw Exception("Unsupported type: ${T::class.simpleName}")
 }
