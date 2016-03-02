@@ -43,7 +43,7 @@ class HarmonieApplication : Application() {
       ContentDb(this, permanentDb, loggerProvider, listOf(sentenceProvider, wordsProvider))
 
       val flowManager = FlowManager(lt, loggerProvider)
-      val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceProvider)
+      val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceProvider, wordsProvider, loggerProvider)
       val flowItemProviderRegistrar = FlowItemProviderRegistrar(parallelSentenceFlowManager)
 
       container.register(flowItemProviderRegistrar)

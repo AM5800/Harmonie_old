@@ -7,9 +7,10 @@ import am5800.harmonie.controllers.defaultControls.ButtonController
 import am5800.harmonie.controllers.defaultControls.TextViewController
 import am5800.harmonie.model.FlowManager
 import am5800.harmonie.model.ParallelSentenceFlowManager
+import am5800.harmonie.model.ParallelSentenceUserScore
 import am5800.harmonie.viewBinding.ReflectionBindableController
 
-class ParallelSentenceController(parallelSentenceFlowManager: ParallelSentenceFlowManager,
+class ParallelSentenceController(private val parallelSentenceFlowManager: ParallelSentenceFlowManager,
                                  lifetime: Lifetime,
                                  flowContentController: FlowController,
                                  private val flowManager: FlowManager) : ReflectionBindableController(R.layout.parallel_sentence) {
@@ -29,9 +30,9 @@ class ParallelSentenceController(parallelSentenceFlowManager: ParallelSentenceFl
   private val state = Property(lifetime, State.ShowQuestion)
 
   init {
-    goodBtn.clickedSignal.subscribe(lifetime, { next() })
-    badBtn.clickedSignal.subscribe(lifetime, { next() })
-    notSureBtn.clickedSignal.subscribe(lifetime, { next() })
+    goodBtn.clickedSignal.subscribe(lifetime, { next(ParallelSentenceUserScore.Good) })
+    badBtn.clickedSignal.subscribe(lifetime, { next(ParallelSentenceUserScore.Bad) })
+    notSureBtn.clickedSignal.subscribe(lifetime, { next(ParallelSentenceUserScore.NotSure) })
 
     state.forEachValue(lifetime, { state, lt ->
       if (state == State.ShowQuestion) {
@@ -46,13 +47,14 @@ class ParallelSentenceController(parallelSentenceFlowManager: ParallelSentenceFl
     parallelSentenceFlowManager.question.forEachValue(lifetime, { data, lt ->
       data!!
       state.value = State.ShowQuestion
-      questionTextView.title.value = data.question
-      answerTextView.title.value = data.answer
+      questionTextView.title.value = data.first.text
+      answerTextView.title.value = data.second.text
       flowContentController.setContent(this)
     })
   }
 
-  private fun next() {
+  private fun next(score: ParallelSentenceUserScore) {
+    parallelSentenceFlowManager.submitScore(score)
     flowManager.next()
   }
 

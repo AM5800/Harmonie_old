@@ -3,7 +3,7 @@ package am5800.harmonie.model.dbAccess
 import am5800.common.ContentDbConstants
 import am5800.harmonie.ContentDb
 import am5800.harmonie.ContentDbConsumer
-import am5800.harmonie.query3
+import am5800.harmonie.query2
 
 
 class WordsProviderImpl : WordsProvider, ContentDbConsumer {
@@ -24,10 +24,10 @@ class WordsProviderImpl : WordsProvider, ContentDbConsumer {
     val words = ContentDbConstants.wordsTableName
     val occurrences = ContentDbConstants.wordOccurrencesTableName
     val sentenceId = sentence.id
-    val query = "SELECT key, word, frequency FROM $words WHERE key IN (SELECT wordId FROM $occurrences WHERE sentenceId = $sentenceId)"
+    val query = "SELECT key, word FROM $words WHERE key IN (SELECT wordId FROM $occurrences WHERE sentenceId = $sentenceId)"
 
-    val result = db.query3<Long, String, Double>(query)
+    val result = db.query2<Long, String>(query)
 
-    return result.map { DbWord(it.value1, sentence.lang, it.value2, it.value3) }
+    return result.map { DbWord(it.first, sentence.lang, it.second) }
   }
 }
