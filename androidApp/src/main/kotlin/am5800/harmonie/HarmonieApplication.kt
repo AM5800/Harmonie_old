@@ -8,6 +8,7 @@ import am5800.harmonie.model.FlowItemProviderRegistrar
 import am5800.harmonie.model.FlowManager
 import am5800.harmonie.model.ParallelSentenceFlowManager
 import am5800.harmonie.model.dbAccess.SentenceProviderImpl
+import am5800.harmonie.model.dbAccess.WordsProviderImpl
 import android.app.Application
 import android.content.Context
 import android.content.res.AssetManager
@@ -35,10 +36,11 @@ class HarmonieApplication : Application() {
       container.register(env)
 
       val sentenceProvider = SentenceProviderImpl()
+      val wordsProvider = WordsProviderImpl()
 
 
       val permanentDb = PermanentDb(this)
-      val contentDb = ContentDb(this, permanentDb, loggerProvider, listOf(sentenceProvider))
+      val contentDb = ContentDb(this, permanentDb, loggerProvider, listOf(sentenceProvider, wordsProvider))
 
       val flowManager = FlowManager(lt, loggerProvider)
       val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceProvider)
