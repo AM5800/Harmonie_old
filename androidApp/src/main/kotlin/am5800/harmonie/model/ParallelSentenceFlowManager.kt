@@ -1,10 +1,10 @@
 package am5800.harmonie.model
 
 import am5800.common.Language
+import am5800.common.db.DbSentence
 import am5800.common.utilityFunctions.shuffle
 import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
-import am5800.harmonie.model.dbAccess.DbSentence
 import am5800.harmonie.model.dbAccess.DbWord
 import am5800.harmonie.model.dbAccess.SentenceProvider
 import am5800.harmonie.model.dbAccess.WordsProvider

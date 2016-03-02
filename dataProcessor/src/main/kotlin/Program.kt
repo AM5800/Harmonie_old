@@ -1,5 +1,5 @@
 import am5800.common.Language
-import am5800.common.Sentence
+import am5800.common.db.DbSentence
 import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.Multimap
 import corpus.CorpusInfo
@@ -9,11 +9,12 @@ import corpus.parsing.NegraParser
 import ml.sentenceBreaking.splitWords
 import java.io.File
 
-fun computeParallelSentences(infos: List<CorpusInfo>): Pair<Map<Long, Long>, List<Sentence>> {
-  val sentences = mutableListOf<Sentence>()
+fun computeParallelSentences(infos: List<CorpusInfo>): Pair<Map<Long, Long>, List<DbSentence>> {
+  val sentences = mutableListOf<DbSentence>()
   val translations = mutableMapOf<Long, Long>()
 
   val sxmlCorpusParser = SxmlCorpusParser()
+  var id = 0L
   for (corpus in infos) {
     val enPath = File(corpus.infoFile.parentFile, corpus.metadata["en"])
     val dePath = File(corpus.infoFile.parentFile, corpus.metadata["de"])
@@ -23,20 +24,20 @@ fun computeParallelSentences(infos: List<CorpusInfo>): Pair<Map<Long, Long>, Lis
     for (en in enData) {
       val de = deData[en.key]!!
 
-      sentences.add(Sentence(Language.English, en.value))
-      sentences.add(Sentence(Language.German, de))
-      val gi = (sentences.size - 1).toLong()
-      val ei = (sentences.size - 2).toLong()
+      val firstId = id++
+      val secondId = id++
+      sentences.add(DbSentence(firstId, Language.English, en.value))
+      sentences.add(DbSentence(secondId, Language.German, de))
 
-      translations.put(gi, ei)
-      translations.put(ei, gi)
+      translations.put(firstId, secondId)
+      translations.put(secondId, firstId)
     }
   }
 
   return Pair(translations, sentences)
 }
 
-class Data(val sentences: List<Sentence>,
+class Data(val sentences: List<DbSentence>,
            val sentenceTranslations: Map<Long, Long>,
            val wordOccurrences: Multimap<Word, Long>,
            val wordFrequencies: Map<Word, Double>)
@@ -65,47 +66,51 @@ fun computeData(repository: CorpusRepository, parsersSet: CorpusParsersSet): Dat
   return Data(sentences.second, sentences.first, occurrences, frequencies)
 }
 
-fun filterGermanSentences(data: Data): List<Int> {
-  val sentenceToWords = LinkedHashMultimap.create<Int, Word>()
+fun filterGermanSentences(data: Data): List<DbSentence> {
+  val sentenceToWords = LinkedHashMultimap.create<Long, Word>()
   for (pair in data.wordOccurrences.asMap()) {
     val word = pair.key
     for (sentenceId in pair.value) {
-      sentenceToWords.put(sentenceId.toInt(), word)
+      sentenceToWords.put(sentenceId, word)
     }
   }
 
-  val sentences = data.sentences.filter { it.language == Language.German }.mapIndexed { i, sentence -> i }
-  val sentencesWithOptimalLength = sentences.filter { data.sentences[it].text.length > 50 && data.sentences[it].text.length < 150 }
-  val sentenceFrequencies = sentencesWithOptimalLength.map { sentenceIndex ->
-    val avg = sentenceToWords[sentenceIndex]!!.map { word ->
+  val sentences = data.sentences.filter { it.language == Language.German }
+  val sentencesWithOptimalLength = sentences.filter { it.text.length > 50 && it.text.length < 150 }
+
+  val sentenceFrequencies = sentencesWithOptimalLength.map { sentence ->
+    val avg = sentenceToWords[sentence.id]!!.map { word ->
       data.wordFrequencies[word]!!
     }.average()
-    Pair(sentenceIndex, avg)
+    Pair(sentence, avg)
   }
 
-  val top = sentenceFrequencies.sortedByDescending { it.second }.take(10000)
+  val result = sentenceFrequencies.sortedByDescending { it.second }
 
-  val resultSentences = top.map { it.first }
-
-  return resultSentences
+  return result.map { it.first }.take(10000)
 }
 
 fun filterData(data: Data): Data {
   val filtered = filterGermanSentences(data)
-  val sentences = mutableListOf<Sentence>()
+  val sentences = mutableListOf<DbSentence>()
   val translations = mutableMapOf<Long, Long>()
 
-  for (sentenceIndex: Int in filtered) {
-    val translatedIndex = data.sentenceTranslations[sentenceIndex.toLong()]!!.toInt()
+  val sentencesMap = data.sentences.map { Pair(it.id, it) }.toMap()
 
-    sentences.add(data.sentences[translatedIndex])
-    sentences.add(data.sentences[sentenceIndex])
+  var id = 0L
+  for (sentence in filtered) {
+    val translated = sentencesMap[data.sentenceTranslations[sentence.id]!!]!!
 
-    val first = (sentences.size - 1).toLong()
-    val second = (sentences.size - 2).toLong()
+    val firstId = id++
+    val newSentence = DbSentence(firstId, sentence.language, sentence.text)
 
-    translations.put(first, second)
-    translations.put(second, first)
+    val secondId = id++
+    val newTranslatedSentence = DbSentence(secondId, translated.language, translated.text)
+    sentences.add(newSentence)
+    sentences.add(newTranslatedSentence)
+
+    translations.put(firstId, secondId)
+    translations.put(secondId, firstId)
   }
 
   val occurrences = computeWordOccurrences(sentences)
@@ -127,10 +132,10 @@ fun computeFrequencies(corpusFrequencies: Map<Word, Long>, occurrences: Multimap
   return result.map { Pair(it.key, it.value.toDouble() / totalByLang[it.key.language]!!) }.toMap()
 }
 
-fun computeWordOccurrences(sentences: List<Sentence>): Multimap<Word, Long> {
+fun computeWordOccurrences(sentences: List<DbSentence>): Multimap<Word, Long> {
   val result = LinkedHashMultimap.create<Word, Long>()
 
-  sentences.forEachIndexed { i, sentence ->
+  sentences.forEach { sentence ->
     val language = sentence.language
     val text = sentence.text
 
@@ -143,7 +148,7 @@ fun computeWordOccurrences(sentences: List<Sentence>): Multimap<Word, Long> {
         .map { text.substring(it.start, it.end).toLowerCase() }
 
     for (word in words) {
-      result.put(Word(language, word), i.toLong())
+      result.put(Word(language, word), sentence.id)
     }
   }
 

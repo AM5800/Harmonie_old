@@ -1,6 +1,6 @@
-import am5800.common.ContentDbConstants
 import am5800.common.LanguageParser
-import am5800.common.Sentence
+import am5800.common.db.ContentDbConstants
+import am5800.common.db.DbSentence
 import com.google.common.collect.Multimap
 import org.tmatesoft.sqljet.core.SqlJetTransactionMode
 import org.tmatesoft.sqljet.core.table.SqlJetDb
@@ -36,29 +36,29 @@ class DbWriter {
     }
   }
 
-  private fun writeSentences(sentences: List<Sentence>, translations: Map<Long, Long>, db: SqlJetDb): Map<Long, Long> {
-    val result = mutableMapOf<Long, Long>()
+  private fun writeSentences(sentences: List<DbSentence>, translations: Map<Long, Long>, db: SqlJetDb): Map<Long, Long> {
+    val sentenceIdToRealId = mutableMapOf<Long, Long>()
 
     val sentencesTable = db.getTable(ContentDbConstants.sentencesTableName)
-    sentences.forEachIndexed { i, sentence ->
-      val id = sentencesTable.insert(LanguageParser.toShortString(sentence.language), sentence.text)
-      result.put(i.toLong(), id)
+    sentences.forEach { sentence ->
+      val insertedId = sentencesTable.insert(LanguageParser.toShortString(sentence.language), sentence.text)
+      sentenceIdToRealId.put(sentence.id, insertedId)
     }
 
     val sentencesMappingTable = db.getTable(ContentDbConstants.sentenceMappingTableName)
     for (pair in translations) {
-      val from = result[pair.key]!!
-      val to = result[pair.value]!!
+      val from = sentenceIdToRealId[pair.key]!!
+      val to = sentenceIdToRealId[pair.value]!!
       sentencesMappingTable.insert(from, to)
     }
 
-    return result
+    return sentenceIdToRealId
   }
 
   private fun createDbSchema(db: SqlJetDb) {
     db.createTable("CREATE TABLE ${ContentDbConstants.sentencesTableName} (id INTEGER PRIMARY KEY, lang TEXT, text TEXT)")
     db.createTable("CREATE TABLE ${ContentDbConstants.sentenceMappingTableName} (key INTEGER PRIMARY KEY, value INTEGER)")
-    db.createTable("CREATE TABLE ${ContentDbConstants.wordsTableName} (key INTEGER PRIMARY KEY, lang TEXT, word TEXT, frequency REAL)")
+    db.createTable("CREATE TABLE ${ContentDbConstants.wordsTableName} (id INTEGER PRIMARY KEY, lang TEXT, word TEXT, frequency REAL)")
     db.createTable("CREATE TABLE ${ContentDbConstants.wordOccurrencesTableName} (wordId INTEGER, sentenceId INTEGER)")
     //db.createIndex("CREATE INDEX germanWordOccurrencesIndex ON wordOccurrences (wordId)")
   }

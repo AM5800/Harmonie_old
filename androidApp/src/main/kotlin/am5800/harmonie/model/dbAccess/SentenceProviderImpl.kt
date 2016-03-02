@@ -1,13 +1,12 @@
 package am5800.harmonie.model.dbAccess
 
-import am5800.common.ContentDbConstants
 import am5800.common.Language
 import am5800.common.LanguageParser
+import am5800.common.db.ContentDbConstants
+import am5800.common.db.DbSentence
 import am5800.harmonie.ContentDb
 import am5800.harmonie.ContentDbConsumer
 import am5800.harmonie.query4
-
-data class DbSentence(val id: Long, val lang: Language, val text: String)
 
 class SentenceProviderImpl : SentenceProvider, ContentDbConsumer {
   var database: ContentDb? = null

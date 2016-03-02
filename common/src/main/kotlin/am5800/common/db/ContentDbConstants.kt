@@ -1,4 +1,4 @@
-package am5800.common
+package am5800.common.db
 
 
 class ContentDbConstants {
