@@ -13,7 +13,7 @@ class ParallelSentenceFlowManager(lifetime: Lifetime, private val sentenceProvid
 
   override fun tryPresentNextItem(flowSettings: FlowSettings): Boolean {
     val pair = sentenceProvider.getSentences(Language.German, Language.English).shuffle().first()
-    question.value = ParallelSentencePresentation(pair.first, pair.second)
+    question.value = ParallelSentencePresentation(pair.first.text, pair.second.text)
     return true
   }
 }
