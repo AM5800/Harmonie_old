@@ -21,13 +21,13 @@ fun computeParallelSentences(infos: List<CorpusInfo>): Pair<Map<Long, Long>, Lis
     val enData = sxmlCorpusParser.parse(enPath)
     val deData = sxmlCorpusParser.parse(dePath)
 
-    for (en in enData) {
-      val de = deData[en.key]!!
+    for (de in deData) {
+      val en = enData[de.key] ?: continue
 
       val firstId = id++
       val secondId = id++
-      sentences.add(DbSentence(firstId, Language.English, en.value))
-      sentences.add(DbSentence(secondId, Language.German, de))
+      sentences.add(DbSentence(firstId, Language.English, en))
+      sentences.add(DbSentence(secondId, Language.German, de.value))
 
       translations.put(firstId, secondId)
       translations.put(secondId, firstId)
@@ -79,15 +79,28 @@ fun filterGermanSentences(data: Data): List<DbSentence> {
   val sentencesWithOptimalLength = sentences.filter { it.text.length > 50 && it.text.length < 150 }
 
   val sentenceFrequencies = sentencesWithOptimalLength.map { sentence ->
-    val avg = sentenceToWords[sentence.id]!!.map { word ->
+    val sentData = sentenceToWords[sentence.id]!!.map { word ->
       data.wordFrequencies[word]!!
-    }.average()
-    Pair(sentence, avg)
+    }.computeSentenceData()
+    Pair(sentence, sentData)
   }
 
-  val result = sentenceFrequencies.sortedByDescending { it.second }
+  val byExpectation = sentenceFrequencies.sortedByDescending { it.second.expectation }
+  val byDispersion = sentenceFrequencies.sortedBy { it.second.dispersion }
 
-  return result.map { it.first }.take(10000)
+  println("byExpectation: " + byExpectation.take(5).map { it.first }.joinToString("\n"))
+  println("byDispersion: " + byDispersion.take(50).map { it.first }.joinToString("\n"))
+
+  return byExpectation.map { it.first }.take(10000)
+}
+
+data class StatData(val expectation: Double, val dispersion: Double)
+
+fun List<Double>.computeSentenceData(): StatData {
+  val avg = this.average()
+  val dispersion = this.map { it - avg }.map { it * it }.sum() / this.count()
+
+  return StatData(avg, dispersion)
 }
 
 fun filterData(data: Data): Data {
