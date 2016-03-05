@@ -4,9 +4,6 @@ import am5800.common.db.ContentDbConstants
 import am5800.common.db.DbSentence
 import am5800.common.db.DbWord
 import am5800.common.db.SQLSentence
-import am5800.harmonie.android.ContentDb
-import am5800.harmonie.android.ContentDbConsumer
-import am5800.harmonie.android.query2
 import am5800.harmonie.app.model.dbAccess.WordsProvider
 
 

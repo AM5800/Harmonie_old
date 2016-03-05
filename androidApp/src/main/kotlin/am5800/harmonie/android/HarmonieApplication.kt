@@ -4,8 +4,7 @@ import am5800.common.componentContainer.ComponentContainer
 import am5800.common.utils.Lifetime
 import am5800.harmonie.android.logging.AndroidLoggerProvider
 import am5800.harmonie.android.model.FileEnvironment
-import am5800.harmonie.android.model.dbAccess.SentenceProviderImpl
-import am5800.harmonie.android.model.dbAccess.WordsProviderImpl
+import am5800.harmonie.android.model.dbAccess.*
 import am5800.harmonie.app.model.flow.FlowItemProviderRegistrar
 import am5800.harmonie.app.model.flow.FlowManager
 import am5800.harmonie.app.model.flow.ParallelSentenceFlowManager
@@ -38,12 +37,14 @@ class HarmonieApplication : Application() {
       val env = AndroidEnvironment(assets, this)
       container.register(env)
 
+      val keyValueDb = KeyValueDatabaseImpl()
+
+
       val sentenceProvider = SentenceProviderImpl()
       val wordsProvider = WordsProviderImpl()
 
-
-      val permanentDb = PermanentDb(this)
-      ContentDb(this, permanentDb, loggerProvider, listOf(sentenceProvider, wordsProvider))
+      PermanentDb(this, listOf(keyValueDb))
+      ContentDb(this, keyValueDb, loggerProvider, listOf(sentenceProvider, wordsProvider))
 
       val flowManager = FlowManager(lt, loggerProvider)
       val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceProvider, wordsProvider, loggerProvider)
@@ -53,10 +54,10 @@ class HarmonieApplication : Application() {
       container.register(flowManager)
       container.register(parallelSentenceFlowManager)
       container.register(ControllerStack())
-      container.register(permanentDb)
       container.register(loggerProvider)
       container.register(sentenceProvider)
       container.register(wordsProvider)
+      container.register(keyValueDb)
 
       container.register(ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager))
       container.register(StartScreenViewModel(flowManager, flowItemProviderRegistrar))
