@@ -20,7 +20,9 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
   private val logger = loggerProvider.getLogger(javaClass)
 
   override fun tryPresentNextItem(flowSettings: FlowSettings): Boolean {
-    val pair = sentenceProvider.getSentences(Language.German, Language.English).shuffle().first()
+    val ich = wordsProvider.tryFindWord("ich", Language.German)!!
+    val war = wordsProvider.tryFindWord("war", Language.German)!!
+    val pair = sentenceProvider.getSentencesWithAnyOfWords(Language.German, Language.English, listOf(ich, war)).shuffle().first()
     question.value = pair
     return true
   }
@@ -29,7 +31,7 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
     val sentence = question.value!!.first
     val wordsInSentence = wordsProvider.getWordsInSentence(sentence)
 
-    attempts.submitAttempt(score, wordsInSentence)
+    attempts.submitAttempt(score, sentence)
 
     for (word in wordsInSentence) {
       val pt = ParallelSentenceUserScore.values()

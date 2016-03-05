@@ -1,5 +1,6 @@
 package am5800.harmonie.android.model.dbAccess
 
+import am5800.common.db.DbSentence
 import am5800.common.db.DbWord
 import am5800.harmonie.app.model.dbAccess.SentenceAttemptsManager
 import am5800.harmonie.app.model.dbAccess.WordsProvider
@@ -13,11 +14,11 @@ class SentenceAttemptsManagerImpl(private val wordsProvider: WordsProvider) : Se
   val wordsCountByTag = mutableMapOf<ParallelSentenceUserScore, Int>()
 
 
-  override fun submitAttempt(tag: ParallelSentenceUserScore, wordsInSentence: List<DbWord>) {
+  override fun submitAttempt(tag: ParallelSentenceUserScore, sentence: DbSentence) {
     ++sentences
     sentenceCountByTag[tag] = (sentenceCountByTag[tag] ?: 0) + 1
 
-    for (word in wordsInSentence) {
+    for (word in wordsProvider.getWordsInSentence(sentence)) {
       wordsCountByTag[tag] = (wordsCountByTag[tag] ?: 0) + 1
       val map = words[word] ?: LinkedHashMap()
       map[tag] = (map[tag] ?: 0) + 1

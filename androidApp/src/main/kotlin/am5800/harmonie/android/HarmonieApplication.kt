@@ -41,14 +41,13 @@ class HarmonieApplication : Application() {
 
 
       val sentenceProvider = SentenceProviderImpl()
-      val wordsProvider = WordsProviderImpl()
 
       PermanentDb(this, listOf(keyValueDb))
-      ContentDb(this, keyValueDb, loggerProvider, listOf(sentenceProvider, wordsProvider))
+      ContentDb(this, keyValueDb, loggerProvider, listOf(sentenceProvider))
 
       val flowManager = FlowManager(lt, loggerProvider)
-      val attempts = SentenceAttemptsManagerImpl(wordsProvider)
-      val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceProvider, wordsProvider, loggerProvider, attempts)
+      val attempts = SentenceAttemptsManagerImpl(sentenceProvider)
+      val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceProvider, sentenceProvider, loggerProvider, attempts)
       val flowItemProviderRegistrar = FlowItemProviderRegistrar(parallelSentenceFlowManager)
 
       container.register(flowItemProviderRegistrar)
@@ -57,7 +56,6 @@ class HarmonieApplication : Application() {
       container.register(ControllerStack())
       container.register(loggerProvider)
       container.register(sentenceProvider)
-      container.register(wordsProvider)
       container.register(keyValueDb)
       container.register(attempts)
 
