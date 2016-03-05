@@ -13,7 +13,7 @@ class DefaultFlowController(private val stack: ControllerStack, lifetime: Lifeti
   private val content = Property<BindableController?>(lifetime, null)
 
   override fun setContent(controller: BindableController) {
-    stack.bringToFront(this)
+    stack.bringToFront(this, javaClass.name)
     content.value = controller
   }
 

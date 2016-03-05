@@ -6,20 +6,23 @@ import android.support.v4.app.FragmentManager
 import java.util.*
 
 class ControllerStack {
-  private val controllerStack = LinkedList<BindableController>()
+  private val controllerStack = LinkedList<Pair<String, BindableController>>()
 
   fun top(): BindableController {
-    return controllerStack.last()
+    return controllerStack.last().second
   }
 
   fun restoreController(layoutId: Int): BindableController {
     val result = controllerStack.last()
-    if (result.id != layoutId) throw Exception("Trying to restore not the last controller")
-    return controllerStack.last()
+    if (result.second.id != layoutId) throw Exception("Trying to restore not the last controller")
+    return controllerStack.last().second
   }
 
-  fun bringToFront(controller: BindableController) {
-    controllerStack.addLast(controller)
+  fun bringToFront(controller: BindableController, key: String) {
+    if (controllerStack.isEmpty() || controllerStack.last().first != key) {
+      controllerStack.addLast(Pair(key, controller))
+    }
+
     val fm = fragmentManager ?: return
     val ft = fm.beginTransaction()
     ft.replace(R.id.main_layout, BindableFragment())
@@ -43,7 +46,7 @@ class ControllerStack {
   private var fragmentManager: FragmentManager? = null
 
   fun start(supportFragmentManager: FragmentManager, rootController: BindableController) {
-    controllerStack.addLast(rootController)
+    controllerStack.addLast(Pair("root", rootController))
     fragmentManager = supportFragmentManager
 
     val transaction = supportFragmentManager.beginTransaction()
