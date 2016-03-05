@@ -6,17 +6,17 @@ import am5800.common.db.DbWord
 import am5800.common.utilityFunctions.shuffle
 import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
+import am5800.harmonie.app.model.dbAccess.SentenceAttemptsManager
 import am5800.harmonie.app.model.dbAccess.SentenceProvider
 import am5800.harmonie.app.model.dbAccess.WordsProvider
 import am5800.harmonie.app.model.logging.LoggerProvider
-import java.util.*
 
 class ParallelSentenceFlowManager(lifetime: Lifetime,
                                   private val sentenceProvider: SentenceProvider,
                                   private val wordsProvider: WordsProvider,
-                                  loggerProvider: LoggerProvider) : FlowItemProvider {
+                                  loggerProvider: LoggerProvider,
+                                  private val attempts: SentenceAttemptsManager) : FlowItemProvider {
   val question = Property<Pair<DbSentence, DbSentence>?>(lifetime, null)
-  private val history = mutableListOf<Pair<DbSentence, ParallelSentenceUserScore>>()
   private val logger = loggerProvider.getLogger(javaClass)
 
   override fun tryPresentNextItem(flowSettings: FlowSettings): Boolean {
@@ -26,48 +26,27 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
   }
 
   fun submitScore(score: ParallelSentenceUserScore) {
-    val current = question.value!!
-    history.add(Pair(current.first, score))
+    val sentence = question.value!!.first
+    val wordsInSentence = wordsProvider.getWordsInSentence(sentence)
 
-    val allWords = mutableMapOf<DbWord, Int>()
-    val tagToWordHistory = mutableMapOf<ParallelSentenceUserScore, LinkedHashMap<DbWord, Int>>()
+    attempts.submitAttempt(score, wordsInSentence)
 
-    for ((sentence, tag) in history) {
-      val words = wordsProvider.getWordsInSentence(sentence)
-      for (word in words) {
-        allWords[word] = (allWords[word] ?: 0) + 1
-        val linkedHashMap = tagToWordHistory[tag] ?: LinkedHashMap()
-        val wordCount = linkedHashMap[word] ?: 0
-        linkedHashMap[word] = wordCount + 1
-        tagToWordHistory[tag] = linkedHashMap
-      }
-    }
-
-    val tagFrequencies = ParallelSentenceUserScore.values()
-        .map { tag -> Pair(tag, history.count { it.second == tag }) }
-        .map { Pair(it.first, it.second.toDouble() / history.size) }
-        .toMap()
-
-    for ((word, occurrences) in allWords) {
-      val pFts = ParallelSentenceUserScore.values()
-          .map { tag ->
-            Pair(tag, (tagToWordHistory[tag]?.get(word)?.toDouble() ?: 0.0) / occurrences)
-          }
-          .toMap()
-
+    for (word in wordsInSentence) {
       val pt = ParallelSentenceUserScore.values()
-          .map { tag -> Pair(tag, computePTagGivenWord(pFts, tag, tagFrequencies)) }
+          .map { tag -> Pair(tag, computePTagGivenWord(word, tag)) }
           .toMap()
       val p = pt[ParallelSentenceUserScore.Good]!! + pt[ParallelSentenceUserScore.NotSure]!! / 2
 
-      logger.info("$word: $p")
+      logger.info("${word.word}: $p")
     }
   }
 
-  private fun computePTagGivenWord(pFts: Map<ParallelSentenceUserScore, Double>, tag: ParallelSentenceUserScore, tagFrequencies: Map<ParallelSentenceUserScore, Double>): Double {
-    val pWordGivenTag = pFts[tag]!!
-    val tagFrequency = tagFrequencies[tag]!!
-    val wordFrequency = ParallelSentenceUserScore.values().map { tag -> pFts[tag]!! * tagFrequencies[tag]!! }.sum()
+  private fun computePTagGivenWord(word: DbWord, tag: ParallelSentenceUserScore): Double {
+    val pWordGivenTag = attempts.getWordFrequency(word, tag)
+    val tagFrequency = attempts.getTagFrequency(tag)
+    val wordFrequency = ParallelSentenceUserScore.values().map { tag ->
+      attempts.getWordFrequency(word, tag) * attempts.getTagFrequency(tag)
+    }.sum()
 
     return pWordGivenTag * tagFrequency / wordFrequency
   }

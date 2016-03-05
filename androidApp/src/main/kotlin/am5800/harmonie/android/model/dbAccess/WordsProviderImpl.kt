@@ -1,9 +1,6 @@
 package am5800.harmonie.android.model.dbAccess
 
-import am5800.common.db.ContentDbConstants
-import am5800.common.db.DbSentence
-import am5800.common.db.DbWord
-import am5800.common.db.SQLSentence
+import am5800.common.db.*
 import am5800.harmonie.app.model.dbAccess.WordsProvider
 
 
@@ -31,6 +28,6 @@ class WordsProviderImpl : WordsProvider, ContentDbConsumer {
 
     val result = db.query2<Long, String>(query)
 
-    return result.map { DbWord(it.first, sentence.language, it.second) }
+    return result.map { SqlWord(it.first, sentence.language, it.second) }
   }
 }
