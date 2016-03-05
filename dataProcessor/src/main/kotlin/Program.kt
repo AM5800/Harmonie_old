@@ -1,5 +1,5 @@
 import am5800.common.Language
-import am5800.common.db.DbSentence
+import am5800.common.db.SQLSentence
 import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.Multimap
 import corpus.CorpusInfo
@@ -9,8 +9,8 @@ import corpus.parsing.NegraParser
 import ml.sentenceBreaking.splitWords
 import java.io.File
 
-fun computeParallelSentences(infos: List<CorpusInfo>): Pair<Map<Long, Long>, List<DbSentence>> {
-  val sentences = mutableListOf<DbSentence>()
+fun computeParallelSentences(infos: List<CorpusInfo>): Pair<Map<Long, Long>, List<SQLSentence>> {
+  val sentences = mutableListOf<SQLSentence>()
   val translations = mutableMapOf<Long, Long>()
 
   val sxmlCorpusParser = SxmlCorpusParser()
@@ -26,8 +26,8 @@ fun computeParallelSentences(infos: List<CorpusInfo>): Pair<Map<Long, Long>, Lis
 
       val firstId = id++
       val secondId = id++
-      sentences.add(DbSentence(firstId, Language.English, en))
-      sentences.add(DbSentence(secondId, Language.German, de.value))
+      sentences.add(SQLSentence(firstId, Language.English, en))
+      sentences.add(SQLSentence(secondId, Language.German, de.value))
 
       translations.put(firstId, secondId)
       translations.put(secondId, firstId)
@@ -37,7 +37,7 @@ fun computeParallelSentences(infos: List<CorpusInfo>): Pair<Map<Long, Long>, Lis
   return Pair(translations, sentences)
 }
 
-class Data(val sentences: List<DbSentence>,
+class Data(val sentences: List<SQLSentence>,
            val sentenceTranslations: Map<Long, Long>,
            val wordOccurrences: Multimap<Word, Long>,
            val wordFrequencies: Map<Word, Double>)
@@ -66,7 +66,7 @@ fun computeData(repository: CorpusRepository, parsersSet: CorpusParsersSet): Dat
   return Data(sentences.second, sentences.first, occurrences, frequencies)
 }
 
-fun filterGermanSentences(data: Data): List<DbSentence> {
+fun filterGermanSentences(data: Data): List<SQLSentence> {
   val sentenceToWords = LinkedHashMultimap.create<Long, Word>()
   for (pair in data.wordOccurrences.asMap()) {
     val word = pair.key
@@ -117,7 +117,7 @@ fun List<Double>.computeSentenceData(): StatData {
 
 fun filterData(data: Data): Data {
   val filtered = filterGermanSentences(data)
-  val sentences = mutableListOf<DbSentence>()
+  val sentences = mutableListOf<SQLSentence>()
   val translations = mutableMapOf<Long, Long>()
 
   val sentencesMap = data.sentences.map { Pair(it.id, it) }.toMap()
@@ -127,10 +127,10 @@ fun filterData(data: Data): Data {
     val translated = sentencesMap[data.sentenceTranslations[sentence.id]!!]!!
 
     val firstId = id++
-    val newSentence = DbSentence(firstId, sentence.language, sentence.text)
+    val newSentence = SQLSentence(firstId, sentence.language, sentence.text)
 
     val secondId = id++
-    val newTranslatedSentence = DbSentence(secondId, translated.language, translated.text)
+    val newTranslatedSentence = SQLSentence(secondId, translated.language, translated.text)
     sentences.add(newSentence)
     sentences.add(newTranslatedSentence)
 
@@ -157,7 +157,7 @@ fun computeFrequencies(corpusFrequencies: Map<Word, Long>, occurrences: Multimap
   return result.map { Pair(it.key, it.value.toDouble() / totalByLang[it.key.language]!!) }.toMap()
 }
 
-fun computeWordOccurrences(sentences: List<DbSentence>): Multimap<Word, Long> {
+fun computeWordOccurrences(sentences: List<SQLSentence>): Multimap<Word, Long> {
   val result = LinkedHashMultimap.create<Word, Long>()
 
   sentences.forEach { sentence ->

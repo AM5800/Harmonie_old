@@ -31,6 +31,12 @@ class Property<T>(lifetime: Lifetime, initialValue: T?) {
     binder(PropertyChangedArg(null, value, false))
   }
 
+  fun bind(lifetime: Lifetime, sourceProperty: Property<T>) {
+    sourceProperty.bind(lifetime, {
+      value = it.newValue
+    })
+  }
+
   fun bindNotNull(lifetime: Lifetime, binder: (T) -> Unit) {
     bind(lifetime, { arg -> if (arg.newValue != null) binder(arg.newValue) })
   }

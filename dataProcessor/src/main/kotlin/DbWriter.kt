@@ -1,6 +1,6 @@
 import am5800.common.LanguageParser
 import am5800.common.db.ContentDbConstants
-import am5800.common.db.DbSentence
+import am5800.common.db.SQLSentence
 import com.google.common.collect.Multimap
 import org.tmatesoft.sqljet.core.SqlJetTransactionMode
 import org.tmatesoft.sqljet.core.table.SqlJetDb
@@ -36,7 +36,7 @@ class DbWriter {
     }
   }
 
-  private fun writeSentences(sentences: List<DbSentence>, translations: Map<Long, Long>, db: SqlJetDb): Map<Long, Long> {
+  private fun writeSentences(sentences: List<SQLSentence>, translations: Map<Long, Long>, db: SqlJetDb): Map<Long, Long> {
     val sentenceIdToRealId = mutableMapOf<Long, Long>()
 
     val sentencesTable = db.getTable(ContentDbConstants.sentencesTableName)

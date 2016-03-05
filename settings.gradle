@@ -1,1 +1,1 @@
-include ':androidApp', ':common', ':dataProcessor'
+include ':androidApp', ':common', ':dataProcessor', ':commonApp'
