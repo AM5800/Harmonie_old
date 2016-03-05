@@ -7,7 +7,7 @@ import org.joda.time.Duration
 
 class DefaultFlowControllerOwnerViewModel(private val flowManager: FlowManager, lifetime: Lifetime) {
   val timeLeft = Property<Duration>(lifetime, null)
-  val statusVisibility = Property<Visibility>(lifetime, Visibility.Visible)
+  val statusVisibility = Property(lifetime, Visibility.Visible)
 
   init {
     flowManager.timeLeft.bind(lifetime, { args ->

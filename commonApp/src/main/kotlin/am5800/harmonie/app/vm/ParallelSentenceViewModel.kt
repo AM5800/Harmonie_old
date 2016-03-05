@@ -26,9 +26,9 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
     flowManager.next()
   }
 
-  val answerGroupVisibility = Property<Visibility>(lifetime, Visibility.Collapsed)
-  val question = Property<String>(lifetime, "")
-  val answer = Property<String>(lifetime, "")
+  val answerGroupVisibility = Property(lifetime, Visibility.Collapsed)
+  val question = Property(lifetime, "")
+  val answer = Property(lifetime, "")
 
   init {
     state.forEachValue(lifetime, { state, lt ->

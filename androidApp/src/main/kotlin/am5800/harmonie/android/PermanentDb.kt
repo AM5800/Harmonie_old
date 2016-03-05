@@ -15,9 +15,6 @@ class PermanentDb(context: Context) : SQLiteOpenHelper(context, "Settings.db", n
     throw UnsupportedOperationException()
   }
 
-  fun initialize() {
-  }
-
   fun getValue(key: String, defaultValue: String): String {
     val cursor = this.readableDatabase.rawQuery("SELECT value FROM simpleSettings WHERE key = ?", arrayOf(key))
     var result = defaultValue
