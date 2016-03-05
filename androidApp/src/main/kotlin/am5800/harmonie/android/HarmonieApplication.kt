@@ -9,6 +9,7 @@ import am5800.harmonie.android.model.dbAccess.WordsProviderImpl
 import am5800.harmonie.app.model.flow.FlowItemProviderRegistrar
 import am5800.harmonie.app.model.flow.FlowManager
 import am5800.harmonie.app.model.flow.ParallelSentenceFlowManager
+import am5800.harmonie.app.vm.DefaultFlowControllerOwnerViewModel
 import am5800.harmonie.app.vm.ParallelSentenceViewModel
 import am5800.harmonie.app.vm.StartScreenViewModel
 import android.app.Application
@@ -59,6 +60,7 @@ class HarmonieApplication : Application() {
 
       container.register(ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager))
       container.register(StartScreenViewModel(flowManager, flowItemProviderRegistrar))
+      container.register(DefaultFlowControllerOwnerViewModel(flowManager, lt))
     } catch (e: Exception) {
       logger.exception(e)
       throw e
