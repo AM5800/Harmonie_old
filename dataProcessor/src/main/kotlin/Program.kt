@@ -78,20 +78,32 @@ fun filterGermanSentences(data: Data): List<DbSentence> {
   val sentences = data.sentences.filter { it.language == Language.German }
   val sentencesWithOptimalLength = sentences.filter { it.text.length > 50 && it.text.length < 150 }
 
-  val sentenceFrequencies = sentencesWithOptimalLength.map { sentence ->
+  val sentenceStats = sentencesWithOptimalLength.map { sentence ->
     val sentData = sentenceToWords[sentence.id]!!.map { word ->
       data.wordFrequencies[word]!!
     }.computeSentenceData()
     Pair(sentence, sentData)
   }
 
-  val byExpectation = sentenceFrequencies.sortedByDescending { it.second.expectation }
-  val byDispersion = sentenceFrequencies.sortedBy { it.second.dispersion }
+
+  val minFrequency = sentenceStats.map { it.second.expectation }.min()!!
+  val maxFrequency = sentenceStats.map { it.second.expectation }.max()!!
+  val bucketsN = 1000
+  val bucketSize = (maxFrequency - minFrequency) / bucketsN
+
+  val buckets = sentenceStats.groupBy { (it.second.expectation / bucketSize).toInt() }
+  val sortedBuckets = buckets.map { Pair(it.key, it.value.sortedBy { s -> s.second.dispersion }) }
+  println("No of buckets: " + buckets.count())
+
+  val byExpectation = sentenceStats.sortedByDescending { it.second.expectation }
+  val byDispersion = sentenceStats.sortedBy { it.second.dispersion }
+  val byBuckets = sortedBuckets.flatMap { it.second.take(it.second.size / 2) }.take(10000).map { it.first }
+
 
   println("byExpectation: " + byExpectation.take(5).map { it.first }.joinToString("\n"))
   println("byDispersion: " + byDispersion.take(50).map { it.first }.joinToString("\n"))
 
-  return byExpectation.map { it.first }.take(10000)
+  return byBuckets
 }
 
 data class StatData(val expectation: Double, val dispersion: Double)
