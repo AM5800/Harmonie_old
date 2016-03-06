@@ -3,6 +3,7 @@ import am5800.common.db.ContentDbConstants
 import am5800.common.db.DbWordOccurrence
 import am5800.common.db.Sentence
 import org.tmatesoft.sqljet.core.SqlJetTransactionMode
+import org.tmatesoft.sqljet.core.table.ISqlJetTable
 import org.tmatesoft.sqljet.core.table.SqlJetDb
 import java.io.File
 
@@ -12,7 +13,7 @@ class DbWriter {
     val database = SqlJetDb.open(path, true)
     database.runTransaction({ db ->
       createDbSchema(db)
-      val sentenceMapping = writeSentences(data.sentences, data.sentenceTranslations, db)
+      val sentenceMapping = writeSentences(data.sentenceTranslations, db)
       writeWords(data.wordOccurrences, sentenceMapping, db)
     }, SqlJetTransactionMode.WRITE)
   }
@@ -33,23 +34,28 @@ class DbWriter {
     }
   }
 
-  private fun writeSentences(sentences: List<Sentence>, translations: Map<Sentence, Sentence>, db: SqlJetDb): Map<Sentence, Long> {
+  private fun writeSentences(translations: Map<Sentence, Sentence>, db: SqlJetDb): Map<Sentence, Long> {
     val sentenceIdToRealId = mutableMapOf<Sentence, Long>()
 
     val sentencesTable = db.getTable(ContentDbConstants.sentencesTableName)
-    sentences.forEach { sentence ->
-      val insertedId = sentencesTable.insert(LanguageParser.toShortString(sentence.language), sentence.text)
-      sentenceIdToRealId.put(sentence, insertedId)
-    }
 
     val sentenceTranslations = db.getTable(ContentDbConstants.sentenceTranslationsTableName)
     for (pair in translations) {
-      val from = sentenceIdToRealId[pair.key]!!
-      val to = sentenceIdToRealId[pair.value]!!
+      val from = getOrInsert(pair.key, sentenceIdToRealId, sentencesTable)
+      val to = getOrInsert(pair.value, sentenceIdToRealId, sentencesTable)
       sentenceTranslations.insert(from, to)
     }
 
     return sentenceIdToRealId
+  }
+
+  private fun getOrInsert(sentence: Sentence, sentenceToId: MutableMap<Sentence, Long>, sentencesTable: ISqlJetTable): Long {
+    val id = sentenceToId[sentence]
+    if (id == null) {
+      val insertedId = sentencesTable.insert(LanguageParser.toShortString(sentence.language), sentence.text)
+      sentenceToId[sentence] = insertedId
+      return insertedId
+    } else return id
   }
 
   private fun createDbSchema(db: SqlJetDb) {
