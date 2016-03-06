@@ -15,7 +15,7 @@ fun main(args: Array<String>) {
   val data = prepareData(repository)
   val filteredData = filterData(data)
 
-  DbWriter().write(File("data\\db\\content.db"), filteredData)
+  DbWriter().write(File("androidApp\\src\\main\\assets\\content.db"), filteredData)
 }
 
 fun prepareData(repository: CorpusRepository): Data {

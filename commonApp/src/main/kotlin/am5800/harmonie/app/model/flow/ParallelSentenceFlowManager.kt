@@ -21,8 +21,7 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
 
   override fun tryPresentNextItem(flowSettings: FlowSettings): Boolean {
     val ich = wordsProvider.tryFindWord("ich", Language.German)!!
-    val war = wordsProvider.tryFindWord("war", Language.German)!!
-    val pair = sentenceProvider.getSentencesWithAnyOfWords(Language.German, Language.English, listOf(ich, war)).shuffle().first()
+    val pair = sentenceProvider.getSentencesWithAnyOfWords(Language.German, Language.English, listOf(ich)).shuffle().first()
     question.value = pair
     return true
   }
@@ -39,7 +38,7 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
           .toMap()
       val p = pt[ParallelSentenceUserScore.Good]!! + pt[ParallelSentenceUserScore.NotSure]!! / 2
 
-      logger.info("${word.word}: $p")
+      logger.info("${word.lemma}: $p")
     }
   }
 

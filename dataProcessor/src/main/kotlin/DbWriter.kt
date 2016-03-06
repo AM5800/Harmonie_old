@@ -25,7 +25,7 @@ class DbWriter {
       val word = occurrencePair.key
       val lang = LanguageParser.toShortString(word.language)
 
-      val wordId = wordsTable.insert(lang, word.word)
+      val wordId = wordsTable.insert(lang, word.lemma)
       for (occurrence in occurrencePair.value) {
         val sentenceId = sentenceMapping[occurrence.sentence]
         occurrencesTable.insert(wordId, sentenceId, occurrence.startIndex, occurrence.endIndex)
@@ -55,7 +55,7 @@ class DbWriter {
   private fun createDbSchema(db: SqlJetDb) {
     db.createTable("CREATE TABLE ${ContentDbConstants.sentencesTableName} (id INTEGER PRIMARY KEY, language TEXT, text TEXT)")
     db.createTable("CREATE TABLE ${ContentDbConstants.sentenceTranslationsTableName} (key INTEGER PRIMARY KEY, value INTEGER)")
-    db.createTable("CREATE TABLE ${ContentDbConstants.wordsTableName} (id INTEGER PRIMARY KEY, language TEXT, word TEXT)")
+    db.createTable("CREATE TABLE ${ContentDbConstants.wordsTableName} (id INTEGER PRIMARY KEY, language TEXT, lemma TEXT)")
     db.createTable("CREATE TABLE ${ContentDbConstants.wordOccurrencesTableName} (wordId INTEGER, sentenceId INTEGER, startIndex INTEGER, endIndex INTEGER)")
     //db.createIndex("CREATE INDEX germanWordOccurrencesIndex ON wordOccurrences (wordId)")
   }

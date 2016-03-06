@@ -4,7 +4,7 @@ import am5800.common.Language
 import am5800.common.db.Word
 
 
-class SqlWord(val id: Long, language: Language, word: String) : Word(language, word) {
+class SqlWord(val id: Long, language: Language, lemma: String) : Word(language, lemma) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other?.javaClass != javaClass) return false

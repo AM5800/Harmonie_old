@@ -23,7 +23,7 @@ class SentenceProviderImpl : SentenceProvider, ContentDbConsumer, WordsProvider 
             ON $map.key = s1.id
           INNER JOIN $sentences AS s2
             ON $map.value = s2.id
-        WHERE s1.lang='$langFrom' AND s2.lang='$langTo'"""
+        WHERE s1.language = '$langFrom' AND s2.language ='$langTo'"""
 
     val sqlWords = words.filterIsInstance<SqlWord>()
     if (sqlWords.any()) {
@@ -42,7 +42,7 @@ class SentenceProviderImpl : SentenceProvider, ContentDbConsumer, WordsProvider 
 
     val words = ContentDbConstants.wordsTableName
     val lang = LanguageParser.toShortString(language)
-    val query = "SELECT id FROM $words WHERE word = '$w' AND lang = '$lang'"
+    val query = "SELECT id FROM $words WHERE lemma = '$w' AND language = '$lang'"
     val id = database!!.query1<Long>(query).singleOrNull() ?: return null
 
     return SqlWord(id, language, word)
@@ -71,7 +71,7 @@ class SentenceProviderImpl : SentenceProvider, ContentDbConsumer, WordsProvider 
     val words = ContentDbConstants.wordsTableName
     val occurrences = ContentDbConstants.wordOccurrencesTableName
     val sentenceId = sentence.id
-    val query = "SELECT id, word FROM $words WHERE id IN (SELECT wordId FROM $occurrences WHERE sentenceId = $sentenceId)"
+    val query = "SELECT id, lemma FROM $words WHERE id IN (SELECT wordId FROM $occurrences WHERE sentenceId = $sentenceId)"
 
     val result = db.query2<Long, String>(query)
 
