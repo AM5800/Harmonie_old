@@ -2,12 +2,12 @@ package am5800.common.db
 
 import am5800.common.Language
 
-open class DbWord(val language: Language, val word: String) {
+open class Word(val language: Language, val word: String) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other?.javaClass != javaClass) return false
 
-    other as DbWord
+    other as Word
 
     if (language != other.language) return false
     if (word != other.word) return false

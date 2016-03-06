@@ -2,14 +2,16 @@ package am5800.harmonie.android.model.dbAccess
 
 import am5800.common.Language
 import am5800.common.LanguageParser
-import am5800.common.db.*
+import am5800.common.db.ContentDbConstants
+import am5800.common.db.Sentence
+import am5800.common.db.Word
 import am5800.harmonie.app.model.dbAccess.SentenceProvider
 import am5800.harmonie.app.model.dbAccess.WordsProvider
 
 class SentenceProviderImpl : SentenceProvider, ContentDbConsumer, WordsProvider {
-  override fun getSentencesWithAnyOfWords(languageFrom: Language, languageTo: Language, words: List<DbWord>): List<Pair<DbSentence, DbSentence>> {
+  override fun getSentencesWithAnyOfWords(languageFrom: Language, languageTo: Language, words: List<Word>): List<Pair<Sentence, Sentence>> {
     val db = database!!
-    val map = ContentDbConstants.sentenceMappingTableName
+    val map = ContentDbConstants.sentenceTranslationsTableName
     val sentences = ContentDbConstants.sentencesTableName
     val langFrom = LanguageParser.toShortString(languageFrom)
     val langTo = LanguageParser.toShortString(languageTo)
@@ -32,10 +34,10 @@ class SentenceProviderImpl : SentenceProvider, ContentDbConsumer, WordsProvider 
 
     val result = db.query4<Long, String, Long, String>(query)
 
-    return result.map { Pair(SQLSentence(it.value1, languageFrom, it.value2), SQLSentence(it.value3, languageTo, it.value4)) }
+    return result.map { Pair(SqlSentence(it.value1, languageFrom, it.value2), SqlSentence(it.value3, languageTo, it.value4)) }
   }
 
-  override fun tryFindWord(word: String, language: Language): DbWord? {
+  override fun tryFindWord(word: String, language: Language): Word? {
     val w = word.toLowerCase().trim()
 
     val words = ContentDbConstants.wordsTableName
@@ -58,13 +60,13 @@ class SentenceProviderImpl : SentenceProvider, ContentDbConsumer, WordsProvider 
     database = db
   }
 
-  override fun getSentences(languageFrom: Language, languageTo: Language): List<Pair<DbSentence, DbSentence>> {
+  override fun getSentences(languageFrom: Language, languageTo: Language): List<Pair<Sentence, Sentence>> {
     return getSentencesWithAnyOfWords(languageFrom, languageTo, emptyList())
   }
 
-  override fun getWordsInSentence(sentence: DbSentence): List<DbWord> {
+  override fun getWordsInSentence(sentence: Sentence): List<Word> {
     val db = database!!
-    if (sentence !is SQLSentence) throw Exception("Unsupported type: " + sentence.javaClass.name)
+    if (sentence !is SqlSentence) throw Exception("Unsupported type: " + sentence.javaClass.name)
 
     val words = ContentDbConstants.wordsTableName
     val occurrences = ContentDbConstants.wordOccurrencesTableName

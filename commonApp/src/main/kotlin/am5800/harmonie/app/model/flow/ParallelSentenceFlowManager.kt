@@ -1,8 +1,8 @@
 package am5800.harmonie.app.model.flow
 
 import am5800.common.Language
-import am5800.common.db.DbSentence
-import am5800.common.db.DbWord
+import am5800.common.db.Sentence
+import am5800.common.db.Word
 import am5800.common.utilityFunctions.shuffle
 import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
@@ -16,7 +16,7 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
                                   private val wordsProvider: WordsProvider,
                                   loggerProvider: LoggerProvider,
                                   private val attempts: SentenceAttemptsManager) : FlowItemProvider {
-  val question = Property<Pair<DbSentence, DbSentence>?>(lifetime, null)
+  val question = Property<Pair<Sentence, Sentence>?>(lifetime, null)
   private val logger = loggerProvider.getLogger(javaClass)
 
   override fun tryPresentNextItem(flowSettings: FlowSettings): Boolean {
@@ -43,7 +43,7 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
     }
   }
 
-  private fun computePTagGivenWord(word: DbWord, tag: ParallelSentenceUserScore): Double {
+  private fun computePTagGivenWord(word: Word, tag: ParallelSentenceUserScore): Double {
     val pWordGivenTag = attempts.getWordFrequency(word, tag)
     val tagFrequency = attempts.getTagFrequency(tag)
     val wordFrequency = ParallelSentenceUserScore.values().map { tag ->

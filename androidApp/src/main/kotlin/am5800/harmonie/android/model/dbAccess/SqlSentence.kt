@@ -1,15 +1,16 @@
-package am5800.common.db
+package am5800.harmonie.android.model.dbAccess
 
 import am5800.common.Language
+import am5800.common.db.Sentence
 
 
-class SQLSentence(val id: Long, language: Language, text: String) : DbSentence(language, text) {
+class SqlSentence(val id: Long, language: Language, text: String) : Sentence(language, text) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other?.javaClass != javaClass) return false
     if (!super.equals(other)) return false
 
-    other as SQLSentence
+    other as SqlSentence
 
     if (id != other.id) return false
 
