@@ -3,19 +3,15 @@ import am5800.common.db.Sentence
 import am5800.common.db.Word
 import am5800.common.db.WordOccurrence
 import corpus.CorpusRepository
-import corpus.parsing.CorpusParsersSet
-import corpus.parsing.NegraParser
 import java.io.File
 
 fun main(args: Array<String>) {
-  val repository = CorpusRepository(File("data\\corpuses"))
-  val parsersSet = CorpusParsersSet()
-  parsersSet.registerParser(NegraParser())
+  val repository = CorpusRepository(File("data/corpuses"))
 
   val data = prepareData(repository)
   val filteredData = filterData(filterData(data))
 
-  DbWriter().write(File("androidApp\\src\\main\\assets\\content.db"), filteredData)
+  DbWriter().write(File("androidApp/src/main/assets/content.db"), filteredData)
 }
 
 fun prepareData(repository: CorpusRepository): Data {
