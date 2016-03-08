@@ -22,7 +22,7 @@ class DbWriter {
     val wordsTable = db.getTable(ContentDbConstants.wordsTableName)
     val occurrencesTable = db.getTable(ContentDbConstants.wordOccurrencesTableName)
 
-    for (occurrencePair in wordsOccurrences.groupBy { it.word }) {
+    for (occurrencePair in wordsOccurrences.distinct().groupBy { it.word }) {
       val word = occurrencePair.key
       val lang = LanguageParser.toShortString(word.language)
 
