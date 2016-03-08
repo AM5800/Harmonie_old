@@ -35,8 +35,8 @@ fun prepareData(repository: CorpusRepository): Data {
     for (deSentencePair in deData.sentences) {
       val enSentence = enData.sentences[deSentencePair.key] ?: continue
 
-      val englishSentence = Sentence(Language.English, enSentence)
-      val germanSentence = Sentence(Language.German, deSentencePair.value)
+      val englishSentence = Sentence(Language.English, enSentence.trim())
+      val germanSentence = Sentence(Language.German, deSentencePair.value.trim())
 
       wordOccurrences.addAll(processWords(englishSentence, enData.words[deSentencePair.key]))
       wordOccurrences.addAll(processWords(germanSentence, deData.words[deSentencePair.key]))
