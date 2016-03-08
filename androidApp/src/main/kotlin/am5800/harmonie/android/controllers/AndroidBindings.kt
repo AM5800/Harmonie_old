@@ -6,6 +6,7 @@ import am5800.harmonie.android.toVisible
 import am5800.harmonie.app.vm.Visibility
 import android.app.Activity
 import android.view.View
+import android.widget.Button
 import android.widget.TextView
 
 
@@ -35,6 +36,11 @@ fun <T> TextView.bindText(lifetime: Lifetime, activity: Activity, property: Prop
       else this.text = mapper.invoke(value)
     }
   })
+}
+
+fun Button.bindOnClick(lifetime: Lifetime, action: () -> Unit) {
+  this.setOnClickListener { action() }
+  lifetime.addAction { this.setOnClickListener(null) }
 }
 
 

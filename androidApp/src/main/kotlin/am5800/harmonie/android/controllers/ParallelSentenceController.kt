@@ -2,43 +2,62 @@ package am5800.harmonie.android.controllers
 
 import am5800.common.utils.Lifetime
 import am5800.harmonie.android.R
-import am5800.harmonie.android.controllers.defaultControls.ButtonController
-import am5800.harmonie.android.controllers.defaultControls.TextViewController
+import am5800.harmonie.android.viewBinding.BindableView
 import am5800.harmonie.android.viewBinding.ReflectionBindableController
-import am5800.harmonie.app.model.flow.ParallelSentenceUserScore
+import am5800.harmonie.app.model.dbAccess.AttemptScore
 import am5800.harmonie.app.vm.ParallelSentenceViewModel
+import am5800.harmonie.app.vm.ToggleableWordViewModel
+import am5800.harmonie.app.vm.WordViewModel
+import android.graphics.Color
+import android.util.TypedValue
+import android.widget.Button
+import android.widget.TextView
+import org.apmem.tools.layouts.FlowLayout
 
 class ParallelSentenceController(lifetime: Lifetime,
                                  flowContentController: FlowController,
                                  private val vm: ParallelSentenceViewModel
 ) : ReflectionBindableController(R.layout.parallel_sentence) {
 
-  val goodBtn = ButtonController(R.id.goodBtn, lifetime, "Good")
-  val badBtn = ButtonController(R.id.badBtn, lifetime, "Bad")
-  val notSureBtn = ButtonController(R.id.notSureBtn, lifetime, "Not Sure")
-  val questionTextView = TextViewController(R.id.question, lifetime)
-  val answerTextView = TextViewController(R.id.answer, lifetime)
-  private val buttons = listOf(goodBtn, badBtn, notSureBtn)
 
+  override fun bind(view: BindableView, bindingLifetime: Lifetime) {
+    super.bind(view, bindingLifetime)
 
-  init {
-    goodBtn.clickedSignal.subscribe(lifetime, { vm.submitAnswer(ParallelSentenceUserScore.Good) })
-    badBtn.clickedSignal.subscribe(lifetime, { vm.submitAnswer(ParallelSentenceUserScore.Bad) })
-    notSureBtn.clickedSignal.subscribe(lifetime, { vm.submitAnswer(ParallelSentenceUserScore.NotSure) })
+    val answer = view.getChild<TextView>(R.id.answer)
+    answer.bindText(bindingLifetime, view.activity, vm.answer)
+    answer.bindVisibility(bindingLifetime, view.activity, vm.answerGroupVisibility)
 
-    questionTextView.title.bind(lifetime, vm.question)
-    answerTextView.title.bind(lifetime, vm.answer)
-    vm.activationRequired.subscribe(lifetime, { flowContentController.setContent(this) })
+    val nextBtn = view.getChild<Button>(R.id.continueBtn)
+    nextBtn.bindOnClick(bindingLifetime, { vm.next() })
 
-    vm.answerGroupVisibility.forEachValue(lifetime, { visibility, lt ->
-      buttons.forEach { it.visible.value = visibility }
-      answerTextView.visible.value = visibility
+    val flowLayout = view.getChild<FlowLayout>(R.id.question)
+    vm.question.bind(bindingLifetime, {
+      flowLayout.removeAllViews()
+      for (childVm in it.newValue!!) {
+        val wordView = TextView(view.activity)
+        setupWordView(wordView, childVm, bindingLifetime)
+        flowLayout.addView(wordView)
+      }
     })
   }
 
-  override fun onClicked() {
-    vm.showAnswer()
+  private fun setupWordView(wordView: TextView, childVm: WordViewModel, bindingLifetime: Lifetime) {
+    wordView.text = childVm.text
 
+    if (childVm is ToggleableWordViewModel) {
+      wordView.setOnClickListener({ childVm.toggle() })
+      childVm.state.bind(bindingLifetime, {
+        if (it.newValue == AttemptScore.Ok) wordView.setTextColor(Color.BLACK)
+        else wordView.setTextColor(Color.RED)
+      })
+    }
+
+    wordView.setPadding(10, 8, 10, 8)
+    wordView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20.0f)
+  }
+
+  init {
+    vm.activationRequired.subscribe(lifetime, { flowContentController.setContent(this) })
   }
 }
 

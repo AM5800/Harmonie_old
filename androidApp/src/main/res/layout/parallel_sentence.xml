@@ -10,14 +10,10 @@
                   android:layout_alignParentTop="true"
                   android:layout_centerHorizontal="true"
                   android:layout_margin="10dp">
-        <TextView
-                android:layout_margin="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Large Text"
-                android:id="@+id/question"
-                android:layout_gravity="center_horizontal"/>
+
+        <org.apmem.tools.layouts.FlowLayout android:layout_width="fill_parent"
+                                            android:layout_height="wrap_content" android:id="@+id/question">
+        </org.apmem.tools.layouts.FlowLayout>
 
         <TextView
                 android:layout_margin="5dp"
@@ -30,6 +26,7 @@
     </LinearLayout>
 
 
+
     <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -40,17 +37,7 @@
         <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Good"
-                android:id="@+id/goodBtn" android:layout_gravity="center_horizontal"/>
-        <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Not sure"
-                android:id="@+id/notSureBtn"/>
-        <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Bad"
-                android:id="@+id/badBtn"/>
+                android:text="Continue"
+                android:id="@+id/continueBtn" android:layout_gravity="center_horizontal"/>
     </LinearLayout>
 </RelativeLayout>

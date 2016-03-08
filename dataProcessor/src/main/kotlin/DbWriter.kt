@@ -1,7 +1,7 @@
 import am5800.common.LanguageParser
 import am5800.common.db.ContentDbConstants
-import am5800.common.db.DbWordOccurrence
 import am5800.common.db.Sentence
+import am5800.common.db.WordOccurrence
 import org.tmatesoft.sqljet.core.SqlJetTransactionMode
 import org.tmatesoft.sqljet.core.table.ISqlJetTable
 import org.tmatesoft.sqljet.core.table.SqlJetDb
@@ -18,7 +18,7 @@ class DbWriter {
     }, SqlJetTransactionMode.WRITE)
   }
 
-  private fun writeWords(wordsOccurrences: List<DbWordOccurrence>, sentenceMapping: Map<Sentence, Long>, db: SqlJetDb) {
+  private fun writeWords(wordsOccurrences: List<WordOccurrence>, sentenceMapping: Map<Sentence, Long>, db: SqlJetDb) {
     val wordsTable = db.getTable(ContentDbConstants.wordsTableName)
     val occurrencesTable = db.getTable(ContentDbConstants.wordOccurrencesTableName)
 

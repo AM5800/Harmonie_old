@@ -7,7 +7,7 @@ import javax.xml.parsers.SAXParserFactory
 
 data class SentenceId(val id: String)
 
-data class WordOccurrence(val lemma: String, val sentenceStartIndex: Int, val sentenceEndIndex: Int)
+data class ParseWordOccurrence(val lemma: String, val sentenceStartIndex: Int, val sentenceEndIndex: Int)
 
 class LetsmtCorpusParser {
   class LetsmtParserHandler() : DefaultHandler() {
@@ -20,7 +20,7 @@ class LetsmtCorpusParser {
     }
 
     val sentences = mutableMapOf<SentenceId, String>()
-    val words = LinkedHashMultimap.create<SentenceId, WordOccurrence>()
+    val words = LinkedHashMultimap.create<SentenceId, ParseWordOccurrence>()
 
     private val tagStack = Stack<Tags>()
 
@@ -78,7 +78,7 @@ class LetsmtCorpusParser {
         builder.append(word.word)
         val end = builder.length
         if (word.lem.isBlank()) word.lem = word.word.toLowerCase()
-        if (accept(word)) words.put(sentenceId, WordOccurrence(word.lem, start, end))
+        if (accept(word)) words.put(sentenceId, ParseWordOccurrence(word.lem, start, end))
       }
 
       sentences.put(sentenceId, builder.toString())

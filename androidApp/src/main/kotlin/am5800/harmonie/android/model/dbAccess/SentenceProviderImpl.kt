@@ -5,10 +5,33 @@ import am5800.common.LanguageParser
 import am5800.common.db.ContentDbConstants
 import am5800.common.db.Sentence
 import am5800.common.db.Word
+import am5800.common.db.WordOccurrence
 import am5800.harmonie.app.model.dbAccess.SentenceProvider
-import am5800.harmonie.app.model.dbAccess.WordsProvider
 
-class SentenceProviderImpl : SentenceProvider, ContentDbConsumer, WordsProvider {
+class SentenceProviderImpl : SentenceProvider, ContentDbConsumer {
+  override fun getOccurrences(sentence: Sentence): List<WordOccurrence> {
+    val db = database!!
+    if (sentence !is SqlSentence) throw Exception("Only SqlSentences supported")
+
+
+    val words = ContentDbConstants.wordsTableName
+    val occurrences = ContentDbConstants.wordOccurrencesTableName
+
+    val query = """
+        SELECT $words.id, $words.lemma, $occurrences.startIndex, $occurrences.endIndex
+        FROM $words
+          INNER JOIN $occurrences
+            ON $words.id = $occurrences.wordId
+        WHERE $occurrences.sentenceId = ${sentence.id}
+    """
+
+    val wordsData = db.query4<Long, String, Int, Int>(query)
+
+    return wordsData.map {
+      WordOccurrence(SqlWord(it.value1, sentence.language, it.value2), sentence, it.value3, it.value4)
+    }
+  }
+
   override fun getSentencesWithAnyOfWords(languageFrom: Language, languageTo: Language, words: List<Word>): List<Pair<Sentence, Sentence>> {
     val db = database!!
     val map = ContentDbConstants.sentenceTranslationsTableName

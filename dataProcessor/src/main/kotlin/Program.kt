@@ -1,7 +1,7 @@
 import am5800.common.Language
-import am5800.common.db.DbWordOccurrence
 import am5800.common.db.Sentence
 import am5800.common.db.Word
+import am5800.common.db.WordOccurrence
 import corpus.CorpusRepository
 import corpus.parsing.CorpusParsersSet
 import corpus.parsing.NegraParser
@@ -22,7 +22,7 @@ fun prepareData(repository: CorpusRepository): Data {
   val infos = repository.getCorpuses().filter { it.formatId.equals("parallel", true) }
 
   val translations = mutableMapOf<Sentence, Sentence>()
-  val wordOccurrences = mutableListOf<DbWordOccurrence>()
+  val wordOccurrences = mutableListOf<WordOccurrence>()
 
   val parser = LetsmtCorpusParser()
   for (corpus in infos) {
@@ -49,23 +49,23 @@ fun prepareData(repository: CorpusRepository): Data {
   return Data(translations, wordOccurrences.distinct())
 }
 
-fun processWords(sentence: Sentence, occurrences: Set<WordOccurrence>): List<DbWordOccurrence> {
+fun processWords(sentence: Sentence, occurrences: Set<ParseWordOccurrence>): List<WordOccurrence> {
   return occurrences.map {
     val lemma = it.lemma
     val word = Word(sentence.language, lemma)
-    DbWordOccurrence(word, sentence, it.sentenceStartIndex, it.sentenceEndIndex)
+    WordOccurrence(word, sentence, it.sentenceStartIndex, it.sentenceEndIndex)
   }
 }
 
 class Data(val sentenceTranslations: Map<Sentence, Sentence>,
-           val wordOccurrences: List<DbWordOccurrence>)
+           val wordOccurrences: List<WordOccurrence>)
 
 fun filterData(data: Data): Data {
   val filtered = topNGermanSentenceWithThreshold(data, 10000, 10)
   val translations = mutableMapOf<Sentence, Sentence>()
 
   val oldOccurrences = data.wordOccurrences.groupBy { it.sentence }
-  val wordOccurrences = mutableListOf<DbWordOccurrence>()
+  val wordOccurrences = mutableListOf<WordOccurrence>()
 
   for (sentence in filtered) {
     val translated = data.sentenceTranslations[sentence]!!
