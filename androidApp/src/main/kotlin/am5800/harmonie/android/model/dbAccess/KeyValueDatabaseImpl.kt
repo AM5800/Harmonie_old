@@ -14,7 +14,7 @@ class KeyValueDatabaseImpl() : PermanentDbConsumer, KeyValueDatabase {
   }
 
   override fun getValue(key: String, defaultValue: String): String {
-    return db!!.query1<String>("SELECT value FROM simpleSettings WHERE key = '$key'").single()
+    return db!!.query1<String>("SELECT value FROM simpleSettings WHERE key = '$key'").singleOrNull() ?: defaultValue
   }
 
   override fun setValue(key: String, value: String) {
