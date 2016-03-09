@@ -13,7 +13,6 @@ class SentenceProviderImpl : SentenceProvider, ContentDbConsumer {
     val db = database!!
     if (sentence !is SqlSentence) throw Exception("Only SqlSentences supported")
 
-
     val words = ContentDbConstants.wordsTableName
     val occurrences = ContentDbConstants.wordOccurrencesTableName
 

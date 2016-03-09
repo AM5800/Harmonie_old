@@ -1,13 +1,14 @@
 package am5800.harmonie.app.model.flow
 
 import am5800.common.Language
+import am5800.common.LanguageParser
 import am5800.common.db.Sentence
 import am5800.common.db.Word
 import am5800.common.utilityFunctions.shuffle
 import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
 import am5800.harmonie.app.model.dbAccess.AttemptScore
-import am5800.harmonie.app.model.dbAccess.AttemptsService
+import am5800.harmonie.app.model.dbAccess.RepetitionService
 import am5800.harmonie.app.model.dbAccess.SentenceProvider
 import am5800.harmonie.app.model.logging.LoggerProvider
 import com.google.common.collect.LinkedHashMultimap
@@ -16,19 +17,19 @@ import com.google.common.collect.Multimap
 
 data class TextRange(val start: Int, val end: Int)
 
-data class ParallelSentenceQuestion(val question: Sentence, val answer: Sentence, val lemmas: Multimap<Word, TextRange>)
+class ParallelSentenceQuestion(val question: Sentence, val answer: Sentence, val lemmas: Multimap<Word, TextRange>)
 
 class ParallelSentenceFlowManager(lifetime: Lifetime,
                                   private val sentenceProvider: SentenceProvider,
                                   loggerProvider: LoggerProvider,
-                                  private val attemptsService: AttemptsService) : FlowItemProvider {
-  private val attemptCategory = "ParallelSentenceWordsDE"
+                                  private val repetitionService: RepetitionService) : FlowItemProvider {
+  private val attemptCategory = "ParallelSentenceWords"
 
   val question = Property<ParallelSentenceQuestion?>(lifetime, null)
   private val logger = loggerProvider.getLogger(javaClass)
 
   override fun tryPresentNextItem(flowSettings: FlowSettings): Boolean {
-    val pair = sentenceProvider.getSentences(Language.German, Language.English).shuffle().first()
+    val pair = sentenceProvider.getSentences(flowSettings.questionLanguage, flowSettings.answerLanguage).shuffle().first()
     question.value = prepareQuestion(pair.first, pair.second)
     return true
   }
@@ -45,7 +46,10 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
 
   fun submitScore(scores: Map<Word, AttemptScore>) {
     for ((word, score) in scores) {
-      attemptsService.submitAttempt(word.lemma, attemptCategory, score)
+      val dueDate = repetitionService.submitAttempt(word.lemma, getCategory(word.language), score)
+      logger.info("'${word.lemma}' has score of $score and scheduled to ${dueDate.toString()} ")
     }
   }
+
+  private fun getCategory(language: Language) = attemptCategory + LanguageParser.toShortString(language)
 }

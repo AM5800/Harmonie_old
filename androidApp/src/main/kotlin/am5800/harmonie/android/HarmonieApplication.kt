@@ -5,6 +5,7 @@ import am5800.common.utils.Lifetime
 import am5800.harmonie.android.logging.AndroidLoggerProvider
 import am5800.harmonie.android.model.FileEnvironment
 import am5800.harmonie.android.model.dbAccess.*
+import am5800.harmonie.app.model.BucketRepetitionAlgorithm
 import am5800.harmonie.app.model.flow.FlowItemProviderRegistrar
 import am5800.harmonie.app.model.flow.FlowManager
 import am5800.harmonie.app.model.flow.ParallelSentenceFlowManager
@@ -32,28 +33,29 @@ class HarmonieApplication : Application() {
     try {
       val lt = Lifetime()
       val container = ComponentContainer(lt, null)
+      val debugOptions = DebugOptions(true)
       modelContainer = container
 
       val env = AndroidEnvironment(assets, this)
       container.register(env)
 
-      val keyValueDb = KeyValueDatabaseImpl()
-
-
       val sentenceProvider = SentenceProviderImpl()
 
-      PermanentDb(this, listOf(keyValueDb))
+      val permanentDb = PermanentDb(this)
+      val keyValueDb = KeyValueDatabaseImpl(permanentDb)
+
+
       ContentDb(this, keyValueDb, loggerProvider, listOf(sentenceProvider))
 
       val flowManager = FlowManager(lt, loggerProvider)
-      val attempts = AttemptsServiceImpl()
+      val attempts = RepetitionServiceImpl(BucketRepetitionAlgorithm(), permanentDb, debugOptions)
       val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceProvider, loggerProvider, attempts)
       val flowItemProviderRegistrar = FlowItemProviderRegistrar(parallelSentenceFlowManager)
 
       container.register(flowItemProviderRegistrar)
       container.register(flowManager)
       container.register(parallelSentenceFlowManager)
-      container.register(ControllerStack())
+      container.register(ControllerStack(loggerProvider))
       container.register(loggerProvider)
       container.register(sentenceProvider)
       container.register(keyValueDb)

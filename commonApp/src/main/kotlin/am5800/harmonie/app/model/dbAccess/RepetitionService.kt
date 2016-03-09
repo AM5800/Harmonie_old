@@ -6,8 +6,8 @@ enum class AttemptScore {
   Ok, Wrong
 }
 
-interface AttemptsService {
-  fun submitAttempt(entityId: String, entityCategory: String, score: AttemptScore)
+interface RepetitionService {
+  fun submitAttempt(entityId: String, entityCategory: String, score: AttemptScore): DateTime
   fun computeDueDate(entityId: String, entityCategory: String, score: AttemptScore): DateTime
   fun getScheduledEntities(entityCategory: String, dateTime: DateTime): List<String>
 }

@@ -2,10 +2,13 @@ package am5800.harmonie.android
 
 import am5800.harmonie.android.viewBinding.BindableController
 import am5800.harmonie.android.viewBinding.BindableFragment
+import am5800.harmonie.app.model.logging.LoggerProvider
 import android.support.v4.app.FragmentManager
 import java.util.*
 
-class ControllerStack {
+class ControllerStack(loggerProvider: LoggerProvider) {
+  private val logger = loggerProvider.getLogger(javaClass)
+
   private val controllerStack = LinkedList<Pair<String, BindableController>>()
 
   fun top(): BindableController {
@@ -19,6 +22,7 @@ class ControllerStack {
   }
 
   fun bringToFront(controller: BindableController, key: String) {
+    logger.info("bringToFront: $key")
     if (controllerStack.isEmpty() || controllerStack.last().first != key) {
       controllerStack.addLast(Pair(key, controller))
     }
@@ -30,6 +34,7 @@ class ControllerStack {
   }
 
   fun restore(fm: FragmentManager) {
+    logger.info("Restored")
     fragmentManager = fm
   }
 
@@ -46,6 +51,7 @@ class ControllerStack {
   private var fragmentManager: FragmentManager? = null
 
   fun start(supportFragmentManager: FragmentManager, rootController: BindableController) {
+    logger.info("Started")
     controllerStack.addLast(Pair("root", rootController))
     fragmentManager = supportFragmentManager
 
