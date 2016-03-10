@@ -8,7 +8,6 @@ import am5800.harmonie.android.viewBinding.BindableController
 import am5800.harmonie.android.viewBinding.BindableView
 import am5800.harmonie.android.viewBinding.ReflectionBindableController
 import am5800.harmonie.app.vm.DefaultFlowControllerOwnerViewModel
-import android.app.Activity
 import android.content.res.Resources
 import android.view.View
 import android.widget.LinearLayout
@@ -17,8 +16,7 @@ import android.widget.TextView
 class DefaultFlowControllerOwner(private val stack: ControllerStack,
                                  lifetime: Lifetime,
                                  private val vm: DefaultFlowControllerOwnerViewModel,
-                                 private val resources: Resources,
-                                 private val activity: Activity) : FlowController, ReflectionBindableController(R.layout.flow_fragment) {
+                                 private val resources: Resources) : FlowController, ReflectionBindableController(R.layout.flow_fragment) {
   private val content = Property<BindableController?>(lifetime, null)
 
   override fun setContent(controller: BindableController) {
@@ -30,8 +28,8 @@ class DefaultFlowControllerOwner(private val stack: ControllerStack,
     val statusGroup = view.getChild<View>(R.id.statusGroup)
     val statusMessage = view.getChild<TextView>(R.id.statusTextView)
 
-    statusGroup.bindVisibility(bindingLifetime, activity, vm.statusVisibility)
-    statusMessage.bindText(bindingLifetime, activity, vm.timeLeft, { duration ->
+    statusGroup.bindVisibility(bindingLifetime, view, vm.statusVisibility)
+    statusMessage.bindText(bindingLifetime, view, vm.timeLeft, { duration ->
       val minutes = duration.standardMinutes.toInt()
       if (minutes > 0) resources.getQuantityString(R.plurals.minutesLeft, minutes, minutes)
       else {

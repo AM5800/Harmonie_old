@@ -24,8 +24,8 @@ class ParallelSentenceController(lifetime: Lifetime,
     super.bind(view, bindingLifetime)
 
     val answer = view.getChild<TextView>(R.id.answer)
-    answer.bindText(bindingLifetime, view.activity, vm.answer)
-    answer.bindVisibility(bindingLifetime, view.activity, vm.answerGroupVisibility)
+    answer.bindText(bindingLifetime, view, vm.answer)
+    answer.bindVisibility(bindingLifetime, view, vm.answerGroupVisibility)
 
     val nextBtn = view.getChild<Button>(R.id.continueBtn)
     nextBtn.bindOnClick(bindingLifetime, { vm.next() })

@@ -1,14 +1,8 @@
 package am5800.harmonie.android
 
-import am5800.common.componentContainer.ComponentContainer
 import am5800.common.componentContainer.getComponent
 import am5800.common.utils.Lifetime
-import am5800.harmonie.android.controllers.DefaultFlowControllerOwner
-import am5800.harmonie.android.controllers.EmptyFlowContentController
-import am5800.harmonie.android.controllers.ParallelSentenceController
 import am5800.harmonie.android.controllers.StartScreenController
-import am5800.harmonie.android.viewBinding.BindableController
-import am5800.harmonie.app.model.flow.FlowManager
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
@@ -32,23 +26,9 @@ class MainActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
 
-    val rootController = initComponents(modelContainer, lt, stack)
-
     if (savedInstanceState != null) {
       stack.restore(supportFragmentManager)
-    } else stack.start(supportFragmentManager, rootController)
-  }
-
-  private fun initComponents(container: ComponentContainer, lifetime: Lifetime, stack: ControllerStack): BindableController {
-    val defaultFlowController = DefaultFlowControllerOwner(stack, lifetime, container.getComponent(), resources, this)
-    val flowManager = container.getComponent<FlowManager>()
-
-    EmptyFlowContentController(defaultFlowController, flowManager, lifetime)
-    ParallelSentenceController(lifetime, defaultFlowController, container.getComponent())
-
-    val startScreen = StartScreenController(lifetime, container.getComponent())
-
-    return startScreen
+    } else stack.start(supportFragmentManager, modelContainer.getComponent<StartScreenController>())
   }
 
   override fun onDestroy() {

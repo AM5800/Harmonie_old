@@ -2,6 +2,10 @@ package am5800.harmonie.android
 
 import am5800.common.componentContainer.ComponentContainer
 import am5800.common.utils.Lifetime
+import am5800.harmonie.android.controllers.DefaultFlowControllerOwner
+import am5800.harmonie.android.controllers.EmptyFlowContentController
+import am5800.harmonie.android.controllers.ParallelSentenceController
+import am5800.harmonie.android.controllers.StartScreenController
 import am5800.harmonie.android.logging.AndroidLoggerProvider
 import am5800.harmonie.android.model.FileEnvironment
 import am5800.harmonie.android.model.dbAccess.AndroidContentDb
@@ -56,18 +60,22 @@ class HarmonieApplication : Application() {
       val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceProvider, loggerProvider, attempts)
       val flowItemProviderRegistrar = FlowItemProviderRegistrar(parallelSentenceFlowManager)
 
-      container.register(flowItemProviderRegistrar)
-      container.register(flowManager)
-      container.register(parallelSentenceFlowManager)
-      container.register(ControllerStack(loggerProvider))
-      container.register(loggerProvider)
-      container.register(sentenceProvider)
-      container.register(keyValueDb)
-      container.register(attempts)
+      // ViewModels
+      val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager)
+      val startScreenViewModel = StartScreenViewModel(flowManager, flowItemProviderRegistrar)
+      val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt)
 
-      container.register(ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager))
-      container.register(StartScreenViewModel(flowManager, flowItemProviderRegistrar))
-      container.register(DefaultFlowControllerOwnerViewModel(flowManager, lt))
+      // View components
+      val controllerStack = ControllerStack(loggerProvider)
+      val defaultFlowController = DefaultFlowControllerOwner(controllerStack, lt, defaultFlowControllerOwnerViewModel, resources)
+
+      EmptyFlowContentController(defaultFlowController, flowManager, lt)
+      ParallelSentenceController(lt, defaultFlowController, parallelSentenceViewModel)
+      val startScreen = StartScreenController(lt, startScreenViewModel)
+
+      container.register(controllerStack)
+      container.register(loggerProvider)
+      container.register(startScreen)
     } catch (e: Exception) {
       logger.exception(e)
       throw e
