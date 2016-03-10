@@ -4,9 +4,9 @@ import am5800.common.Language
 import am5800.common.LanguageParser
 import am5800.common.db.Sentence
 import am5800.common.db.Word
-import am5800.common.utilityFunctions.shuffle
 import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
+import am5800.common.utils.functions.shuffle
 import am5800.harmonie.app.model.dbAccess.AttemptScore
 import am5800.harmonie.app.model.dbAccess.RepetitionService
 import am5800.harmonie.app.model.dbAccess.SentenceProvider

@@ -19,14 +19,14 @@ class BindableFragment : Fragment() {
   override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
     val registry = controllerRegistry!!
     val vm =
-            if (savedInstanceState == null) {
-              val result = registry.top()
-              layoutId = result.id
-              result
-            } else {
-              layoutId = savedInstanceState.getInt(idTag)
-              registry.restoreController(layoutId)
-            }
+        if (savedInstanceState == null) {
+          val result = registry.top()
+          layoutId = result.id
+          result
+        } else {
+          layoutId = savedInstanceState.getInt(idTag)
+          registry.restoreController(layoutId)
+        }
 
     val bindableView = BindableViewImpl(inflater!!, vm.id, activity)
     vm.bind(bindableView, fragmentLifetime)
