@@ -2,8 +2,8 @@ package am5800.harmonie.android.controllers
 
 import am5800.common.utils.Lifetime
 import am5800.harmonie.android.R
+import am5800.harmonie.android.viewBinding.BindableController
 import am5800.harmonie.android.viewBinding.BindableView
-import am5800.harmonie.android.viewBinding.ReflectionBindableController
 import am5800.harmonie.app.model.dbAccess.AttemptScore
 import am5800.harmonie.app.vm.ParallelSentenceViewModel
 import am5800.harmonie.app.vm.ToggleableWordViewModel
@@ -17,9 +17,9 @@ import org.apmem.tools.layouts.FlowLayout
 class ParallelSentenceController(lifetime: Lifetime,
                                  flowContentController: FlowController,
                                  private val vm: ParallelSentenceViewModel
-) : ReflectionBindableController(R.layout.parallel_sentence) {
+) : BindableController {
 
-
+  override val id: Int = R.layout.parallel_sentence
   override fun bind(view: BindableView, bindingLifetime: Lifetime) {
     super.bind(view, bindingLifetime)
 

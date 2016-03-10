@@ -6,7 +6,6 @@ import am5800.harmonie.android.ControllerStack
 import am5800.harmonie.android.R
 import am5800.harmonie.android.viewBinding.BindableController
 import am5800.harmonie.android.viewBinding.BindableView
-import am5800.harmonie.android.viewBinding.ReflectionBindableController
 import am5800.harmonie.app.vm.DefaultFlowControllerOwnerViewModel
 import android.content.res.Resources
 import android.view.View
@@ -16,8 +15,9 @@ import android.widget.TextView
 class DefaultFlowControllerOwner(private val stack: ControllerStack,
                                  lifetime: Lifetime,
                                  private val vm: DefaultFlowControllerOwnerViewModel,
-                                 private val resources: Resources) : FlowController, ReflectionBindableController(R.layout.flow_fragment) {
+                                 private val resources: Resources) : FlowController, BindableController {
   private val content = Property<BindableController?>(lifetime, null)
+  override val id: Int = R.layout.flow_fragment
 
   override fun setContent(controller: BindableController) {
     stack.bringToFront(this, javaClass.name)
@@ -37,8 +37,6 @@ class DefaultFlowControllerOwner(private val stack: ControllerStack,
         resources.getQuantityString(R.plurals.secondsLeft, seconds, seconds)
       }
     })
-
-    super.bind(view, bindingLifetime)
 
     val placeholder = view.getChild<LinearLayout>(R.id.placeholder)
     content.bindNotNull(bindingLifetime, {

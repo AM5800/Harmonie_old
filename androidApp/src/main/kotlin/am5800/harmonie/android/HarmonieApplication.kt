@@ -71,7 +71,7 @@ class HarmonieApplication : Application() {
 
       EmptyFlowContentController(defaultFlowController, flowManager, lt)
       ParallelSentenceController(lt, defaultFlowController, parallelSentenceViewModel)
-      val startScreen = StartScreenController(lt, startScreenViewModel)
+      val startScreen = StartScreenController(startScreenViewModel)
 
       container.register(controllerStack)
       container.register(loggerProvider)

@@ -2,20 +2,20 @@ package am5800.harmonie.android.controllers
 
 import am5800.common.utils.Lifetime
 import am5800.harmonie.android.R
-import am5800.harmonie.android.controllers.defaultControls.ButtonController
-import am5800.harmonie.android.viewBinding.ReflectionBindableController
+import am5800.harmonie.android.viewBinding.BindableController
+import am5800.harmonie.android.viewBinding.BindableView
 import am5800.harmonie.app.vm.StartScreenViewModel
+import android.widget.Button
 
-class StartScreenController(lifetime: Lifetime,
-                            viewModel: StartScreenViewModel) : ReflectionBindableController(R.layout.start_screen) {
+class StartScreenController(private val viewModel: StartScreenViewModel) : BindableController {
 
-  val startLearningButton: ButtonController = ButtonController(R.id.startLearningBtn, lifetime, "Learn!")
-
-  init {
-    startLearningButton.clickedSignal.subscribe(lifetime, {
+  override fun bind(view: BindableView, bindingLifetime: Lifetime) {
+    view.getChild<Button>(R.id.startLearningBtn).bindOnClick(bindingLifetime, {
       viewModel.startLearning()
     })
   }
+
+  override val id: Int = R.layout.start_screen
 }
 
 
