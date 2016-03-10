@@ -1,15 +1,15 @@
-package am5800.harmonie.android.model.dbAccess
+package am5800.harmonie.app.model.dbAccess.sql
 
-import am5800.harmonie.android.DebugOptions
 import am5800.harmonie.app.model.Attempt
+import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.RepetitionAlgorithm
 import am5800.harmonie.app.model.dbAccess.AttemptScore
 import am5800.harmonie.app.model.dbAccess.RepetitionService
 import org.joda.time.DateTime
 
-class RepetitionServiceImpl(private val repetitionAlgorithm: RepetitionAlgorithm,
-                            private val db: PermanentDb,
-                            private val debugOptions: DebugOptions) : RepetitionService {
+class SqlRepetitionService(private val repetitionAlgorithm: RepetitionAlgorithm,
+                           private val db: PermanentDb,
+                           private val debugOptions: DebugOptions) : RepetitionService {
   init {
     db.execute("CREATE TABLE IF NOT EXISTS attempts (entityId STRING, entityCategory STRING, dateTime INTEGER, score REAL)")
   }

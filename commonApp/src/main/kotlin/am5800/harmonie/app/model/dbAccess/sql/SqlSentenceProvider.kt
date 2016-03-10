@@ -1,4 +1,4 @@
-package am5800.harmonie.android.model.dbAccess
+package am5800.harmonie.app.model.dbAccess.sql
 
 import am5800.common.Language
 import am5800.common.LanguageParser
@@ -8,7 +8,7 @@ import am5800.common.db.Word
 import am5800.common.db.WordOccurrence
 import am5800.harmonie.app.model.dbAccess.SentenceProvider
 
-class SentenceProviderImpl : SentenceProvider, ContentDbConsumer {
+class SqlSentenceProvider : SentenceProvider, ContentDbConsumer {
   override fun getOccurrences(sentence: Sentence): List<WordOccurrence> {
     val db = database!!
     if (sentence !is SqlSentence) throw Exception("Only SqlSentences supported")

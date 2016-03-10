@@ -1,4 +1,4 @@
-package am5800.harmonie.android.model.dbAccess
+package am5800.harmonie.app.model.dbAccess.sql
 
 interface ContentDbConsumer {
   fun dbMigrationPhase1(oldDb: ContentDb)

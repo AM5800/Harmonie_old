@@ -4,8 +4,13 @@ import am5800.common.componentContainer.ComponentContainer
 import am5800.common.utils.Lifetime
 import am5800.harmonie.android.logging.AndroidLoggerProvider
 import am5800.harmonie.android.model.FileEnvironment
-import am5800.harmonie.android.model.dbAccess.*
+import am5800.harmonie.android.model.dbAccess.AndroidContentDb
+import am5800.harmonie.android.model.dbAccess.AndroidPermanentDb
+import am5800.harmonie.android.model.dbAccess.KeyValueDatabaseImpl
 import am5800.harmonie.app.model.BucketRepetitionAlgorithm
+import am5800.harmonie.app.model.DebugOptions
+import am5800.harmonie.app.model.dbAccess.sql.SqlRepetitionService
+import am5800.harmonie.app.model.dbAccess.sql.SqlSentenceProvider
 import am5800.harmonie.app.model.flow.FlowItemProviderRegistrar
 import am5800.harmonie.app.model.flow.FlowManager
 import am5800.harmonie.app.model.flow.ParallelSentenceFlowManager
@@ -39,16 +44,15 @@ class HarmonieApplication : Application() {
       val env = AndroidEnvironment(assets, this)
       container.register(env)
 
-      val sentenceProvider = SentenceProviderImpl()
+      val sentenceProvider = SqlSentenceProvider()
 
-      val permanentDb = PermanentDb(this)
+      val permanentDb = AndroidPermanentDb(this)
       val keyValueDb = KeyValueDatabaseImpl(permanentDb)
 
-
-      ContentDb(this, keyValueDb, loggerProvider, listOf(sentenceProvider))
+      AndroidContentDb(this, keyValueDb, loggerProvider, listOf(sentenceProvider))
 
       val flowManager = FlowManager(lt, loggerProvider)
-      val attempts = RepetitionServiceImpl(BucketRepetitionAlgorithm(), permanentDb, debugOptions)
+      val attempts = SqlRepetitionService(BucketRepetitionAlgorithm(), permanentDb, debugOptions)
       val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceProvider, loggerProvider, attempts)
       val flowItemProviderRegistrar = FlowItemProviderRegistrar(parallelSentenceFlowManager)
 

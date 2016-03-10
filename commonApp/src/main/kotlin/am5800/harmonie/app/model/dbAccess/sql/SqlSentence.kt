@@ -1,4 +1,4 @@
-package am5800.harmonie.android.model.dbAccess
+package am5800.harmonie.app.model.dbAccess.sql
 
 import am5800.common.Language
 import am5800.common.db.Sentence

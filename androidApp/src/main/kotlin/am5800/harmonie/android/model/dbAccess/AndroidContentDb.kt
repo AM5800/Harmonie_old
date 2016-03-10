@@ -1,19 +1,21 @@
 package am5800.harmonie.android.model.dbAccess
 
+import am5800.harmonie.app.model.dbAccess.sql.ContentDb
+import am5800.harmonie.app.model.dbAccess.sql.ContentDbConsumer
+import am5800.harmonie.app.model.dbAccess.sql.Cursor
 import am5800.harmonie.app.model.logging.Logger
 import am5800.harmonie.app.model.logging.LoggerProvider
 import android.content.Context
-import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.google.common.hash.Hashing
 import com.google.common.io.ByteStreams
 import java.io.FileOutputStream
 
-class ContentDb(private val context: Context,
-                private val keyValueDb: KeyValueDatabaseImpl,
-                loggerProvider: LoggerProvider,
-                dbConsumers: List<ContentDbConsumer>) : SqlDatabase {
+class AndroidContentDb(private val context: Context,
+                       private val keyValueDb: KeyValueDatabaseImpl,
+                       loggerProvider: LoggerProvider,
+                       dbConsumers: List<ContentDbConsumer>) : ContentDb {
   override fun execute(query: String) {
     throw UnsupportedOperationException()
   }
@@ -26,7 +28,7 @@ class ContentDb(private val context: Context,
                            private val keyValueDb: KeyValueDatabaseImpl,
                            private val logger: Logger,
                            dbConsumers: List<ContentDbConsumer>,
-                           db: ContentDb) : SQLiteOpenHelper(context, DbName, null, 1) {
+                           db: AndroidContentDb) : SQLiteOpenHelper(context, DbName, null, 1) {
 
     init {
       if (checkDbUpdateNeeded()) {
@@ -70,10 +72,6 @@ class ContentDb(private val context: Context,
   }
 
   override fun query(query: String): Cursor {
-    return db.readableDatabase.rawQuery(query, emptyArray())
+    return AndroidCursor(db.readableDatabase.rawQuery(query, emptyArray()))
   }
 }
-
-
-
-

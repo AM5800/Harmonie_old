@@ -1,26 +1,28 @@
-package am5800.harmonie.android.model.dbAccess
+package am5800.harmonie.app.model.dbAccess.sql
 
-import android.database.Cursor
-
+interface Cursor {
+  fun getString(index: Int): String
+  fun moveToNext(): Boolean
+}
 
 interface SqlDatabase {
   fun query(query: String): Cursor
-
   fun execute(query: String)
 }
 
 inline fun <reified T> valueFromCursor(index: Int, cursor: Cursor): T {
+  var string = cursor.getString(index)
   if ("" is T) {
-    return cursor.getString(index) as T
+    return string as T
   }
   if (0 is T) {
-    return cursor.getInt(index) as T
+    return string.toInt() as T
   }
   if (0.0 is T) {
-    return cursor.getDouble(index) as T
+    return string.toDouble() as T
   }
   if (0L is T) {
-    return cursor.getLong(index) as T
+    return string.toLong() as T
   }
 
   throw Exception("Unsupported type: ${T::class.qualifiedName}")

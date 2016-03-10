@@ -1,12 +1,13 @@
 package am5800.harmonie.android.model.dbAccess
 
+import am5800.harmonie.app.model.dbAccess.sql.Cursor
+import am5800.harmonie.app.model.dbAccess.sql.PermanentDb
 import android.content.Context
-import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
 
-class PermanentDb(context: Context) : SqlDatabase {
+class AndroidPermanentDb(context: Context) : PermanentDb {
   override fun execute(query: String) {
     instance.writableDatabase.execSQL(query)
   }
@@ -14,7 +15,7 @@ class PermanentDb(context: Context) : SqlDatabase {
   private val instance = DbInstance(context)
 
   override fun query(query: String): Cursor {
-    return instance.readableDatabase.rawQuery(query, emptyArray())
+    return AndroidCursor(instance.readableDatabase.rawQuery(query, emptyArray()))
   }
 
   private class DbInstance(context: Context) : SQLiteOpenHelper(context, "Settings.db", null, 1) {
