@@ -81,10 +81,14 @@ fun topNGermanSentenceWithThreshold(data: Data, n: Int, threshold: Int): List<Se
   val wordToOccurrences = germanOccurrences.groupBy { it.word }
   val sentenceToOccurrences = germanOccurrences.groupBy { it.sentence }
 
-  val sentencesWithRareWordsCount = germanSentences.map {
-    val rareWordsCount = sentenceToOccurrences[it]?.count { occ -> (wordToOccurrences[occ.word]?.size ?: 0) < threshold } ?: 100
-    Pair(it, rareWordsCount)
-  }
+  val sentencesWithRareWordsCount = germanSentences
+      .map {
+        Pair(it, sentenceToOccurrences[it] ?: emptyList())
+      }
+      .toMap()
+      .filter { it.value.size > 4 && it.value.size <= 20 }
+      .mapValues { it.value.count { (wordToOccurrences[it.word]?.size ?: 0) < threshold } }
+      .toList()
 
   val result = sentencesWithRareWordsCount.sortedBy { it.second }
   return result.take(n).map { it.first }
