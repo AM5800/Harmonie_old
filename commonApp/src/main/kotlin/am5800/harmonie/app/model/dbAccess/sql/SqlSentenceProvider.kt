@@ -31,34 +31,6 @@ class SqlSentenceProvider : SentenceProvider, ContentDbConsumer {
     }
   }
 
-  override fun getSentencesWithAnyOfWords(languageFrom: Language, languageTo: Language, words: List<Word>): List<Pair<Sentence, Sentence>> {
-    val db = database!!
-    val map = ContentDbConstants.sentenceTranslationsTableName
-    val sentences = ContentDbConstants.sentencesTableName
-    val langFrom = LanguageParser.toShortString(languageFrom)
-    val langTo = LanguageParser.toShortString(languageTo)
-
-    var query = """
-        SELECT s1.id, s1.text, s2.id, s2.text
-        FROM $map
-          INNER JOIN $sentences AS s1
-            ON $map.key = s1.id
-          INNER JOIN $sentences AS s2
-            ON $map.value = s2.id
-        WHERE s1.language = '$langFrom' AND s2.language ='$langTo'"""
-
-    val sqlWords = words.filterIsInstance<SqlWord>()
-    if (sqlWords.any()) {
-      val ids = sqlWords.map { it.id }.joinToString(", ")
-      val occurrences = ContentDbConstants.wordOccurrencesTableName
-      query += " AND s1.id IN (SELECT sentenceId FROM $occurrences WHERE wordId IN ($ids))"
-    }
-
-    val result = db.query4<Long, String, Long, String>(query)
-
-    return result.map { Pair(SqlSentence(it.value1, languageFrom, it.value2), SqlSentence(it.value3, languageTo, it.value4)) }
-  }
-
   override fun tryFindWord(word: String, language: Language): Word? {
     val w = word.toLowerCase().trim()
 
@@ -80,10 +52,6 @@ class SqlSentenceProvider : SentenceProvider, ContentDbConsumer {
 
   override fun dbInitialized(db: ContentDb) {
     database = db
-  }
-
-  override fun getSentences(languageFrom: Language, languageTo: Language): List<Pair<Sentence, Sentence>> {
-    return getSentencesWithAnyOfWords(languageFrom, languageTo, emptyList())
   }
 
   override fun getWordsInSentence(sentence: Sentence): List<Word> {

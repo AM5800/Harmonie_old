@@ -7,9 +7,13 @@ data class Attempt(val score: Double, val dateTime: DateTime)
 
 interface RepetitionAlgorithm {
   fun getNextDueDate(attempts: List<Attempt>): DateTime
+  fun getScore(attempts: List<Attempt>): Int
 }
 
 class BucketRepetitionAlgorithm() : RepetitionAlgorithm {
+  override fun getScore(attempts: List<Attempt>): Int {
+    return compute(attempts.sortedBy { it.dateTime }).first
+  }
 
   val buckets: List<Period> = listOf(Hours.ONE.toPeriod(), Days.ONE.toPeriod(), Weeks.TWO.toPeriod(), Months.TWO.toPeriod(), Months.SIX.toPeriod())
 

@@ -6,10 +6,10 @@ import am5800.common.db.Sentence
 import am5800.common.db.Word
 import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
-import am5800.common.utils.functions.shuffle
 import am5800.harmonie.app.model.dbAccess.AttemptScore
 import am5800.harmonie.app.model.dbAccess.RepetitionService
 import am5800.harmonie.app.model.dbAccess.SentenceProvider
+import am5800.harmonie.app.model.dbAccess.SentenceSelector
 import am5800.harmonie.app.model.logging.LoggerProvider
 import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.Multimap
@@ -22,14 +22,15 @@ class ParallelSentenceQuestion(val question: Sentence, val answer: Sentence, val
 class ParallelSentenceFlowManager(lifetime: Lifetime,
                                   private val sentenceProvider: SentenceProvider,
                                   loggerProvider: LoggerProvider,
-                                  private val repetitionService: RepetitionService) : FlowItemProvider {
+                                  private val repetitionService: RepetitionService,
+                                  private val sentenceSelector: SentenceSelector) : FlowItemProvider {
   private val attemptCategory = "ParallelSentenceWords"
 
   val question = Property<ParallelSentenceQuestion?>(lifetime, null)
   private val logger = loggerProvider.getLogger(javaClass)
 
   override fun tryPresentNextItem(flowSettings: FlowSettings): Boolean {
-    val pair = sentenceProvider.getSentences(flowSettings.questionLanguage, flowSettings.answerLanguage).shuffle().first()
+    val pair = sentenceSelector.findBestSentence(flowSettings.questionLanguage, flowSettings.answerLanguage, getCategory(flowSettings.questionLanguage))
     question.value = prepareQuestion(pair.first, pair.second)
     return true
   }
