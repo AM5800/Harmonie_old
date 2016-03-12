@@ -77,8 +77,7 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
     for ((word, range) in sortedOccurrences) {
       if (index != range.start) {
         val substringSinceLastProcessedWord = sentence.substring(index, range.start)
-        val words = substringSinceLastProcessedWord.split(' ').map { it.trim() }.filterNot { it.isBlank() }
-        result.addAll(words.map { WordViewModel(it) })
+        processNonToggleables(result, substringSinceLastProcessedWord)
       }
       val text = sentence.substring(range.start, range.end)
 
@@ -87,6 +86,15 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
       index = range.end + 1
     }
 
+    if (index != sentence.length - 1) {
+      processNonToggleables(result, sentence.substring(index))
+    }
+
     return result
+  }
+
+  private fun processNonToggleables(result: MutableList<WordViewModel>, substringSinceLastProcessedWord: String) {
+    val words = substringSinceLastProcessedWord.split(' ').map { it.trim() }.filterNot { it.isBlank() }
+    result.addAll(words.map { WordViewModel(it) })
   }
 }
