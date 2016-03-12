@@ -1,57 +1,34 @@
 import am5800.common.Language
 import am5800.common.db.Sentence
-import am5800.common.db.Word
 import am5800.common.db.WordOccurrence
 import corpus.CorpusRepository
 import java.io.File
 
 fun main(args: Array<String>) {
   val repository = CorpusRepository(File("data/corpuses"))
-
   val data = prepareData(repository)
-
   val filteredData = filterData(data)
-
   DbWriter().write(File("androidApp/src/main/assets/content.db"), filteredData)
 }
 
 fun prepareData(repository: CorpusRepository): Data {
-  val infos = repository.getCorpuses().filter { it.formatId.equals("parallel", true) }
+  val infos = repository.getCorpuses().filter { it.formatId.equals("harmonie", true) }
 
-  val translations = mutableMapOf<Sentence, Sentence>()
-  val wordOccurrences = mutableListOf<WordOccurrence>()
+  val parser = HarmonieParallelSentencesParser()
 
-  val parser = LetsmtCorpusParser()
-  for (corpus in infos) {
-    val enPath = File(corpus.infoFile.parentFile, corpus.metadata["en"])
-    val dePath = File(corpus.infoFile.parentFile, corpus.metadata["de"])
-
-    val enData = parser.parse(enPath)
-    val deData = parser.parse(dePath)
-
-    for (deSentencePair in deData.sentences) {
-      val enSentence = enData.sentences[deSentencePair.key] ?: continue
-
-      val englishSentence = Sentence(Language.English, enSentence.trim())
-      val germanSentence = Sentence(Language.German, deSentencePair.value.trim())
-
-      wordOccurrences.addAll(processWords(englishSentence, enData.words[deSentencePair.key]))
-      wordOccurrences.addAll(processWords(germanSentence, deData.words[deSentencePair.key]))
-
-      translations.put(englishSentence, germanSentence)
-      translations.put(germanSentence, englishSentence)
-    }
-  }
-
-  return Data(translations, wordOccurrences.distinct(), emptyMap())
+  val initial: Data? = null
+  return infos.fold(initial, { acc, info ->
+    val data = parser.parse(info)
+    if (acc == null) return data
+    else mergeData(acc, data)
+  })!!
 }
 
-fun processWords(sentence: Sentence, occurrences: Set<ParseWordOccurrence>): List<WordOccurrence> {
-  return occurrences.map {
-    val lemma = it.lemma
-    val word = Word(sentence.language, lemma)
-    WordOccurrence(word, sentence, it.sentenceStartIndex, it.sentenceEndIndex)
-  }
+fun mergeData(left: Data, right: Data): Data {
+  val occurrences = left.wordOccurrences.plus(right.wordOccurrences).distinct()
+  val translations = left.sentenceTranslations.plus(right.sentenceTranslations)
+
+  return Data(translations, occurrences, emptyMap())
 }
 
 fun filterData(data: Data): Data {

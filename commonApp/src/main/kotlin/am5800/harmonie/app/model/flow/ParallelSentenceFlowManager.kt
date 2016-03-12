@@ -6,6 +6,7 @@ import am5800.common.db.Sentence
 import am5800.common.db.Word
 import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
+import am5800.common.utils.TextRange
 import am5800.harmonie.app.model.dbAccess.AttemptScore
 import am5800.harmonie.app.model.dbAccess.RepetitionService
 import am5800.harmonie.app.model.dbAccess.SentenceProvider
@@ -14,8 +15,6 @@ import am5800.harmonie.app.model.logging.LoggerProvider
 import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.Multimap
 
-
-data class TextRange(val start: Int, val end: Int)
 
 class ParallelSentenceQuestion(val question: Sentence, val answer: Sentence, val lemmas: Multimap<Word, TextRange>)
 
