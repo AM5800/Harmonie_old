@@ -72,7 +72,7 @@ class DbWriter {
     db.createTable("CREATE TABLE ${ContentDbConstants.sentenceTranslationsTableName} (key INTEGER PRIMARY KEY, value INTEGER)")
     db.createTable("CREATE TABLE ${ContentDbConstants.wordsTableName} (id INTEGER PRIMARY KEY, language TEXT, lemma TEXT)")
     db.createTable("CREATE TABLE ${ContentDbConstants.wordOccurrencesTableName} (wordId INTEGER, sentenceId INTEGER, startIndex INTEGER, endIndex INTEGER)")
-    db.createTable("CREATE TABLE ${ContentDbConstants.sentenceDifficultyTableName} (sentenceId INTEGER, difficulty INTEGER)")
+    db.createTable("CREATE TABLE ${ContentDbConstants.sentenceDifficultyTableName} (sentenceId INTEGER PRIMARY KEY, difficulty INTEGER)")
     db.createIndex("CREATE INDEX germanWordOccurrencesIndex ON ${ContentDbConstants.wordOccurrencesTableName} (wordId, sentenceId)")
   }
 }
