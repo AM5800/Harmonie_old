@@ -4,18 +4,14 @@ import am5800.common.Language
 import am5800.common.LanguageParser
 import am5800.common.db.ContentDbConstants
 import am5800.common.db.Sentence
-import am5800.common.utils.functions.shuffle
-import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.dbAccess.RepetitionService
-import am5800.harmonie.app.model.dbAccess.SentenceProvider
 import am5800.harmonie.app.model.dbAccess.SentenceSelector
 import am5800.harmonie.app.model.logging.LoggerProvider
 import org.joda.time.DateTime
 
 
 class SentenceSelectorImpl(private val repetitionService: RepetitionService,
-                           private val sentenceProvider: SentenceProvider,
-                           private val debugOptions: DebugOptions, loggerProvider: LoggerProvider) : SentenceSelector, ContentDbConsumer {
+                           loggerProvider: LoggerProvider) : SentenceSelector, ContentDbConsumer {
   private val logger = loggerProvider.getLogger(javaClass)
 
   override fun dbMigrationPhase1(oldDb: ContentDb) {
@@ -37,58 +33,62 @@ class SentenceSelectorImpl(private val repetitionService: RepetitionService,
     val attempted = getAttemptedWords(attemptCategory).toSet()
     val scheduled = getScheduledWords(attemptCategory, attempted)
 
-    logger.info("Looking for best sentence. ${attempted.size} words attempted, ${scheduled.size} words scheduled")
+    logger.info("Looking for best sentence. ${scheduled.size} words scheduled")
 
-    if (!scheduled.isEmpty()) return findBestSentence(languageFrom, languageTo, scheduled, attempted)
+    if (!scheduled.isEmpty()) return findBestSentence(languageFrom, languageTo, scheduled)
 
     val nextByFrequencyWord = findNextByFrequencyWord(attempted)
     logger.info("Next by frequency word is: ${nextByFrequencyWord?.lemma}")
 
-    return findBestSentence(languageFrom, languageTo, listOf(nextByFrequencyWord).filterNotNull(), attempted)
+    return findBestSentence(languageFrom, languageTo, listOf(nextByFrequencyWord).filterNotNull())
   }
 
-  private fun findBestSentence(languageFrom: Language, languageTo: Language, contianingWords: List<SqlWord>, attempted: Set<SqlWord>): Pair<Sentence, Sentence> {
+  private fun findBestSentence(languageFrom: Language, languageTo: Language, contianingWords: List<SqlWord>): Pair<Sentence, Sentence> {
     val db = database!!
-    val map = ContentDbConstants.sentenceTranslationsTableName
+    val translations = ContentDbConstants.sentenceTranslationsTableName
     val sentences = ContentDbConstants.sentencesTableName
     val langFrom = LanguageParser.toShortString(languageFrom)
     val langTo = LanguageParser.toShortString(languageTo)
+    val difficulties = ContentDbConstants.sentenceDifficultyTableName
+    val wordOccurrences = ContentDbConstants.wordOccurrencesTableName
 
-    var query = """
+    val includeIds = contianingWords.map { it.id }.joinToString(", ")
+
+    val searchQuery = """
         SELECT s1.id, s1.text, s2.id, s2.text
-        FROM $map
+          FROM $translations
           INNER JOIN $sentences AS s1
-            ON $map.key = s1.id
+            ON s1.id = $translations.key
           INNER JOIN $sentences AS s2
-            ON $map.value = s2.id
-        WHERE s1.language = '$langFrom' AND s2.language ='$langTo'"""
+            ON s2.id = $translations.value
+          INNER JOIN $difficulties
+            ON s1.id = $difficulties.sentenceId
+          INNER JOIN $wordOccurrences
+            ON s1.id = $wordOccurrences.sentenceId
+          WHERE s1.language='$langFrom' AND s2.language='$langTo' AND $wordOccurrences.wordId IN ($includeIds)
+          GROUP BY s1.id
+          ORDER BY $difficulties.difficulty
+          LIMIT 1
+		"""
 
-    if (contianingWords.any()) {
-      val ids = contianingWords.map { it.id }.joinToString(", ")
-      val occurrences = ContentDbConstants.wordOccurrencesTableName
-      query += " AND s1.id IN (SELECT sentenceId FROM $occurrences WHERE wordId IN ($ids))"
-    }
+    val randomQuery = """
+        SELECT s1.id, s1.text, s2.id, s2.text
+          FROM $translations
+          INNER JOIN $sentences AS s1
+            ON s1.id = $translations.key
+          INNER JOIN $sentences AS s2
+            ON s2.id = $translations.value
+          WHERE s1.language='$langFrom' AND s2.language='$langTo'
+          ORDER BY RANDOM()
+          LIMIT 1
+    """
 
+    val query = if (contianingWords.any()) searchQuery else randomQuery
     val result = db.query4<Long, String, Long, String>(query)
         .map { Pair(SqlSentence(it.value1, languageFrom, it.value2), SqlSentence(it.value3, languageTo, it.value4)) }
-        .toMap()
+        .single()
 
-    val sentenceWithUnknownWordsCount = result
-        .map { Pair(it.key, countUnknownWords(it, attempted)) }
-        .sortedBy { it.second }
-
-    val minCount = sentenceWithUnknownWordsCount.first().second
-    val sentencesWithMinDifficulty = sentenceWithUnknownWordsCount.takeWhile { it.second == minCount }
-
-    logger.info("Min difficulty is $minCount and there are ${sentencesWithMinDifficulty.size} such sentences")
-
-    val question = sentencesWithMinDifficulty.map { it.first }.shuffle(debugOptions.randomSeed).first()
-
-    return Pair(question, result[question]!!)
-  }
-
-  private fun countUnknownWords(it: Map.Entry<SqlSentence, SqlSentence>, attempted: Set<SqlWord>): Int {
-    return sentenceProvider.getOccurrences(it.key).count { !attempted.contains(it.word) }
+    return result
   }
 
   private fun findNextByFrequencyWord(attempted: Collection<SqlWord>): SqlWord? {

@@ -9,7 +9,8 @@ fun main(args: Array<String>) {
   val repository = CorpusRepository(File("data/corpuses"))
 
   val data = prepareData(repository)
-  val filteredData = filterData(filterData(data))
+
+  val filteredData = filterData(data)
 
   DbWriter().write(File("androidApp/src/main/assets/content.db"), filteredData)
 }
@@ -42,7 +43,7 @@ fun prepareData(repository: CorpusRepository): Data {
     }
   }
 
-  return Data(translations, wordOccurrences.distinct())
+  return Data(translations, wordOccurrences.distinct(), emptyMap())
 }
 
 fun processWords(sentence: Sentence, occurrences: Set<ParseWordOccurrence>): List<WordOccurrence> {
@@ -53,17 +54,14 @@ fun processWords(sentence: Sentence, occurrences: Set<ParseWordOccurrence>): Lis
   }
 }
 
-class Data(val sentenceTranslations: Map<Sentence, Sentence>,
-           val wordOccurrences: List<WordOccurrence>)
-
 fun filterData(data: Data): Data {
-  val filtered = topNGermanSentenceWithThreshold(data, 10000, 10)
+  val difficulty = filterByDifficulty(data)
   val translations = mutableMapOf<Sentence, Sentence>()
 
   val oldOccurrences = data.wordOccurrences.groupBy { it.sentence }
   val wordOccurrences = mutableListOf<WordOccurrence>()
 
-  for (sentence in filtered) {
+  for (sentence in difficulty.keys) {
     val translated = data.sentenceTranslations[sentence]!!
 
     translations.put(sentence, translated)
@@ -72,25 +70,29 @@ fun filterData(data: Data): Data {
     wordOccurrences.addAll(oldOccurrences[sentence] ?: continue)
   }
 
-  return Data(translations, wordOccurrences)
+  return Data(translations, wordOccurrences, difficulty)
 }
 
-fun topNGermanSentenceWithThreshold(data: Data, n: Int, threshold: Int): List<Sentence> {
+fun filterByDifficulty(data: Data): Map<Sentence, Int> {
   val germanSentences = data.sentenceTranslations.map { if (it.key.language == Language.German) it.key else it.value }.toList()
   val germanOccurrences = data.wordOccurrences.filter { it.word.language == Language.German }
+  val sentenceToOccurrences: Map<Sentence, List<WordOccurrence>> = germanOccurrences.groupBy { it.sentence }
   val wordToOccurrences = germanOccurrences.groupBy { it.word }
-  val sentenceToOccurrences = germanOccurrences.groupBy { it.sentence }
+  val wordFrequencies = wordToOccurrences.mapValues { it.value.count() / data.wordOccurrences.size.toDouble() }
 
-  val sentencesWithRareWordsCount = germanSentences
+  return germanSentences
       .map {
         Pair(it, sentenceToOccurrences[it] ?: emptyList())
       }
       .toMap()
-      .filter { it.value.size > 4 && it.value.size <= 20 }
-      .mapValues { it.value.count { (wordToOccurrences[it.word]?.size ?: 0) < threshold } }
+      .mapValues { it.value.map { occ -> wordFrequencies[occ.word] ?: 0.0 } }
+      .filter { it.value.size > 4 && it.value.size < 15 }
+      .mapValues { it.value.fold(1.0, { i, d -> i * d }) }
       .toList()
-
-  val result = sentencesWithRareWordsCount.sortedBy { it.second }
-  return result.take(n).map { it.first }
+      .sortedByDescending { it.second }
+      .take(10000)
+      .mapIndexed { i, pair -> Pair(pair.first, i) }
+      .toMap()
 }
+
 

@@ -7,5 +7,6 @@ class ContentDbConstants {
     val sentenceTranslationsTableName = "sentenceMapping"
     val wordsTableName = "words"
     val wordOccurrencesTableName = "wordOccurrences"
+    val sentenceDifficultyTableName = "sentenceDifficulty"
   }
 }

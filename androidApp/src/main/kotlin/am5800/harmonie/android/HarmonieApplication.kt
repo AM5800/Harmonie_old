@@ -56,7 +56,7 @@ class HarmonieApplication : Application() {
       val attempts = SqlRepetitionService(BucketRepetitionAlgorithm(), permanentDb, debugOptions)
 
       val sentenceProvider = SqlSentenceProvider()
-      val bestSentenceFinder = SentenceSelectorImpl(attempts, sentenceProvider, debugOptions, loggerProvider)
+      val bestSentenceFinder = SentenceSelectorImpl(attempts, loggerProvider)
       AndroidContentDb(this, keyValueDb, loggerProvider, listOf(sentenceProvider, bestSentenceFinder))
 
       val flowManager = FlowManager(lt, loggerProvider)
