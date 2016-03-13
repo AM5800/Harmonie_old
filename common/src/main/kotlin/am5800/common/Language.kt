@@ -2,7 +2,18 @@ package am5800.common
 
 enum class Language {
   English,
-  German
+  German,
+  Russian,
+  Japanese
+}
+
+fun Language.code(): String {
+  return when (this) {
+    Language.English -> "en"
+    Language.German -> "de"
+    Language.Russian -> "ru"
+    Language.Japanese -> "jp"
+  }
 }
 
 class LanguageParser {
@@ -11,14 +22,9 @@ class LanguageParser {
       return when (string.toLowerCase()) {
         "en" -> Language.English
         "de" -> Language.German
+        "jp" -> Language.Japanese
+        "ru" -> Language.Russian
         else -> throw Exception("Unknown language: $string")
-      }
-    }
-
-    fun toShortString(language: Language): String {
-      return when (language) {
-        Language.English -> "en"
-        Language.German -> "de"
       }
     }
   }

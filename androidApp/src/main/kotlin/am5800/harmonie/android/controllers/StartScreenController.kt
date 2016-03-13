@@ -17,6 +17,10 @@ class StartScreenController(private val viewModel: StartScreenViewModel) : Binda
     view.getChild<Button>(R.id.startLearningEnDeBtn).bindOnClick(bindingLifetime, {
       viewModel.startLearningEnDe()
     })
+
+    view.getChild<Button>(R.id.startLearningJpRuBtn).bindOnClick(bindingLifetime, {
+      viewModel.startLearningJpRu()
+    })
   }
 
   override val id: Int = R.layout.start_screen

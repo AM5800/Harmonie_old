@@ -18,4 +18,8 @@ class StartScreenViewModel(private val flowManager: FlowManager,
   fun startLearningEnDe() {
     flowManager.start(providerRegistrar.all, FlowSettings(Language.English, Language.German), defaultDuration)
   }
+
+  fun startLearningJpRu() {
+    flowManager.start(providerRegistrar.all, FlowSettings(Language.Japanese, Language.Russian), defaultDuration)
+  }
 }

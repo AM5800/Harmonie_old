@@ -1,4 +1,4 @@
-import am5800.common.LanguageParser
+import am5800.common.code
 import am5800.common.db.ContentDbConstants
 import am5800.common.db.Sentence
 import am5800.common.db.WordOccurrence
@@ -33,7 +33,7 @@ class DbWriter {
 
     for (occurrencePair in wordsOccurrences.distinct().groupBy { it.word }) {
       val word = occurrencePair.key
-      val lang = LanguageParser.toShortString(word.language)
+      val lang = word.language.code()
 
       val wordId = wordsTable.insert(lang, word.lemma)
       for (occurrence in occurrencePair.value) {
@@ -61,7 +61,7 @@ class DbWriter {
   private fun getOrInsert(sentence: Sentence, sentenceToId: MutableMap<Sentence, Long>, sentencesTable: ISqlJetTable): Long {
     val id = sentenceToId[sentence]
     if (id == null) {
-      val insertedId = sentencesTable.insert(LanguageParser.toShortString(sentence.language), sentence.text)
+      val insertedId = sentencesTable.insert(sentence.language.code(), sentence.text)
       sentenceToId[sentence] = insertedId
       return insertedId
     } else return id

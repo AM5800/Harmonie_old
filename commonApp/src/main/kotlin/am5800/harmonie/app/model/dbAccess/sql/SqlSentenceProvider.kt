@@ -1,7 +1,7 @@
 package am5800.harmonie.app.model.dbAccess.sql
 
 import am5800.common.Language
-import am5800.common.LanguageParser
+import am5800.common.code
 import am5800.common.db.ContentDbConstants
 import am5800.common.db.Sentence
 import am5800.common.db.Word
@@ -35,7 +35,7 @@ class SqlSentenceProvider : SentenceProvider, ContentDbConsumer {
     val w = word.toLowerCase().trim()
 
     val words = ContentDbConstants.wordsTableName
-    val lang = LanguageParser.toShortString(language)
+    val lang = language.code()
     val query = "SELECT id FROM $words WHERE lemma = '$w' AND language = '$lang'"
     val id = database!!.query1<Long>(query).singleOrNull() ?: return null
 

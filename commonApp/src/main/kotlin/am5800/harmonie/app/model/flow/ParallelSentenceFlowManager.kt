@@ -1,7 +1,7 @@
 package am5800.harmonie.app.model.flow
 
 import am5800.common.Language
-import am5800.common.LanguageParser
+import am5800.common.code
 import am5800.common.db.Sentence
 import am5800.common.db.Word
 import am5800.common.utils.Lifetime
@@ -29,7 +29,7 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
   private val logger = loggerProvider.getLogger(javaClass)
 
   override fun tryPresentNextItem(flowSettings: FlowSettings): Boolean {
-    val pair = sentenceSelector.findBestSentence(flowSettings.questionLanguage, flowSettings.answerLanguage, getCategory(flowSettings.questionLanguage))
+    val pair = sentenceSelector.findBestSentence(flowSettings.questionLanguage, flowSettings.answerLanguage, getCategory(flowSettings.questionLanguage)) ?: return false
     question.value = prepareQuestion(pair.first, pair.second)
     return true
   }
@@ -51,5 +51,5 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
     }
   }
 
-  private fun getCategory(language: Language) = attemptCategory + LanguageParser.toShortString(language)
+  private fun getCategory(language: Language) = attemptCategory + language.code()
 }

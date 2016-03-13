@@ -19,7 +19,7 @@ fun prepareData(repository: CorpusRepository): Data {
   val initial: Data? = null
   return infos.fold(initial, { acc, info ->
     val data = parser.parse(info)
-    if (acc == null) return data
+    if (acc == null) return@fold data
     else mergeData(acc, data)
   })!!
 }
@@ -54,7 +54,7 @@ fun filterData(data: Data): Data {
 }
 
 fun extractLanguages(data: Data): List<Language> {
-  return data.wordOccurrences.groupBy { it.sentence.language }.keys.toList()
+  return data.sentenceTranslations.keys.groupBy { it.language }.keys.toList()
 }
 
 fun filterByDifficulty(data: Data, language: Language): Map<Sentence, Int> {
@@ -70,7 +70,7 @@ fun filterByDifficulty(data: Data, language: Language): Map<Sentence, Int> {
       }
       .toMap()
       .mapValues { it.value.map { occ -> wordFrequencies[occ.word] ?: 0.0 } }
-      .filter { it.value.size > 4 && it.value.size < 15 }
+      .filter { acceptOptimalSentenceSize(language, it.value.size) }
       .mapValues { it.value.fold(1.0, { i, d -> i * d }) }
       .toList()
       .sortedByDescending { it.second }
@@ -78,9 +78,15 @@ fun filterByDifficulty(data: Data, language: Language): Map<Sentence, Int> {
 
   val actualCount = sentencesWithDifficulties.size
   val requiredBuckets = 100
+  val bucketSize = if (actualCount < requiredBuckets) requiredBuckets else actualCount / requiredBuckets
 
-  return sentencesWithDifficulties.mapIndexed { i, pair -> Pair(pair.first, i / (actualCount / requiredBuckets)) }
+  return sentencesWithDifficulties.mapIndexed { i, pair -> Pair(pair.first, i / bucketSize) }
       .toMap()
+}
+
+private fun acceptOptimalSentenceSize(language: Language, size: Int): Boolean {
+  if (language == Language.Japanese) return size >= 3 && size < 10
+  return size > 4 && size < 15
 }
 
 
