@@ -45,9 +45,9 @@ class createViewModelsForQuestionTests {
   @Test
   fun wordInTheMiddleSurroundedBySpaces() {
     Lifetime().use {
-      val question = "Hello  my   beautiful   world!"
+      val question = " Hello  my   beautiful   world!"
       val lemmas = LinkedHashMultimap.create<Word, TextRange>()
-      lemmas.put(Word(Language.English, "my"), TextRange(7, 9))
+      lemmas.put(Word(Language.English, "my"), TextRange(8, 10))
       val vms = createViewModelsForQuestion(ParallelSentenceQuestion(Sentence(Language.English, question), Sentence(Language.English, ""), lemmas), it)
       Assert.assertEquals(4, vms.size)
 
