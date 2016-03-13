@@ -57,7 +57,7 @@ fun filterByDifficulty(data: Data): Map<Sentence, Int> {
   val wordToOccurrences = germanOccurrences.groupBy { it.word }
   val wordFrequencies = wordToOccurrences.mapValues { it.value.count() / data.wordOccurrences.size.toDouble() }
 
-  return germanSentences
+  val sentencesWithDifficulties = germanSentences
       .map {
         Pair(it, sentenceToOccurrences[it] ?: emptyList())
       }
@@ -68,7 +68,12 @@ fun filterByDifficulty(data: Data): Map<Sentence, Int> {
       .toList()
       .sortedByDescending { it.second }
       .take(10000)
-      .mapIndexed { i, pair -> Pair(pair.first, i) }
+
+
+  val actualCount = sentencesWithDifficulties.size
+  val requiredBuckets = 100
+
+  return sentencesWithDifficulties.mapIndexed { i, pair -> Pair(pair.first, i / (actualCount / requiredBuckets)) }
       .toMap()
 }
 

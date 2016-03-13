@@ -4,6 +4,8 @@ import am5800.common.Language
 import am5800.common.LanguageParser
 import am5800.common.db.ContentDbConstants
 import am5800.common.db.Sentence
+import am5800.common.utils.functions.shuffle
+import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.dbAccess.RepetitionService
 import am5800.harmonie.app.model.dbAccess.SentenceSelector
 import am5800.harmonie.app.model.logging.LoggerProvider
@@ -11,7 +13,8 @@ import org.joda.time.DateTime
 
 
 class SentenceSelectorImpl(private val repetitionService: RepetitionService,
-                           loggerProvider: LoggerProvider) : SentenceSelector, ContentDbConsumer {
+                           loggerProvider: LoggerProvider,
+                           private val debugOptions: DebugOptions) : SentenceSelector, ContentDbConsumer {
   private val logger = loggerProvider.getLogger(javaClass)
 
   override fun dbMigrationPhase1(oldDb: ContentDb) {
@@ -55,7 +58,7 @@ class SentenceSelectorImpl(private val repetitionService: RepetitionService,
     val includeIds = contianingWords.map { it.id }.joinToString(", ")
 
     val searchQuery = """
-        SELECT s1.id, s1.text, s2.id, s2.text
+        SELECT s1.id, s1.text, s2.id, s2.text, $difficulties.difficulty
           FROM $translations
           INNER JOIN $sentences AS s1
             ON s1.id = $translations.key
@@ -68,7 +71,7 @@ class SentenceSelectorImpl(private val repetitionService: RepetitionService,
           WHERE s1.language='$langFrom' AND s2.language='$langTo' AND $wordOccurrences.wordId IN ($includeIds)
           GROUP BY s1.id
           ORDER BY $difficulties.difficulty
-          LIMIT 1
+          LIMIT 20
 		"""
 
     val randomQuery = """
@@ -84,11 +87,15 @@ class SentenceSelectorImpl(private val repetitionService: RepetitionService,
     """
 
     val query = if (contianingWords.any()) searchQuery else randomQuery
-    val result = db.query4<Long, String, Long, String>(query)
-        .map { Pair(SqlSentence(it.value1, languageFrom, it.value2), SqlSentence(it.value3, languageTo, it.value4)) }
-        .single()
+    val queryResult = db.query5<Long, String, Long, String, Long>(query)
 
-    return result
+    if (queryResult.size >= 1) {
+      val minDifficulty = queryResult.first().value5
+      return queryResult.takeWhile { it.value5 == minDifficulty }
+          .map { Pair(SqlSentence(it.value1, languageFrom, it.value2), SqlSentence(it.value3, languageTo, it.value4)) }
+          .shuffle(debugOptions.randomSeed)
+          .first()
+    } else throw Exception("No sentences found")
   }
 
   private fun findNextByFrequencyWord(attempted: Collection<SqlWord>): SqlWord? {
