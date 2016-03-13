@@ -32,32 +32,39 @@ fun mergeData(left: Data, right: Data): Data {
 }
 
 fun filterData(data: Data): Data {
-  val difficulty = filterByDifficulty(data)
-  val translations = mutableMapOf<Sentence, Sentence>()
+  val languages = extractLanguages(data)
 
+  val translations = mutableMapOf<Sentence, Sentence>()
   val oldOccurrences = data.wordOccurrences.groupBy { it.sentence }
   val wordOccurrences = mutableListOf<WordOccurrence>()
+  val difficulties = mutableMapOf<Sentence, Int>()
 
-  for (sentence in difficulty.keys) {
-    val translated = data.sentenceTranslations[sentence]!!
+  for (language in languages) {
+    for ((sentence, difficultyLevel) in filterByDifficulty(data, language)) {
+      val translated = data.sentenceTranslations[sentence]!!
+      wordOccurrences.addAll(oldOccurrences[sentence] ?: continue)
 
-    translations.put(sentence, translated)
-    translations.put(translated, sentence)
-
-    wordOccurrences.addAll(oldOccurrences[sentence] ?: continue)
+      translations.put(sentence, translated)
+      translations.put(translated, sentence)
+      difficulties.put(sentence, difficultyLevel)
+    }
   }
 
-  return Data(translations, wordOccurrences, difficulty)
+  return Data(translations, wordOccurrences, difficulties)
 }
 
-fun filterByDifficulty(data: Data): Map<Sentence, Int> {
-  val germanSentences = data.sentenceTranslations.map { if (it.key.language == Language.German) it.key else it.value }.toList()
-  val germanOccurrences = data.wordOccurrences.filter { it.word.language == Language.German }
-  val sentenceToOccurrences: Map<Sentence, List<WordOccurrence>> = germanOccurrences.groupBy { it.sentence }
-  val wordToOccurrences = germanOccurrences.groupBy { it.word }
+fun extractLanguages(data: Data): List<Language> {
+  return data.wordOccurrences.groupBy { it.sentence.language }.keys.toList()
+}
+
+fun filterByDifficulty(data: Data, language: Language): Map<Sentence, Int> {
+  val sentences = data.sentenceTranslations.map { if (it.key.language == language) it.key else it.value }.toList()
+  val occurrences = data.wordOccurrences.filter { it.word.language == language }
+  val sentenceToOccurrences: Map<Sentence, List<WordOccurrence>> = occurrences.groupBy { it.sentence }
+  val wordToOccurrences = occurrences.groupBy { it.word }
   val wordFrequencies = wordToOccurrences.mapValues { it.value.count() / data.wordOccurrences.size.toDouble() }
 
-  val sentencesWithDifficulties = germanSentences
+  val sentencesWithDifficulties = sentences
       .map {
         Pair(it, sentenceToOccurrences[it] ?: emptyList())
       }
@@ -68,7 +75,6 @@ fun filterByDifficulty(data: Data): Map<Sentence, Int> {
       .toList()
       .sortedByDescending { it.second }
       .take(10000)
-
 
   val actualCount = sentencesWithDifficulties.size
   val requiredBuckets = 100

@@ -18,7 +18,7 @@ class HarmonieParallelSentencesParser {
       if (qName == "sp") {
         assert(sentencesInGroup.size == 2)
         translations.put(sentencesInGroup[0], sentencesInGroup[1])
-        translations.put(sentencesInGroup[1], sentencesInGroup[1])
+        translations.put(sentencesInGroup[1], sentencesInGroup[0])
         sentencesInGroup.clear()
       }
     }

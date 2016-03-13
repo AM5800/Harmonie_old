@@ -40,13 +40,14 @@ class SentenceSelectorImpl(private val repetitionService: RepetitionService,
 
     if (!scheduled.isEmpty()) return findBestSentence(languageFrom, languageTo, scheduled)
 
-    val nextByFrequencyWord = findNextByFrequencyWord(attempted)
+    val nextByFrequencyWord = findNextByFrequencyWord(attempted, languageFrom)
     logger.info("Next by frequency word is: ${nextByFrequencyWord?.lemma}")
 
     return findBestSentence(languageFrom, languageTo, listOf(nextByFrequencyWord).filterNotNull())
   }
 
   private fun findBestSentence(languageFrom: Language, languageTo: Language, contianingWords: List<SqlWord>): Pair<Sentence, Sentence> {
+    if (contianingWords.isEmpty()) throw Exception("Nothing to search for")
     val db = database!!
     val translations = ContentDbConstants.sentenceTranslationsTableName
     val sentences = ContentDbConstants.sentencesTableName
@@ -74,20 +75,7 @@ class SentenceSelectorImpl(private val repetitionService: RepetitionService,
           LIMIT 20
 		"""
 
-    val randomQuery = """
-        SELECT s1.id, s1.text, s2.id, s2.text
-          FROM $translations
-          INNER JOIN $sentences AS s1
-            ON s1.id = $translations.key
-          INNER JOIN $sentences AS s2
-            ON s2.id = $translations.value
-          WHERE s1.language='$langFrom' AND s2.language='$langTo'
-          ORDER BY RANDOM()
-          LIMIT 1
-    """
-
-    val query = if (contianingWords.any()) searchQuery else randomQuery
-    val queryResult = db.query5<Long, String, Long, String, Long>(query)
+    val queryResult = db.query5<Long, String, Long, String, Long>(searchQuery)
 
     if (queryResult.size >= 1) {
       val minDifficulty = queryResult.first().value5
@@ -98,12 +86,22 @@ class SentenceSelectorImpl(private val repetitionService: RepetitionService,
     } else throw Exception("No sentences found")
   }
 
-  private fun findNextByFrequencyWord(attempted: Collection<SqlWord>): SqlWord? {
+  private fun findNextByFrequencyWord(attempted: Collection<SqlWord>, language: Language): SqlWord? {
     val occurrences = ContentDbConstants.wordOccurrencesTableName
     val words = ContentDbConstants.wordsTableName
+    val lang = LanguageParser.toShortString(language)
     val ids = attempted.map { it.id }.joinToString(", ")
-    val query = "SELECT id, language, lemma FROM $words WHERE id IN (SELECT wordId FROM $occurrences WHERE wordId NOT IN ($ids) GROUP BY wordId ORDER BY COUNT(*) DESC LIMIT 1)"
-    return database!!.query3<Long, String, String>(query).map { wordFromTuple(it) }.singleOrNull()
+    val query = """
+      SELECT $words.id, $words.lemma
+        FROM words
+        INNER JOIN $occurrences
+          ON $occurrences.wordId = $words.id
+        WHERE $words.language='$lang' AND $words.id NOT IN ($ids)
+        GROUP BY $words.id
+        ORDER BY COUNT(*) DESC
+        LIMIT 1
+    """
+    return database!!.query2<Long, String>(query).map { SqlWord(it.first, language, it.second) }.singleOrNull()
   }
 
   private fun getScheduledWords(attemptCategory: String, attempted: Collection<SqlWord>): List<SqlWord> {

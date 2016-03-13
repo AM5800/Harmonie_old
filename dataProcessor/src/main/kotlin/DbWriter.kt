@@ -9,7 +9,7 @@ import java.io.File
 
 class DbWriter {
   fun write(path: File, data: Data) {
-    if (!path.delete()) throw Exception("Can't delete previous database")
+    if (path.exists() && !path.delete()) throw Exception("Can't delete previous database")
     val database = SqlJetDb.open(path, true)
     database.runTransaction({ db ->
       createDbSchema(db)
