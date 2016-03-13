@@ -52,7 +52,7 @@ class ParallelSentenceController(lifetime: Lifetime,
       })
     }
 
-    wordView.setPadding(10, 8, 10, 8)
+    wordView.setPadding(if (childVm.needSpaceBefore) 16 else 0, 8, 0, 8)
     wordView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20.0f)
   }
 
