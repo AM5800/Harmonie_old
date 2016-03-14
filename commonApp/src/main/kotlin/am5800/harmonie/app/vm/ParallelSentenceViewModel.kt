@@ -63,7 +63,4 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
       activationRequired.fire(Unit)
     })
   }
-
-
-
 }

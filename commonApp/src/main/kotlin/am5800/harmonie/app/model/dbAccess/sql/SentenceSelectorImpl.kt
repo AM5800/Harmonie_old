@@ -1,7 +1,6 @@
 package am5800.harmonie.app.model.dbAccess.sql
 
 import am5800.common.Language
-import am5800.common.LanguageParser
 import am5800.common.code
 import am5800.common.db.ContentDbConstants
 import am5800.common.db.Sentence
@@ -34,7 +33,7 @@ class SentenceSelectorImpl(private val repetitionService: RepetitionService,
 
   override fun findBestSentence(languageFrom: Language, languageTo: Language, attemptCategory: String): Pair<Sentence, Sentence>? {
 
-    val attempted = getAttemptedWords(attemptCategory).toSet()
+    val attempted = getAttemptedWords(attemptCategory, languageFrom).toSet()
     val scheduled = getScheduledWords(attemptCategory, attempted)
 
     logger.info("Looking for best sentence. ${scheduled.size} words scheduled")
@@ -135,16 +134,15 @@ class SentenceSelectorImpl(private val repetitionService: RepetitionService,
     return scheduled.map { mapping[it] }.filterNotNull()
   }
 
-  private fun getAttemptedWords(attemptCategory: String): List<SqlWord> {
+  private fun getAttemptedWords(attemptCategory: String, language: Language): List<SqlWord> {
     val db = database!!
     val attemptedIds = repetitionService.getAttemptedItems(attemptCategory)
 
     val words = ContentDbConstants.wordsTableName
     val lemmas = attemptedIds.map { "'$it'" }.joinToString(", ")
-    val query = "SELECT id, language, lemma FROM $words WHERE lemma IN ($lemmas)"
+    val lang = language.code()
+    val query = "SELECT id, lemma FROM $words WHERE language='$lang' AND lemma IN ($lemmas)"
 
-    return db.query3<Long, String, String>(query).map { wordFromTuple(it) }
+    return db.query2<Long, String>(query).map { SqlWord(it.first, language, it.second) }
   }
-
-  private fun wordFromTuple(it: Tuple3<Long, String, String>) = SqlWord(it.value1, LanguageParser.parse(it.value2), it.value3)
 }
