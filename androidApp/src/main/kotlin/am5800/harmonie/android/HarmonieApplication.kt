@@ -13,6 +13,7 @@ import am5800.harmonie.android.model.dbAccess.AndroidPermanentDb
 import am5800.harmonie.android.model.dbAccess.KeyValueDatabaseImpl
 import am5800.harmonie.app.model.BucketRepetitionAlgorithm
 import am5800.harmonie.app.model.DebugOptions
+import am5800.harmonie.app.model.dbAccess.WordsRepetitionServiceImpl
 import am5800.harmonie.app.model.dbAccess.sql.SentenceSelectorImpl
 import am5800.harmonie.app.model.dbAccess.sql.SqlRepetitionService
 import am5800.harmonie.app.model.dbAccess.sql.SqlSentenceProvider
@@ -53,14 +54,15 @@ class HarmonieApplication : Application() {
       val permanentDb = AndroidPermanentDb(this)
       val keyValueDb = KeyValueDatabaseImpl(permanentDb)
 
-      val attempts = SqlRepetitionService(BucketRepetitionAlgorithm(), permanentDb, debugOptions)
+      val repetitionService = SqlRepetitionService(BucketRepetitionAlgorithm(), permanentDb, debugOptions)
+      val wordsRepetitionService = WordsRepetitionServiceImpl(repetitionService)
 
       val sentenceProvider = SqlSentenceProvider()
-      val bestSentenceFinder = SentenceSelectorImpl(attempts, loggerProvider, debugOptions)
-      AndroidContentDb(this, keyValueDb, loggerProvider, listOf(sentenceProvider, bestSentenceFinder))
+      val bestSentenceFinder = SentenceSelectorImpl(wordsRepetitionService, loggerProvider, debugOptions)
+      AndroidContentDb(this, keyValueDb, loggerProvider, listOf(sentenceProvider, bestSentenceFinder, wordsRepetitionService))
 
       val flowManager = FlowManager(lt, loggerProvider)
-      val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceProvider, loggerProvider, attempts, bestSentenceFinder)
+      val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceProvider, loggerProvider, wordsRepetitionService, bestSentenceFinder)
       val flowItemProviderRegistrar = FlowItemProviderRegistrar(parallelSentenceFlowManager)
 
       // ViewModels

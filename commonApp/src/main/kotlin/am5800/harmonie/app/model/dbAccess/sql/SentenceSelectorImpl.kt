@@ -6,13 +6,13 @@ import am5800.common.db.ContentDbConstants
 import am5800.common.db.Sentence
 import am5800.common.utils.functions.shuffle
 import am5800.harmonie.app.model.DebugOptions
-import am5800.harmonie.app.model.dbAccess.RepetitionService
 import am5800.harmonie.app.model.dbAccess.SentenceSelector
+import am5800.harmonie.app.model.dbAccess.WordsRepetitionService
 import am5800.harmonie.app.model.logging.LoggerProvider
 import org.joda.time.DateTime
 
 
-class SentenceSelectorImpl(private val repetitionService: RepetitionService,
+class SentenceSelectorImpl(private val repetitionService: WordsRepetitionService,
                            loggerProvider: LoggerProvider,
                            private val debugOptions: DebugOptions) : SentenceSelector, ContentDbConsumer {
   private val logger = loggerProvider.getLogger(javaClass)
@@ -31,10 +31,10 @@ class SentenceSelectorImpl(private val repetitionService: RepetitionService,
     database = db
   }
 
-  override fun findBestSentence(languageFrom: Language, languageTo: Language, attemptCategory: String): Pair<Sentence, Sentence>? {
+  override fun findBestSentence(languageFrom: Language, languageTo: Language): Pair<Sentence, Sentence>? {
 
-    val attempted = getAttemptedWords(attemptCategory, languageFrom).toSet()
-    val scheduled = getScheduledWords(attemptCategory, attempted)
+    val attempted = repetitionService.getAttemptedWords(languageFrom).filterIsInstance<SqlWord>()
+    val scheduled = repetitionService.getScheduledWords(languageFrom, DateTime.now()).filterIsInstance<SqlWord>()
 
     logger.info("Looking for best sentence. ${scheduled.size} words scheduled")
 
@@ -126,23 +126,5 @@ class SentenceSelectorImpl(private val repetitionService: RepetitionService,
         LIMIT 1
     """
     return database!!.query2<Long, String>(query).map { SqlWord(it.first, language, it.second) }.singleOrNull()
-  }
-
-  private fun getScheduledWords(attemptCategory: String, attempted: Collection<SqlWord>): List<SqlWord> {
-    val mapping = attempted.map { Pair(it.lemma, it) }.toMap()
-    val scheduled = repetitionService.getScheduledEntities(attemptCategory, DateTime.now())
-    return scheduled.map { mapping[it] }.filterNotNull()
-  }
-
-  private fun getAttemptedWords(attemptCategory: String, language: Language): List<SqlWord> {
-    val db = database!!
-    val attemptedIds = repetitionService.getAttemptedItems(attemptCategory)
-
-    val words = ContentDbConstants.wordsTableName
-    val lemmas = attemptedIds.map { "'$it'" }.joinToString(", ")
-    val lang = language.code()
-    val query = "SELECT id, lemma FROM $words WHERE language='$lang' AND lemma IN ($lemmas)"
-
-    return db.query2<Long, String>(query).map { SqlWord(it.first, language, it.second) }
   }
 }

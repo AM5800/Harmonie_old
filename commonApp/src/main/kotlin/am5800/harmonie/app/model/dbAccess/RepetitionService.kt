@@ -12,3 +12,4 @@ interface RepetitionService {
   fun getScheduledEntities(entityCategory: String, dateTime: DateTime): List<String>
   fun getAttemptedItems(entityCategory: String): List<String>
 }
+
