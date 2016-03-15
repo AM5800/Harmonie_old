@@ -14,7 +14,7 @@ fun main(args: Array<String>) {
 fun prepareData(repository: CorpusRepository): Data {
   val infos = repository.getCorpuses().filter { it.formatId.equals("harmonie", true) }
 
-  val parser = HarmonieParallelSentencesParser()
+  val parser = HarmonieParallelSentencesParser(listOf(GermanPostProcessor()))
 
   val initial: Data? = null
   return infos.fold(initial, { acc, info ->
