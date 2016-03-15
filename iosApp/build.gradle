@@ -1,0 +1,33 @@
+buildscript {
+    ext.kotlin_version = '1.0.0'
+    repositories {
+        mavenCentral()
+
+        maven {
+            url uri(System.getenv("INTEL_MULTI_OS_ENGINE_HOME") + "/gradle")
+        }
+    }
+    dependencies {
+        classpath 'org.intel.gradle:xRTGradlePlugin:1.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+apply plugin: 'xrt'
+apply plugin: 'kotlin'
+
+dependencies {
+    compile fileTree(dir: 'lib', include: '*.jar')
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile project(':common')
+    compile project(':commonApp')
+}
+
+xrt {
+}
+repositories {
+    mavenCentral()
+}
+sourceSets {
+    main.java.srcDirs += 'src/main/kotlin'
+}

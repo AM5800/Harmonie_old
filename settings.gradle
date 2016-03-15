@@ -1,1 +1,2 @@
 include ':androidApp', ':common', ':dataProcessor', ':commonApp'
+include ':iosApp'
