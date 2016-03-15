@@ -1,5 +1,6 @@
 package am5800.harmonie.android.model.dbAccess
 
+import am5800.common.utils.Lifetime
 import am5800.harmonie.app.model.dbAccess.sql.ContentDb
 import am5800.harmonie.app.model.dbAccess.sql.ContentDbConsumer
 import am5800.harmonie.app.model.dbAccess.sql.Cursor
@@ -15,7 +16,9 @@ import java.io.FileOutputStream
 class AndroidContentDb(private val context: Context,
                        private val keyValueDb: KeyValueDatabaseImpl,
                        loggerProvider: LoggerProvider,
-                       dbConsumers: List<ContentDbConsumer>) : ContentDb {
+                       dbConsumers: List<ContentDbConsumer>,
+                       lifetime: Lifetime) : ContentDb {
+
   override fun execute(query: String) {
     throw UnsupportedOperationException()
   }
@@ -64,6 +67,10 @@ class AndroidContentDb(private val context: Context,
 
     override fun onUpgrade(p0: SQLiteDatabase?, p1: Int, p2: Int) {
     }
+  }
+
+  init {
+    lifetime.addAction { db.close() }
   }
 
   companion object {
