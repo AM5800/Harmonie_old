@@ -55,6 +55,8 @@ public class AppViewController extends UIViewController {
   @Selector("BtnPressedCancel_helloButton:")
   public void BtnPressedCancel_button(NSObject sender) {
     statusText.setText("Hello Intel Multi-OS Engine!");
+    PermanentDb permanentDb = new IosPermanentDb();
+    KeyValueDatabase keyValueDb = new KeyValueDatabaseImpl(permanentDb);
     resultText.setText("kuku ok!");
   }
 
