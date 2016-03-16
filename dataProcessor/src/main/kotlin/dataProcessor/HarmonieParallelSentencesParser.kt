@@ -1,3 +1,5 @@
+package dataProcessor
+
 import am5800.common.LanguageParser
 import am5800.common.db.Sentence
 import am5800.common.db.Word
@@ -9,7 +11,7 @@ import java.io.File
 import javax.xml.parsers.SAXParserFactory
 
 class HarmonieParallelSentencesParser(private val postProcessors: List<SentencePostProcessor>) {
-  private class HarmonieParserHandler(private val postProcessors: List<SentencePostProcessor>) : DefaultHandler() {
+  private class HarmonieParserHandler(private val postProcessors: List<SentencePostProcessor>, private val info: CorpusInfo) : DefaultHandler() {
     fun getData(): Data {
       return Data(translations, occurrences.toList(), emptyMap())
     }
@@ -20,7 +22,7 @@ class HarmonieParallelSentencesParser(private val postProcessors: List<SentenceP
         val sentence = sentencesInGroup.last()
         val language = sentence.language
         val postProcessor = postProcessors.firstOrNull { it.language == language }
-        postProcessor?.processInPlace(currentSentenceOccurrences)
+        postProcessor?.processInPlace(currentSentenceOccurrences, info.metadata)
 
         occurrences.addAll(currentSentenceOccurrences.map { WordOccurrence(Word(language, it.lemma), sentence, it.start, it.end) })
         currentSentenceOccurrences.clear()
@@ -60,7 +62,7 @@ class HarmonieParallelSentencesParser(private val postProcessors: List<SentenceP
   fun parse(info: CorpusInfo): Data {
     val factory = SAXParserFactory.newInstance()
     val parser = factory.newSAXParser()
-    val handler = HarmonieParserHandler(postProcessors)
+    val handler = HarmonieParserHandler(postProcessors, info)
 
     val relativePath = info.metadata["path"]!!
     val path = File(info.infoFile.parentFile, relativePath)

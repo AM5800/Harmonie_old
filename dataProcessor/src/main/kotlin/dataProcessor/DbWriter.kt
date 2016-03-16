@@ -1,3 +1,5 @@
+package dataProcessor
+
 import am5800.common.code
 import am5800.common.db.ContentDbConstants
 import am5800.common.db.Sentence

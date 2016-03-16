@@ -1,3 +1,5 @@
+package dataProcessor
+
 import am5800.common.db.Sentence
 import am5800.common.db.WordOccurrence
 

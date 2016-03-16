@@ -1,20 +1,24 @@
+package dataProcessor
+
 import am5800.common.Language
 import am5800.common.db.Sentence
 import am5800.common.db.WordOccurrence
 import corpus.CorpusRepository
+import dataProcessor.german.GermanPostProcessor
+import dataProcessor.german.MorphyCsvParser
 import java.io.File
 
 fun main(args: Array<String>) {
   val repository = CorpusRepository(File("data/corpuses"))
   val data = prepareData(repository)
   val filteredData = filterData(data)
-  DbWriter().write(File("androidApp/src/main/assets/content.db"), filteredData)
+  DbWriter().write(File("androidApp/src/dataProcessor.main/assets/content.db"), filteredData)
 }
 
 fun prepareData(repository: CorpusRepository): Data {
   val infos = repository.getCorpuses().filter { it.formatId.equals("harmonie", true) }
 
-  val parser = HarmonieParallelSentencesParser(listOf(GermanPostProcessor()))
+  val parser = HarmonieParallelSentencesParser(listOf(GermanPostProcessor(MorphyCsvParser(File("data/morphy.csv")))))
 
   val initial: Data? = null
   return infos.fold(initial, { acc, info ->
