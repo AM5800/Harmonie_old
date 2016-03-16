@@ -1,5 +1,6 @@
 package am5800.harmonie.ios.model.dbAccess
 
+import am5800.common.utils.Lifetime
 import am5800.harmonie.app.model.dbAccess.sql.ContentDb
 import am5800.harmonie.app.model.dbAccess.sql.ContentDbConsumer
 import am5800.harmonie.app.model.dbAccess.sql.Cursor
@@ -13,7 +14,13 @@ import java.io.OutputStream
 
 class IosContentDb(private val keyValueDb: KeyValueDatabaseImpl,
                    loggerProvider: LoggerProvider,
-                   dbConsumers: List<ContentDbConsumer>) : ContentDb {
+                   dbConsumers: List<ContentDbConsumer>,
+                   lifetime: Lifetime) : ContentDb
+{
+  init {
+    lifetime.addAction { db.close() }
+  }
+
   override fun execute(query: String) {
     throw UnsupportedOperationException()
   }
@@ -25,8 +32,8 @@ class IosContentDb(private val keyValueDb: KeyValueDatabaseImpl,
   private class DbInstance(private val keyValueDb: KeyValueDatabaseImpl,
                            private val logger: Logger,
                            dbConsumers: List<ContentDbConsumer>,
-                           db: IosContentDb) : IosDbInstanceBase() {
-
+                           db: IosContentDb) : IosDbInstanceBase()
+  {
     init {
       fun checkDbUpdateNeeded(): Boolean {
         val dbKey = "ContentDbChecksum"

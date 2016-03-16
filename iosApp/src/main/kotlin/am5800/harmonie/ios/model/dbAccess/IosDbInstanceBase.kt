@@ -31,7 +31,7 @@ open class IosDbInstanceBase {
     }
   }
 
-  protected fun close() {
+  internal fun close() {
     synchronized(connectionLock) {
       if (connectionHandle != null) {
         Globals.sqlite3_close(connectionHandle)
