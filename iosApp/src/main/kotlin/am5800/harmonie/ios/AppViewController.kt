@@ -1,5 +1,12 @@
 package am5800.harmonie.ios
 
+import am5800.common.Language
+import am5800.common.componentContainer.ComponentContainer
+import am5800.common.componentContainer.getComponent
+import am5800.common.utils.Lifetime
+import am5800.harmonie.app.model.flow.FlowManager
+import am5800.harmonie.app.model.flow.FlowSettings
+import am5800.harmonie.app.vm.ParallelSentenceViewModel
 import am5800.harmonie.ios.logging.IosLoggerProvider
 import am5800.harmonie.ios.model.dbAccess.IosPermanentDb
 import am5800.harmonie.ios.model.dbAccess.KeyValueDatabaseImpl
@@ -28,10 +35,27 @@ class AppViewController protected constructor(peer: Pointer) : UIViewController(
   private var resultText: UILabel? = null
   private var helloButton: UIButton? = null
 
+  private val viewLifetime: Lifetime by lazy { Lifetime(null) }
+  private var container: ComponentContainer? = null
+
+  override fun viewDidUnload() {
+    super.viewDidUnload()
+    viewLifetime.close()
+  }
+
   override fun viewDidLoad() {
     statusText = getLabel()
     resultText = getResultText()
     helloButton = getHelloButton()
+
+    val loggerProvider = IosLoggerProvider()
+    container = initApp(viewLifetime, loggerProvider, loggerProvider.getLogger("view")).let {
+      val vm = it.getComponent<ParallelSentenceViewModel>()
+      vm.question.bind(viewLifetime, { arg -> statusText!!.setText(arg.newValue!!.joinToString(" ") { it.text }) })
+      vm.answer.bind(viewLifetime, { arg -> resultText!!.setText(arg.newValue) })
+      it.getComponent<FlowManager>().start(listOf(it.getComponent()), FlowSettings(Language.German, Language.English), null)
+      it
+    }
   }
 
   @Selector("statusText")
@@ -48,11 +72,8 @@ class AppViewController protected constructor(peer: Pointer) : UIViewController(
 
   @Selector("BtnPressedCancel_helloButton:")
   fun BtnPressedCancel_button(sender: NSObject) {
-    statusText!!.setText("Hello Intel Multi-OS Engine!")
-    val permanentDb = IosPermanentDb()
-    val keyValueDb = KeyValueDatabaseImpl(permanentDb)
-    IosLoggerProvider().getLogger(this.javaClass).info("Logging to logger")
-    resultText!!.setText("kuku ok!")
+    val vm = container!!.getComponent<ParallelSentenceViewModel>()
+    vm.next()
   }
 
   companion object {
