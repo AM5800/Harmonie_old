@@ -1,5 +1,10 @@
 package am5800.harmonie.ios;
 
+import am5800.harmonie.app.model.dbAccess.KeyValueDatabase;
+import am5800.harmonie.app.model.dbAccess.sql.PermanentDb;
+import am5800.harmonie.ios.logging.IosLoggerProvider;
+import am5800.harmonie.ios.model.dbAccess.IosPermanentDb;
+import am5800.harmonie.ios.model.dbAccess.KeyValueDatabaseImpl;
 import com.intel.inde.moe.natj.general.Pointer;
 import com.intel.inde.moe.natj.general.ann.Owned;
 import com.intel.inde.moe.natj.general.ann.RegisterOnStartup;
@@ -7,11 +12,6 @@ import com.intel.inde.moe.natj.objc.ObjCRuntime;
 import com.intel.inde.moe.natj.objc.ann.ObjCClassName;
 import com.intel.inde.moe.natj.objc.ann.Property;
 import com.intel.inde.moe.natj.objc.ann.Selector;
-
-import am5800.harmonie.app.model.dbAccess.KeyValueDatabase;
-import am5800.harmonie.app.model.dbAccess.sql.PermanentDb;
-import am5800.harmonie.ios.model.dbAccess.IosPermanentDb;
-import am5800.harmonie.ios.model.dbAccess.KeyValueDatabaseImpl;
 import ios.NSObject;
 import ios.uikit.UIButton;
 import ios.uikit.UILabel;
@@ -57,6 +57,7 @@ public class AppViewController extends UIViewController {
     statusText.setText("Hello Intel Multi-OS Engine!");
     PermanentDb permanentDb = new IosPermanentDb();
     KeyValueDatabase keyValueDb = new KeyValueDatabaseImpl(permanentDb);
+    new IosLoggerProvider().getLogger(this.getClass()).info("Logging to logger");
     resultText.setText("kuku ok!");
   }
 
