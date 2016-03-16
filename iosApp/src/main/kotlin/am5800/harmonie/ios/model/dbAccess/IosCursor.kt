@@ -5,12 +5,12 @@ import sqlite.c.Globals
 
 
 class IosCursor(private var stmt: IosSQLiteStatement) : Cursor {
-  var isAfterLast: Boolean = moveToNext()
+  var hasData: Boolean? = null
     private set
 
   override fun moveToNext(): Boolean {
-    isAfterLast = stmt.step()
-    return isAfterLast
+    hasData = stmt.step()
+    return hasData!!
   }
 
   override fun close() {
@@ -18,5 +18,7 @@ class IosCursor(private var stmt: IosSQLiteStatement) : Cursor {
   }
 
   // TODO: delegate to statement to hide internals
-  override fun getString(columnIndex: Int): String = stmt.let { Globals.sqlite3_column_text(it.stmtHandle, columnIndex) }
+  override fun getString(columnIndex: Int): String = stmt.let {
+    Globals.sqlite3_column_text(it.stmtHandle, columnIndex)
+  }
 }

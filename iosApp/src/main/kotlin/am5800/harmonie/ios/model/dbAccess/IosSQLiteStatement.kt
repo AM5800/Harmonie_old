@@ -46,10 +46,11 @@ class IosSQLiteStatement(internal val dbHandle: VoidPtr, val statement: String?,
 
   internal fun step(): Boolean {
     if (stmtHandle == null) throw RuntimeException("statement handle is closed")
-    return when (Globals.sqlite3_step(stmtHandle)) {
+    val res = Globals.sqlite3_step(stmtHandle)
+    return when (res) {
       100 -> true // SQLITE_ROW
       101 -> false // SQLITE_DONE
-      else -> throw RuntimeException(Globals.sqlite3_errmsg(dbHandle))
+      else -> throw RuntimeException("code: $res, msg: ${Globals.sqlite3_errmsg(dbHandle)}")
     }
   }
 
