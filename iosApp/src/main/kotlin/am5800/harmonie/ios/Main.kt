@@ -1,44 +1,37 @@
-package am5800.harmonie.ios;
+package am5800.harmonie.ios
 
-import ios.NSObject;
-import ios.foundation.NSDictionary;
-import ios.uikit.UIApplication;
-import ios.uikit.UIWindow;
-import ios.uikit.c.UIKit;
-import ios.uikit.protocol.UIApplicationDelegate;
+import ios.NSObject
+import ios.foundation.NSDictionary
+import ios.uikit.UIApplication
+import ios.uikit.UIWindow
+import ios.uikit.c.UIKit
+import ios.uikit.protocol.UIApplicationDelegate
 
-import com.intel.inde.moe.natj.general.Pointer;
-import com.intel.inde.moe.natj.general.ann.RegisterOnStartup;
-import com.intel.inde.moe.natj.objc.ann.Selector;
+import com.intel.inde.moe.natj.general.Pointer
+import com.intel.inde.moe.natj.general.ann.RegisterOnStartup
+import com.intel.inde.moe.natj.objc.ann.Selector
 
 @RegisterOnStartup
-public class Main extends NSObject implements UIApplicationDelegate {
+class Main protected constructor(peer: Pointer) : NSObject(peer), UIApplicationDelegate {
 
-  public static void main(String[] args) {
-    UIKit.UIApplicationMain(0, null, null, Main.class.getName());
+  private var window: UIWindow? = null
+
+  override fun applicationDidFinishLaunchingWithOptions(application: UIApplication?, launchOptions: NSDictionary<*, *>?): Boolean = true
+
+  override fun setWindow(value: UIWindow?) {
+    window = value
   }
 
-  @Selector("alloc")
-  public static native Main alloc();
+  override fun window(): UIWindow? = window
 
-  protected Main(Pointer peer) {
-    super(peer);
-  }
+  companion object {
 
-  private UIWindow window;
+    @JvmStatic fun main(args: Array<String>) {
+      UIKit.UIApplicationMain(0, null, null, Main::class.java.name)
+    }
 
-  @Override
-  public boolean applicationDidFinishLaunchingWithOptions(UIApplication application, NSDictionary launchOptions) {
-    return true;
-  }
-
-  @Override
-  public void setWindow(UIWindow value) {
-    window = value;
-  }
-
-  @Override
-  public UIWindow window() {
-    return window;
+    @Suppress("unused")
+    @Selector("alloc")
+    @JvmStatic external fun alloc(): Main
   }
 }
