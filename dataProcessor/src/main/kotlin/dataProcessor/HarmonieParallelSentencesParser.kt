@@ -13,7 +13,7 @@ import javax.xml.parsers.SAXParserFactory
 class HarmonieParallelSentencesParser(private val postProcessors: List<SentencePostProcessor>) {
   private class HarmonieParserHandler(private val postProcessors: List<SentencePostProcessor>, private val info: CorpusInfo) : DefaultHandler() {
     fun getData(): Data {
-      return Data(translations, occurrences.toList(), emptyMap())
+      return Data(translations, occurrences.toList(), emptyMap(), emptyMap())
     }
 
     override fun endElement(uri: String?, localName: String?, qName: String?) {

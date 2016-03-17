@@ -19,6 +19,7 @@ class GermanPostProcessor(private val lemmatizer: GermanLemmatizer) : SentencePo
         linearSequence.add(occurrence)
       }
 
+      if (occurrences.isEmpty()) return
       if (needToProcessPrefixes(metadata) && (endsSequence(occurrence) || occurrence == occurrences.last())) {
         processSequence(linearSequence)
         linearSequence.clear()
