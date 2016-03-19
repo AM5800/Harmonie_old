@@ -64,7 +64,7 @@ class GermanPostProcessor(private val lemmatizer: GermanLemmatizer) : SentencePo
   }
 
   private fun isPunctuation(s: String): Boolean {
-    val chars = "[,.'\"'`!?<>{}():]".toCharArray().toSet()
+    val chars = "[,.'\"'`!?<>{}():]-".toCharArray().toSet()
     return s.any() && s.all { c -> chars.contains(c) }
   }
 }

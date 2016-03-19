@@ -111,18 +111,17 @@ class SentenceSelectorImpl(private val repetitionService: WordsRepetitionService
   }
 
   private fun findNextByFrequencyWord(attempted: Collection<SqlWord>, language: Language): SqlWord? {
-    val occurrences = ContentDbConstants.wordOccurrencesTableName
+    val counts = ContentDbConstants.wordCountsTableName
     val words = ContentDbConstants.wordsTableName
     val lang = language.code()
     val ids = attempted.map { it.id }.joinToString(", ")
     val query = """
       SELECT $words.id, $words.lemma
-        FROM words
-        INNER JOIN $occurrences
-          ON $occurrences.wordId = $words.id
+        FROM $words
+        INNER JOIN $counts
+          ON $counts.wordId = $words.id
         WHERE $words.language='$lang' AND $words.id NOT IN ($ids)
-        GROUP BY $words.id
-        ORDER BY COUNT(*) DESC
+        ORDER BY $counts.count DESC
         LIMIT 1
     """
     return database!!.query2<Long, String>(query).map { SqlWord(it.first, language, it.second) }.singleOrNull()

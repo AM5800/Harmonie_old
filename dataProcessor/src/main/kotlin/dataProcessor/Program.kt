@@ -22,7 +22,7 @@ fun main(args: Array<String>) {
   val data = prepareData(repository)
 
   val filteredData = filterData(data)
-  DbWriter().write(File("androidApp/src/dataProcessor.main/assets/content.db"), filteredData)
+  DbWriter().write(File("androidApp/src/main/assets/content.db"), filteredData)
 }
 
 fun prepareData(repository: CorpusRepository): Data {
@@ -49,44 +49,7 @@ fun computeFrequencies(data: Data, repository: CorpusRepository, postProcessors:
   // TODO fix hardcode
   parsers.parse(repository.getCorpuses().filter { it.formatId.equals("NEGRA4", true) }, handler)
 
-  return Data(data.sentenceTranslations, data.wordOccurrences, data.difficulties, handler.wordsFrequencies)
-}
-
-class WordFrequencyCounter(private val postProcessors: List<SentencePostProcessor>, data: Data) : CorpusParserHandler() {
-  private val occurrences = mutableListOf<ParseWordOccurrence>()
-  private var currentPostProcessor: SentencePostProcessor? = null
-  val wordsFrequencies = mutableMapOf<Word, Int>()
-  var language: Language? = null
-
-  init {
-    val dataFrequencies = data.wordOccurrences.groupBy { it.word }.mapValues { it.value.count() }
-    wordsFrequencies.putAll(dataFrequencies)
-  }
-
-  private var currentInfo: CorpusInfo? = null
-
-  override fun beginCorpus(info: CorpusInfo) {
-    val langCode = info.metadata["language"] ?: throw Exception("Language not set for corpus: " + info.infoFile.absolutePath)
-    language = LanguageParser.parse(langCode)
-    currentInfo = info
-
-    currentPostProcessor = postProcessors.firstOrNull { it.language == language }
-  }
-
-  override fun endSentence() {
-    currentPostProcessor?.processInPlace(occurrences, currentInfo!!.metadata)
-    for (occurrence in occurrences) {
-      val word = Word(language!!, occurrence.lemma)
-
-      if (!wordsFrequencies.contains(word)) continue
-      wordsFrequencies[word] = wordsFrequencies[word]!! + 1
-    }
-    occurrences.clear()
-  }
-
-  override fun word(word: String, lemma: String, pos: ParsePartOfSpeech?) {
-    occurrences.add(ParseWordOccurrence(lemma, -1, -1))
-  }
+  return Data(data.sentenceTranslations, data.wordOccurrences, data.difficulties, handler.wordCounts)
 }
 
 fun mergeData(left: Data, right: Data): Data {
@@ -103,11 +66,18 @@ fun filterData(data: Data): Data {
   val oldOccurrences = data.wordOccurrences.groupBy { it.sentence }
   val wordOccurrences = mutableListOf<WordOccurrence>()
   val difficulties = mutableMapOf<Sentence, Int>()
+  val wordCounts = mutableMapOf<Word, Int>()
 
   for (language in languages) {
     for ((sentence, difficultyLevel) in filterByDifficulty(data, language)) {
       val translated = data.sentenceTranslations[sentence]!!
-      wordOccurrences.addAll(oldOccurrences[sentence] ?: continue)
+      val wordsInSentence = oldOccurrences[sentence]  ?: continue
+      wordOccurrences.addAll(wordsInSentence)
+
+      for (occurrence in wordsInSentence) {
+        val prevValue = data.realWorldWordsCount[occurrence.word] ?: continue
+        wordCounts[occurrence.word] = prevValue
+      }
 
       translations.put(sentence, translated)
       translations.put(translated, sentence)
@@ -115,7 +85,7 @@ fun filterData(data: Data): Data {
     }
   }
 
-  return Data(translations, wordOccurrences, difficulties, emptyMap())
+  return Data(translations, wordOccurrences, difficulties, wordCounts)
 }
 
 fun extractLanguages(data: Data): List<Language> {

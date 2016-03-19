@@ -3,6 +3,7 @@ package dataProcessor
 import am5800.common.code
 import am5800.common.db.ContentDbConstants
 import am5800.common.db.Sentence
+import am5800.common.db.Word
 import am5800.common.db.WordOccurrence
 import org.tmatesoft.sqljet.core.SqlJetTransactionMode
 import org.tmatesoft.sqljet.core.table.ISqlJetTable
@@ -16,7 +17,7 @@ class DbWriter {
     database.runTransaction({ db ->
       createDbSchema(db)
       val sentenceMapping = writeSentences(data.sentenceTranslations, db)
-      writeWords(data.wordOccurrences, sentenceMapping, db)
+      writeWords(data.wordOccurrences, sentenceMapping, data.realWorldWordsCount, db)
       writeDifficulties(data.difficulties, sentenceMapping, db)
     }, SqlJetTransactionMode.WRITE)
   }
@@ -29,15 +30,20 @@ class DbWriter {
     }
   }
 
-  private fun writeWords(wordsOccurrences: List<WordOccurrence>, sentenceMapping: Map<Sentence, Long>, db: SqlJetDb) {
+  private fun writeWords(wordsOccurrences: List<WordOccurrence>, sentenceMapping: Map<Sentence, Long>, wordCounts: Map<Word, Int>, db: SqlJetDb) {
     val wordsTable = db.getTable(ContentDbConstants.wordsTableName)
     val occurrencesTable = db.getTable(ContentDbConstants.wordOccurrencesTableName)
+    val countsTable = db.getTable(ContentDbConstants.wordCountsTableName)
 
     for (occurrencePair in wordsOccurrences.distinct().groupBy { it.word }) {
       val word = occurrencePair.key
       val lang = word.language.code()
 
       val wordId = wordsTable.insert(lang, word.lemma)
+      val count = wordCounts[word]!!
+
+      countsTable.insert(wordId, count)
+
       for (occurrence in occurrencePair.value) {
         val sentenceId = sentenceMapping[occurrence.sentence]
         occurrencesTable.insert(wordId, sentenceId, occurrence.startIndex, occurrence.endIndex)
@@ -75,6 +81,7 @@ class DbWriter {
     db.createTable("CREATE TABLE ${ContentDbConstants.wordsTableName} (id INTEGER PRIMARY KEY, language TEXT, lemma TEXT)")
     db.createTable("CREATE TABLE ${ContentDbConstants.wordOccurrencesTableName} (wordId INTEGER, sentenceId INTEGER, startIndex INTEGER, endIndex INTEGER)")
     db.createTable("CREATE TABLE ${ContentDbConstants.sentenceDifficultyTableName} (sentenceId INTEGER PRIMARY KEY, difficulty INTEGER)")
+    db.createTable("CREATE TABLE ${ContentDbConstants.wordCountsTableName} (wordId INTEGER PRIMARY KEY, count INTEGER)")
     db.createIndex("CREATE INDEX germanWordOccurrencesIndex ON ${ContentDbConstants.wordOccurrencesTableName} (wordId, sentenceId)")
   }
 }
