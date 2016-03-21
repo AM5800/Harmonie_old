@@ -7,7 +7,7 @@ class PropertyChangedArg<T>(private val old: T?, val newValue: T?, val hasOld: B
     get() = if (hasOld) old else throw Exception("Old value is not available")
 }
 
-class Property<T>(lifetime: Lifetime, initialValue: T?) {
+class Property<T : Any>(lifetime: Lifetime, initialValue: T?) {
   init {
     lifetime.addAction { binders.clear() }
   }

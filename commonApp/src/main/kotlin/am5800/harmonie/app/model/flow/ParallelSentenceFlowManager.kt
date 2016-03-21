@@ -22,7 +22,7 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
                                   private val repetitionService: WordsRepetitionService,
                                   private val sentenceSelector: SentenceSelector) : FlowItemProvider {
 
-  val question = Property<ParallelSentenceQuestion?>(lifetime, null)
+  val question = Property<ParallelSentenceQuestion>(lifetime, null)
   private val logger = loggerProvider.getLogger(javaClass)
 
   override fun tryPresentNextItem(flowSettings: FlowSettings): Boolean {

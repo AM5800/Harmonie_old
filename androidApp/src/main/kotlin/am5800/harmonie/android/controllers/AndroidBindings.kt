@@ -27,7 +27,7 @@ fun TextView.bindText(lifetime: Lifetime, uiThreadRunner: UIThreadRunner, proper
   })
 }
 
-fun <T> TextView.bindText(lifetime: Lifetime, uiThreadRunner: UIThreadRunner, property: Property<T>, mapper: (T) -> String) {
+fun <T : Any> TextView.bindText(lifetime: Lifetime, uiThreadRunner: UIThreadRunner, property: Property<T>, mapper: (T) -> String) {
   property.bind(lifetime, { args ->
     val value = args.newValue
 

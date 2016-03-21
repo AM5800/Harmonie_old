@@ -69,5 +69,5 @@ class FlowManager(private val lifetime: Lifetime, private val loggerProvider: Lo
     isEmptySignal.fire(Unit)
   }
 
-  val timeLeft = Property<Duration?>(lifetime, null)
+  val timeLeft = Property<Duration>(lifetime, null)
 }

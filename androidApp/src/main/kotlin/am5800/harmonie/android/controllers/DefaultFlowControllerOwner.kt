@@ -16,7 +16,7 @@ class DefaultFlowControllerOwner(private val stack: ControllerStack,
                                  lifetime: Lifetime,
                                  private val vm: DefaultFlowControllerOwnerViewModel,
                                  private val resources: Resources) : FlowController, BindableController {
-  private val content = Property<BindableController?>(lifetime, null)
+  private val content = Property<BindableController>(lifetime, null)
   override val id: Int = R.layout.flow_fragment
 
   override fun setContent(controller: BindableController) {
@@ -41,7 +41,7 @@ class DefaultFlowControllerOwner(private val stack: ControllerStack,
     val placeholder = view.getChild<LinearLayout>(R.id.placeholder)
     content.bindNotNull(bindingLifetime, {
       placeholder.removeAllViews()
-      placeholder.addView(view.createViewAndBind(it!!, bindingLifetime))
+      placeholder.addView(view.createViewAndBind(it, bindingLifetime))
     })
   }
 }
