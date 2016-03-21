@@ -45,6 +45,6 @@ class MorphyCsvParser(path: File) : GermanLemmatizer {
   }
 
   override fun normalize(lemma: String): String {
-    return lemma.trim().toLowerCase().replace("ä", "ae").replace("ö", "oe").replace("ü", "ue")
+    return lemma.trim().toLowerCase().replace("ä", "ae").replace("ö", "oe").replace("ü", "ue").replace("ß", "ss")
   }
 }
