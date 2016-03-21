@@ -11,12 +11,13 @@ import am5800.harmonie.android.model.FileEnvironment
 import am5800.harmonie.android.model.dbAccess.AndroidContentDb
 import am5800.harmonie.android.model.dbAccess.AndroidPermanentDb
 import am5800.harmonie.android.model.dbAccess.KeyValueDatabaseImpl
-import am5800.harmonie.app.model.BucketRepetitionAlgorithm
+import am5800.harmonie.app.model.repetition.BucketRepetitionAlgorithm
 import am5800.harmonie.app.model.DebugOptions
-import am5800.harmonie.app.model.dbAccess.WordsRepetitionServiceImpl
-import am5800.harmonie.app.model.dbAccess.sql.SentenceSelectorImpl
+import am5800.harmonie.app.model.repetition.WordsRepetitionServiceImpl
+import am5800.harmonie.app.model.dbAccess.sql.SqlSentenceSelector
 import am5800.harmonie.app.model.dbAccess.sql.SqlRepetitionService
 import am5800.harmonie.app.model.dbAccess.sql.SqlSentenceProvider
+import am5800.harmonie.app.model.dbAccess.sql.SqlWordSelector
 import am5800.harmonie.app.model.flow.FlowItemProviderRegistrar
 import am5800.harmonie.app.model.flow.FlowManager
 import am5800.harmonie.app.model.flow.ParallelSentenceFlowManager
@@ -58,11 +59,13 @@ class HarmonieApplication : Application() {
       val wordsRepetitionService = WordsRepetitionServiceImpl(repetitionService)
 
       val sentenceProvider = SqlSentenceProvider()
-      val bestSentenceFinder = SentenceSelectorImpl(wordsRepetitionService, loggerProvider, debugOptions)
-      AndroidContentDb(this, keyValueDb, loggerProvider, listOf(sentenceProvider, bestSentenceFinder, wordsRepetitionService), lt)
+      val wordSelector = SqlWordSelector()
+      val sentenceSelector = SqlSentenceSelector(wordsRepetitionService, loggerProvider, debugOptions, wordSelector)
+      val dbConsumers = listOf(sentenceProvider, sentenceSelector, wordsRepetitionService, wordSelector)
+      AndroidContentDb(this, keyValueDb, loggerProvider, dbConsumers, lt)
 
       val flowManager = FlowManager(lt, loggerProvider)
-      val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceProvider, loggerProvider, wordsRepetitionService, bestSentenceFinder)
+      val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceProvider, loggerProvider, wordsRepetitionService, sentenceSelector)
       val flowItemProviderRegistrar = FlowItemProviderRegistrar(parallelSentenceFlowManager)
 
       // ViewModels

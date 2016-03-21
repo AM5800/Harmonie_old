@@ -6,9 +6,10 @@ import am5800.common.db.ContentDbConstants
 import am5800.common.db.Sentence
 import am5800.common.db.Word
 import am5800.common.db.WordOccurrence
+import am5800.harmonie.app.model.WordSelector
 import am5800.harmonie.app.model.dbAccess.SentenceProvider
 
-class SqlSentenceProvider : SentenceProvider, ContentDbConsumer {
+class SqlSentenceProvider() : SentenceProvider, ContentDbConsumer {
   override fun getOccurrences(sentence: Sentence): List<WordOccurrence> {
     val db = database!!
     if (sentence !is SqlSentence) throw Exception("Only SqlSentences supported")
@@ -29,17 +30,6 @@ class SqlSentenceProvider : SentenceProvider, ContentDbConsumer {
     return wordsData.map {
       WordOccurrence(SqlWord(it.value1, sentence.language, it.value2), sentence, it.value3, it.value4)
     }
-  }
-
-  override fun tryFindWord(word: String, language: Language): Word? {
-    val w = word.toLowerCase().trim()
-
-    val words = ContentDbConstants.wordsTableName
-    val lang = language.code()
-    val query = "SELECT id FROM $words WHERE lemma = '$w' AND language = '$lang'"
-    val id = database!!.query1<Long>(query).singleOrNull() ?: return null
-
-    return SqlWord(id, language, word)
   }
 
   var database: ContentDb? = null

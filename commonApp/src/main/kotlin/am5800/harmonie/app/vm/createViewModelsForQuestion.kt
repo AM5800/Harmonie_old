@@ -2,7 +2,7 @@ package am5800.harmonie.app.vm
 
 import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
-import am5800.harmonie.app.model.dbAccess.AttemptScore
+import am5800.harmonie.app.model.repetition.AttemptScore
 import am5800.harmonie.app.model.flow.ParallelSentenceQuestion
 
 fun createViewModelsForQuestion(data: ParallelSentenceQuestion, lifetime: Lifetime): List<WordViewModel> {

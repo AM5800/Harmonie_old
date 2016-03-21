@@ -1,4 +1,4 @@
-package am5800.harmonie.app.model.dbAccess
+package am5800.harmonie.app.model.repetition
 
 import org.joda.time.DateTime
 

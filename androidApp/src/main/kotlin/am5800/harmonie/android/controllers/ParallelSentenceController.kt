@@ -4,7 +4,7 @@ import am5800.common.utils.Lifetime
 import am5800.harmonie.android.R
 import am5800.harmonie.android.viewBinding.BindableController
 import am5800.harmonie.android.viewBinding.BindableView
-import am5800.harmonie.app.model.dbAccess.AttemptScore
+import am5800.harmonie.app.model.repetition.AttemptScore
 import am5800.harmonie.app.vm.ParallelSentenceViewModel
 import am5800.harmonie.app.vm.ToggleableWordViewModel
 import am5800.harmonie.app.vm.WordViewModel

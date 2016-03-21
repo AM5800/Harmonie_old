@@ -6,15 +6,17 @@ import am5800.common.db.ContentDbConstants
 import am5800.common.db.Sentence
 import am5800.common.utils.functions.shuffle
 import am5800.harmonie.app.model.DebugOptions
-import am5800.harmonie.app.model.dbAccess.SentenceSelector
-import am5800.harmonie.app.model.dbAccess.WordsRepetitionService
+import am5800.harmonie.app.model.SentenceSelector
+import am5800.harmonie.app.model.WordSelector
+import am5800.harmonie.app.model.repetition.WordsRepetitionService
 import am5800.harmonie.app.model.logging.LoggerProvider
 import org.joda.time.DateTime
 
 
-class SentenceSelectorImpl(private val repetitionService: WordsRepetitionService,
-                           loggerProvider: LoggerProvider,
-                           private val debugOptions: DebugOptions) : SentenceSelector, ContentDbConsumer {
+class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
+                          loggerProvider: LoggerProvider,
+                          private val debugOptions: DebugOptions,
+                          private val wordSelector: WordSelector) : SentenceSelector, ContentDbConsumer {
   private val logger = loggerProvider.getLogger(javaClass)
 
   override fun dbMigrationPhase1(oldDb: ContentDb) {
@@ -40,12 +42,12 @@ class SentenceSelectorImpl(private val repetitionService: WordsRepetitionService
 
     if (!scheduled.isEmpty()) return findBestSentence(languageFrom, languageTo, scheduled)
 
-    val nextByFrequencyWord = findNextByFrequencyWord(attempted, languageFrom)
-    logger.info("Next by frequency word is: ${nextByFrequencyWord?.lemma}")
+    val nextWord = wordSelector.findBestWord(attempted, languageFrom) as? SqlWord
+    logger.info("Next by frequency word is: ${nextWord?.lemma}")
 
-    if (nextByFrequencyWord == null) return getRandomSentence(languageFrom, languageTo)
+    if (nextWord == null) return getRandomSentence(languageFrom, languageTo)
 
-    return findBestSentence(languageFrom, languageTo, listOf(nextByFrequencyWord))
+    return findBestSentence(languageFrom, languageTo, listOf(nextWord))
   }
 
   private fun getRandomSentence(languageFrom: Language, languageTo: Language): Pair<Sentence, Sentence>? {
@@ -108,22 +110,5 @@ class SentenceSelectorImpl(private val repetitionService: WordsRepetitionService
           .shuffle(debugOptions.randomSeed)
           .first()
     } else throw Exception("No sentences found")
-  }
-
-  private fun findNextByFrequencyWord(attempted: Collection<SqlWord>, language: Language): SqlWord? {
-    val counts = ContentDbConstants.wordCountsTableName
-    val words = ContentDbConstants.wordsTableName
-    val lang = language.code()
-    val ids = attempted.map { it.id }.joinToString(", ")
-    val query = """
-      SELECT $words.id, $words.lemma
-        FROM $words
-        INNER JOIN $counts
-          ON $counts.wordId = $words.id
-        WHERE $words.language='$lang' AND $words.id NOT IN ($ids)
-        ORDER BY $counts.count DESC
-        LIMIT 1
-    """
-    return database!!.query2<Long, String>(query).map { SqlWord(it.first, language, it.second) }.singleOrNull()
   }
 }

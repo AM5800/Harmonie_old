@@ -1,14 +1,7 @@
-package am5800.harmonie.app.model
+package am5800.harmonie.app.model.repetition
 
 import org.joda.time.*
 
-
-data class Attempt(val score: Double, val dateTime: DateTime)
-
-interface RepetitionAlgorithm {
-  fun getNextDueDate(attempts: List<Attempt>): DateTime
-  fun getScore(attempts: List<Attempt>): Int
-}
 
 class BucketRepetitionAlgorithm() : RepetitionAlgorithm {
   override fun getScore(attempts: List<Attempt>): Int {

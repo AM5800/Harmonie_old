@@ -5,10 +5,10 @@ import am5800.common.db.Word
 import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
 import am5800.common.utils.TextRange
-import am5800.harmonie.app.model.dbAccess.AttemptScore
+import am5800.harmonie.app.model.repetition.AttemptScore
 import am5800.harmonie.app.model.dbAccess.SentenceProvider
-import am5800.harmonie.app.model.dbAccess.SentenceSelector
-import am5800.harmonie.app.model.dbAccess.WordsRepetitionService
+import am5800.harmonie.app.model.SentenceSelector
+import am5800.harmonie.app.model.repetition.WordsRepetitionService
 import am5800.harmonie.app.model.logging.LoggerProvider
 import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.Multimap
