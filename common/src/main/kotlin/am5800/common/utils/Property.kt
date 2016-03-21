@@ -41,7 +41,7 @@ class Property<T : Any>(lifetime: Lifetime, initialValue: T?) {
     bind(lifetime, { arg -> if (arg.newValue != null) binder(arg.newValue) })
   }
 
-  fun forEachValue(lifetime: Lifetime, binder: (T, Lifetime) -> Unit) {
+  fun forEachValue(lifetime: Lifetime, binder: (T?, Lifetime) -> Unit) {
     bindNotNull(lifetime, { args ->
       binder(args, valueLifetime.current)
     })

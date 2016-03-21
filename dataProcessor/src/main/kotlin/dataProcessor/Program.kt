@@ -1,16 +1,12 @@
 package dataProcessor
 
 import am5800.common.Language
-import am5800.common.LanguageParser
 import am5800.common.db.Sentence
 import am5800.common.db.Word
 import am5800.common.db.WordOccurrence
-import corpus.CorpusInfo
 import corpus.CorpusRepository
-import corpus.parsing.CorpusParserHandler
 import corpus.parsing.CorpusParsersSet
 import corpus.parsing.NegraParser
-import corpus.parsing.ParsePartOfSpeech
 import dataProcessor.german.GermanPostProcessor
 import dataProcessor.german.MorphyCsvParser
 import java.io.File

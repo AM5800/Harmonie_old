@@ -8,8 +8,6 @@ import am5800.harmonie.app.model.dbAccess.sql.ContentDb
 import am5800.harmonie.app.model.dbAccess.sql.ContentDbConsumer
 import am5800.harmonie.app.model.dbAccess.sql.SqlWord
 import am5800.harmonie.app.model.dbAccess.sql.query2
-import am5800.harmonie.app.model.repetition.AttemptScore
-import am5800.harmonie.app.model.repetition.RepetitionService
 import org.joda.time.DateTime
 
 interface WordsRepetitionService {
