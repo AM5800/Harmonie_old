@@ -7,8 +7,8 @@ import am5800.harmonie.app.model.flow.ParallelSentenceQuestion
 
 fun createViewModelsForQuestion(data: ParallelSentenceQuestion, lifetime: Lifetime): List<WordViewModel> {
   val result = mutableListOf<WordViewModel>()
-  val properties = data.lemmas.keySet().map { Pair(it, Property(lifetime, AttemptScore.Ok)) }.toMap()
-  val sortedOccurrences = data.lemmas.asMap()
+  val properties = data.occurrences.keySet().map { Pair(it, Property(lifetime, AttemptScore.Ok)) }.toMap()
+  val sortedOccurrences = data.occurrences.asMap()
       .flatMap { pair -> pair.value.map { Pair(pair.key, it) } }
       .sortedBy { it.second.start }
 
@@ -21,7 +21,7 @@ fun createViewModelsForQuestion(data: ParallelSentenceQuestion, lifetime: Lifeti
     val text = sentence.substring(range.start, range.end)
 
     val needSpaceBefore = if (range.start == 0) false else sentence[range.start - 1] == ' '
-    result.add(ToggleableWordViewModel(word, text, properties[word]!!, needSpaceBefore))
+    result.add(ToggleableWordViewModel(word, text, properties[word]!!, needSpaceBefore, data.highlightedWords.contains(word)))
 
     index = range.end
   }

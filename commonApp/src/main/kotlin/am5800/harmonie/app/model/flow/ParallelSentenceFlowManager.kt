@@ -5,16 +5,20 @@ import am5800.common.db.Word
 import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
 import am5800.common.utils.TextRange
-import am5800.harmonie.app.model.repetition.AttemptScore
-import am5800.harmonie.app.model.dbAccess.SentenceProvider
 import am5800.harmonie.app.model.SentenceSelector
-import am5800.harmonie.app.model.repetition.WordsRepetitionService
+import am5800.harmonie.app.model.SentenceSelectorResult
+import am5800.harmonie.app.model.dbAccess.SentenceProvider
 import am5800.harmonie.app.model.logging.LoggerProvider
+import am5800.harmonie.app.model.repetition.AttemptScore
+import am5800.harmonie.app.model.repetition.WordsRepetitionService
 import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.Multimap
 
 
-class ParallelSentenceQuestion(val question: Sentence, val answer: Sentence, val lemmas: Multimap<Word, TextRange>)
+class ParallelSentenceQuestion(val question: Sentence,
+                               val answer: Sentence,
+                               val occurrences: Multimap<Word, TextRange>,
+                               val highlightedWords: Set<Word>)
 
 class ParallelSentenceFlowManager(lifetime: Lifetime,
                                   private val sentenceProvider: SentenceProvider,
@@ -26,19 +30,19 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
   private val logger = loggerProvider.getLogger(javaClass)
 
   override fun tryPresentNextItem(flowSettings: FlowSettings): Boolean {
-    val pair = sentenceSelector.findBestSentence(flowSettings.questionLanguage, flowSettings.answerLanguage) ?: return false
-    question.value = prepareQuestion(pair.first, pair.second)
+    val findResult = sentenceSelector.findBestSentence(flowSettings.questionLanguage, flowSettings.answerLanguage) ?: return false
+    question.value = prepareQuestion(findResult)
     return true
   }
 
-  private fun prepareQuestion(first: Sentence, second: Sentence): ParallelSentenceQuestion {
+  private fun prepareQuestion(findResult: SentenceSelectorResult): ParallelSentenceQuestion {
     val occurrences = LinkedHashMultimap.create<Word, TextRange>()
-    for (occurrence in sentenceProvider.getOccurrences(first)) {
+    for (occurrence in sentenceProvider.getOccurrences(findResult.question)) {
       val range = TextRange(occurrence.startIndex, occurrence.endIndex)
       occurrences.put(occurrence.word, range)
     }
 
-    return ParallelSentenceQuestion(first, second, occurrences)
+    return ParallelSentenceQuestion(findResult.question, findResult.answer, occurrences, findResult.highlightedWords)
   }
 
   fun submitScore(scores: Map<Word, AttemptScore>) {

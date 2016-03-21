@@ -3,13 +3,13 @@ package am5800.harmonie.app.model.dbAccess.sql
 import am5800.common.Language
 import am5800.common.code
 import am5800.common.db.ContentDbConstants
-import am5800.common.db.Sentence
 import am5800.common.utils.functions.shuffle
 import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.SentenceSelector
+import am5800.harmonie.app.model.SentenceSelectorResult
 import am5800.harmonie.app.model.WordSelector
-import am5800.harmonie.app.model.repetition.WordsRepetitionService
 import am5800.harmonie.app.model.logging.LoggerProvider
+import am5800.harmonie.app.model.repetition.WordsRepetitionService
 import org.joda.time.DateTime
 
 
@@ -33,7 +33,7 @@ class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
     database = db
   }
 
-  override fun findBestSentence(languageFrom: Language, languageTo: Language): Pair<Sentence, Sentence>? {
+  override fun findBestSentence(languageFrom: Language, languageTo: Language): SentenceSelectorResult? {
 
     val attempted = repetitionService.getAttemptedWords(languageFrom).filterIsInstance<SqlWord>()
     val scheduled = repetitionService.getScheduledWords(languageFrom, DateTime.now()).filterIsInstance<SqlWord>()
@@ -50,7 +50,7 @@ class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
     return findBestSentence(languageFrom, languageTo, listOf(nextWord))
   }
 
-  private fun getRandomSentence(languageFrom: Language, languageTo: Language): Pair<Sentence, Sentence>? {
+  private fun getRandomSentence(languageFrom: Language, languageTo: Language): SentenceSelectorResult? {
     val translations = ContentDbConstants.sentenceTranslationsTableName
     val sentences = ContentDbConstants.sentencesTableName
     val langFrom = languageFrom.code()
@@ -68,11 +68,11 @@ class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
     """
 
     return database!!.query4<Long, String, Long, String>(query)
-        .map { Pair(SqlSentence(it.value1, languageFrom, it.value2), SqlSentence(it.value3, languageTo, it.value4)) }
+        .map { SentenceSelectorResult(SqlSentence(it.value1, languageFrom, it.value2), SqlSentence(it.value3, languageTo, it.value4), emptySet()) }
         .singleOrNull()
   }
 
-  private fun findBestSentence(languageFrom: Language, languageTo: Language, contianingWords: List<SqlWord>): Pair<Sentence, Sentence> {
+  private fun findBestSentence(languageFrom: Language, languageTo: Language, contianingWords: List<SqlWord>): SentenceSelectorResult? {
     if (contianingWords.isEmpty()) throw Exception("Nothing to search for")
     val db = database!!
     val translations = ContentDbConstants.sentenceTranslationsTableName
@@ -106,7 +106,7 @@ class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
     if (queryResult.size >= 1) {
       val minDifficulty = queryResult.first().value5
       return queryResult.takeWhile { it.value5 == minDifficulty }
-          .map { Pair(SqlSentence(it.value1, languageFrom, it.value2), SqlSentence(it.value3, languageTo, it.value4)) }
+          .map { SentenceSelectorResult(SqlSentence(it.value1, languageFrom, it.value2), SqlSentence(it.value3, languageTo, it.value4), contianingWords.toSet()) }
           .shuffle(debugOptions.randomSeed)
           .first()
     } else throw Exception("No sentences found")

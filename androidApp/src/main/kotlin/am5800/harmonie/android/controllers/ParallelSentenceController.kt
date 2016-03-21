@@ -46,6 +46,8 @@ class ParallelSentenceController(lifetime: Lifetime,
 
     if (childVm is ToggleableWordViewModel) {
       wordView.setOnClickListener({ childVm.toggle() })
+      if (childVm.highlight) wordView.setBackgroundColor(Color.GRAY)
+
       childVm.state.bind(bindingLifetime, {
         if (it.newValue == AttemptScore.Ok) wordView.setTextColor(Color.BLACK)
         else wordView.setTextColor(Color.RED)

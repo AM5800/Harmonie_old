@@ -6,11 +6,15 @@ import am5800.common.utils.Property
 import am5800.harmonie.app.model.repetition.AttemptScore
 import am5800.harmonie.app.model.flow.FlowManager
 import am5800.harmonie.app.model.flow.ParallelSentenceFlowManager
+import java.awt.im.InputMethodHighlight
 import java.util.*
 
 open class WordViewModel(val text: String, val needSpaceBefore: Boolean)
 
-class ToggleableWordViewModel(val word: Word, text: String, val state: Property<AttemptScore>, needSpaceBefore: Boolean) : WordViewModel(text, needSpaceBefore) {
+class ToggleableWordViewModel(val word: Word, text: String,
+                              val state: Property<AttemptScore>,
+                              needSpaceBefore: Boolean,
+                              val highlight: Boolean) : WordViewModel(text, needSpaceBefore) {
   fun toggle() {
     if (state.value == AttemptScore.Ok) state.value = AttemptScore.Wrong
     else state.value = AttemptScore.Ok
