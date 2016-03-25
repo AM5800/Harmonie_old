@@ -9,8 +9,11 @@ import am5800.harmonie.app.vm.ParallelSentenceViewModel
 import am5800.harmonie.app.vm.ToggleableWordViewModel
 import am5800.harmonie.app.vm.WordViewModel
 import android.graphics.Color
+import android.text.Html
+import android.text.Spannable
 import android.util.TypedValue
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
 import org.apmem.tools.layouts.FlowLayout
 
@@ -46,7 +49,10 @@ class ParallelSentenceController(lifetime: Lifetime,
 
     if (childVm is ToggleableWordViewModel) {
       wordView.setOnClickListener({ childVm.toggle() })
-      if (childVm.highlight) wordView.setBackgroundColor(Color.GRAY)
+      if (childVm.highlight) {
+        val text = childVm.text
+        wordView.text = Html.fromHtml("<u>$text</u>")
+      }
 
       childVm.state.bind(bindingLifetime, {
         if (it.newValue == AttemptScore.Ok) wordView.setTextColor(Color.BLACK)
@@ -54,7 +60,11 @@ class ParallelSentenceController(lifetime: Lifetime,
       })
     }
 
-    wordView.setPadding(if (childVm.needSpaceBefore) 16 else 0, 8, 0, 8)
+    val layoutParams = FlowLayout.LayoutParams(FlowLayout.LayoutParams.WRAP_CONTENT, FlowLayout.LayoutParams.WRAP_CONTENT)
+    layoutParams.setMargins(0, 8, 0, 8)
+    if (childVm.needSpaceBefore) layoutParams.leftMargin = 16
+    wordView.layoutParams = layoutParams
+
     wordView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20.0f)
   }
 
