@@ -10,10 +10,8 @@ import am5800.harmonie.app.vm.ToggleableWordViewModel
 import am5800.harmonie.app.vm.WordViewModel
 import android.graphics.Color
 import android.text.Html
-import android.text.Spannable
 import android.util.TypedValue
 import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.TextView
 import org.apmem.tools.layouts.FlowLayout
 

@@ -67,7 +67,7 @@ fun filterData(data: Data): Data {
   for (language in languages) {
     for ((sentence, difficultyLevel) in filterByDifficulty(data, language)) {
       val translated = data.sentenceTranslations[sentence]!!
-      val wordsInSentence = oldOccurrences[sentence]  ?: continue
+      val wordsInSentence = oldOccurrences[sentence] ?: continue
       wordOccurrences.addAll(wordsInSentence)
 
       for (occurrence in wordsInSentence) {

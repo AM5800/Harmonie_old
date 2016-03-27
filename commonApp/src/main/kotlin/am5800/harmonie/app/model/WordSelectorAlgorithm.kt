@@ -5,7 +5,6 @@ import am5800.common.utils.functions.clamp
 import am5800.harmonie.app.model.repetition.BinaryLearnScore
 
 
-
 class WordSelectorAlgorithm {
   companion object {
     private fun getFirstUnknownAfter(index: Int, orderedWords: List<Word>, getScore: (Word) -> BinaryLearnScore?): Word? {

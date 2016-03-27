@@ -37,8 +37,7 @@ class SqlRepetitionService(private val repetitionAlgorithm: RepetitionAlgorithm,
     val query = "SELECT dateTime, score FROM attempts WHERE entityId='$entityId' AND entityCategory='$entityCategory'"
     try {
       return db.query2<Long, Double>(query).map { Attempt(it.second, DateTime(it.first)) }
-    }
-    catch(e: Exception) {
+    } catch(e: Exception) {
       throw e
     }
   }

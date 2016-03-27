@@ -3,10 +3,9 @@ package am5800.harmonie.app.vm
 import am5800.common.db.Word
 import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
-import am5800.harmonie.app.model.repetition.AttemptScore
 import am5800.harmonie.app.model.flow.FlowManager
 import am5800.harmonie.app.model.flow.ParallelSentenceFlowManager
-import java.awt.im.InputMethodHighlight
+import am5800.harmonie.app.model.repetition.AttemptScore
 import java.util.*
 
 open class WordViewModel(val text: String, val needSpaceBefore: Boolean)
