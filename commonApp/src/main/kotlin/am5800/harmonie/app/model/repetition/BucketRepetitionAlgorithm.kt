@@ -4,7 +4,11 @@ import org.joda.time.*
 
 
 class BucketRepetitionAlgorithm() : RepetitionAlgorithm {
-  override fun getScore(attempts: List<Attempt>): Int {
+  override fun getScoreAsEnum(attempts: List<Attempt>): LearnScore {
+    throw UnsupportedOperationException()
+  }
+
+  override fun getScoreAsInt(attempts: List<Attempt>): Int {
     return compute(attempts.sortedBy { it.dateTime }).first
   }
 
