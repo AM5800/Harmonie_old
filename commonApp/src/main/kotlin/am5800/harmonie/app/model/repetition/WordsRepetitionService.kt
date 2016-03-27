@@ -15,9 +15,27 @@ interface WordsRepetitionService {
   fun computeDueDate(word: Word, score: AttemptScore): DateTime
   fun getScheduledWords(language: Language, dateTime: DateTime): List<Word>
   fun getAttemptedWords(language: Language): List<Word>
+
+  fun getBinaryWordScore(word: Word): BinaryLearnScore?
+  fun getAverageBinaryScore(language: Language): Double
 }
 
 class WordsRepetitionServiceImpl(private val repetitionService: RepetitionService) : WordsRepetitionService, ContentDbConsumer {
+  override fun getBinaryWordScore(word: Word): BinaryLearnScore? {
+    return repetitionService.getBinaryScore(word.lemma, getCategory(word.language))
+  }
+
+  override fun getAverageBinaryScore(language: Language): Double {
+    return getAttemptedWords(language)
+        .map { getBinaryWordScore(it) }.filterNotNull()
+        .map {
+          when (it) {
+            BinaryLearnScore.Good -> 1.0
+            BinaryLearnScore.Bad -> 0.0
+          }
+        }.average()
+  }
+
   private val cache = mutableMapOf<Pair<String, Language>, SqlWord>()
 
   override fun dbMigrationPhase1(oldDb: ContentDb) {

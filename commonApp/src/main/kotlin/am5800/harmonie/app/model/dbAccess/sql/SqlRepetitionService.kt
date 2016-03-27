@@ -1,15 +1,15 @@
 package am5800.harmonie.app.model.dbAccess.sql
 
-import am5800.harmonie.app.model.repetition.Attempt
 import am5800.harmonie.app.model.DebugOptions
-import am5800.harmonie.app.model.repetition.RepetitionAlgorithm
-import am5800.harmonie.app.model.repetition.AttemptScore
-import am5800.harmonie.app.model.repetition.RepetitionService
+import am5800.harmonie.app.model.repetition.*
 import org.joda.time.DateTime
 
 class SqlRepetitionService(private val repetitionAlgorithm: RepetitionAlgorithm,
                            private val db: PermanentDb,
                            private val debugOptions: DebugOptions) : RepetitionService {
+  override fun getBinaryScore(entityId: String, entityCategory: String): BinaryLearnScore? {
+    return repetitionAlgorithm.getBinaryScore(getAttempts(entityCategory, entityId))
+  }
 
   override fun getAttemptedItems(entityCategory: String): List<String> {
     return db.query1("SELECT DISTINCT(entityId) FROM attempts WHERE entityCategory='$entityCategory'")
@@ -29,9 +29,18 @@ class SqlRepetitionService(private val repetitionAlgorithm: RepetitionAlgorithm,
   }
 
   override fun computeDueDate(entityId: String, entityCategory: String, score: AttemptScore): DateTime {
-    val query = "SELECT dateTime, score FROM attempts WHERE entityId='$entityId' AND entityCategory='$entityCategory'"
-    val attempts = db.query2<Long, Double>(query).map { Attempt(it.second, DateTime(it.first)) }
+    val attempts = getAttempts(entityCategory, entityId)
     return repetitionAlgorithm.getNextDueDate(attempts.plus(Attempt(convertScore(score), DateTime.now())))
+  }
+
+  private fun getAttempts(entityCategory: String, entityId: String): List<Attempt> {
+    val query = "SELECT dateTime, score FROM attempts WHERE entityId='$entityId' AND entityCategory='$entityCategory'"
+    try {
+      return db.query2<Long, Double>(query).map { Attempt(it.second, DateTime(it.first)) }
+    }
+    catch(e: Exception) {
+      throw e
+    }
   }
 
   private fun convertScore(score: AttemptScore): Double {

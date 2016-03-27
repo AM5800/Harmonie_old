@@ -45,7 +45,7 @@ class HarmonieApplication : Application() {
     try {
       val lt = Lifetime()
       val container = ComponentContainer(lt, null)
-      val debugOptions = DebugOptions(false, false, null)
+      val debugOptions = DebugOptions(false, true, null)
       modelContainer = container
 
       val env = AndroidEnvironment(assets, this)
@@ -59,7 +59,7 @@ class HarmonieApplication : Application() {
       val wordsRepetitionService = WordsRepetitionServiceImpl(repetitionService)
 
       val sentenceProvider = SqlSentenceProvider()
-      val wordSelector = SqlWordSelector()
+      val wordSelector = SqlWordSelector(wordsRepetitionService, keyValueDb)
       val sentenceSelector = SqlSentenceSelector(wordsRepetitionService, loggerProvider, debugOptions, wordSelector)
       val dbConsumers = listOf(sentenceProvider, sentenceSelector, wordsRepetitionService, wordSelector)
       AndroidContentDb(this, keyValueDb, loggerProvider, dbConsumers, lt)

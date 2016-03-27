@@ -4,8 +4,12 @@ import org.joda.time.*
 
 
 class BucketRepetitionAlgorithm() : RepetitionAlgorithm {
-  override fun getScoreAsEnum(attempts: List<Attempt>): LearnScore {
-    throw UnsupportedOperationException()
+  override fun getBinaryScore(attempts: List<Attempt>): BinaryLearnScore? {
+    if (attempts.isEmpty()) return null
+    val sortedAndFiltered = attempts.sortedBy { it.dateTime }.takeLast(10)
+    val score = sortedAndFiltered.count { isSuccessful(it) } / sortedAndFiltered.count().toDouble()
+    if (score >= 0.5) return BinaryLearnScore.Good
+    return BinaryLearnScore.Bad
   }
 
   override fun getScoreAsInt(attempts: List<Attempt>): Int {

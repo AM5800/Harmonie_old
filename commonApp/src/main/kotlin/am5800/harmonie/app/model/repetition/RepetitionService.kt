@@ -11,5 +11,6 @@ interface RepetitionService {
   fun computeDueDate(entityId: String, entityCategory: String, score: AttemptScore): DateTime
   fun getScheduledEntities(entityCategory: String, dateTime: DateTime): List<String>
   fun getAttemptedItems(entityCategory: String): List<String>
+  fun getBinaryScore(entityId: String, entityCategory: String): BinaryLearnScore?
 }
 
