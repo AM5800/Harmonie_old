@@ -11,14 +11,14 @@ import org.junit.Assert
 import org.junit.Test
 
 
-class createViewModelsForQuestionTests {
+class CreateViewModelsForQuestionTests {
   @Test
   fun wordInTheMiddle() {
     Lifetime().use {
       val question = "Hello world!"
       val lemmas = LinkedHashMultimap.create<Word, TextRange>()
       lemmas.put(Word(Language.English, "ell"), TextRange(1, 4))
-      val vms = createViewModelsForQuestion(ParallelSentenceQuestion(Sentence(Language.English, question), Sentence(Language.English, ""), lemmas), it)
+      val vms = createViewModelsForQuestion(ParallelSentenceQuestion(Sentence(Language.English, question), Sentence(Language.English, ""), lemmas, emptySet()), it)
       Assert.assertEquals(4, vms.size)
       val h = vms[0]
       val ell = vms[1]
@@ -48,7 +48,7 @@ class createViewModelsForQuestionTests {
       val question = " Hello  my   beautiful   world!"
       val lemmas = LinkedHashMultimap.create<Word, TextRange>()
       lemmas.put(Word(Language.English, "my"), TextRange(8, 10))
-      val vms = createViewModelsForQuestion(ParallelSentenceQuestion(Sentence(Language.English, question), Sentence(Language.English, ""), lemmas), it)
+      val vms = createViewModelsForQuestion(ParallelSentenceQuestion(Sentence(Language.English, question), Sentence(Language.English, ""), lemmas, emptySet()), it)
       Assert.assertEquals(4, vms.size)
 
       val hello = vms[0]
