@@ -1,18 +1,26 @@
 import am5800.common.Language
 import am5800.common.db.Word
-import am5800.harmonie.app.model.repetition.LearnScore
-import am5800.harmonie.app.model.WordScore
 import am5800.harmonie.app.model.WordSelectorAlgorithm
+import am5800.harmonie.app.model.repetition.LearnScore
 import org.junit.Assert
 import org.junit.Test
+
+data class WordScore(val word: Word, val score: LearnScore)
+
 
 class WordSelectorAlgorithmTests {
   val testWords = IntRange(0, 999).map { WordScore(Word(Language.English, it.toString()), LearnScore.Unknown) }.toList()
   val defaultBaseSpeed = 36
 
+  private fun selectNextWord(data: List<WordScore>, previousWord: Word?, averageScore: Double, baseSpeed: Int): Word? {
+    val map = data.map { Pair(it.word, it.score) }.toMap()
+
+    return WordSelectorAlgorithm.selectNextWord(data.map { it.word }, previousWord, averageScore, { map[it]!! }, baseSpeed)
+  }
+
   @Test
   fun selectFirst() {
-    val selected = WordSelectorAlgorithm.selectNextWord(testWords, null, 0.0)
+    val selected = selectNextWord(testWords, null, 0.0, defaultBaseSpeed)
     Assert.assertEquals(testWords.first().word, selected)
   }
 
@@ -23,8 +31,17 @@ class WordSelectorAlgorithmTests {
     modifyScore(list, 10, LearnScore.Bad)
     val averageScore = computeAverageScore(list)
 
-    val selected = WordSelectorAlgorithm.selectNextWord(list, list.first().word, averageScore, 50)
+    val selected = selectNextWord(list, list.first().word, averageScore, 50)
     Assert.assertEquals(list[5].word, selected)
+  }
+
+  @Test
+  fun testPrevIsNull() {
+    val list = testWords.toMutableList()
+    modifyScore(list, 0, LearnScore.Good)
+
+    val selected = selectNextWord(list, null, 1.0, 50)
+    Assert.assertEquals(list[1].word, selected)
   }
 
   @Test
@@ -32,7 +49,7 @@ class WordSelectorAlgorithmTests {
     val list = testWords.toMutableList()
     modifyScore(list, 0, LearnScore.Good)
     modifyScore(list, 1, LearnScore.Bad)
-    val selected = WordSelectorAlgorithm.selectNextWord(list, list.first().word, 0.5, defaultBaseSpeed)
+    val selected = selectNextWord(list, list.first().word, 0.5, defaultBaseSpeed)
 
     Assert.assertEquals(list[2].word, selected)
   }
@@ -44,7 +61,7 @@ class WordSelectorAlgorithmTests {
     modifyScore(list, 1, LearnScore.Bad)
     modifyScore(list, 2, LearnScore.Good)
     modifyScore(list, 3, LearnScore.Good)
-    val selected = WordSelectorAlgorithm.selectNextWord(list, list.first().word, computeAverageScore(list), defaultBaseSpeed)
+    val selected = selectNextWord(list, list.first().word, computeAverageScore(list), defaultBaseSpeed)
 
     Assert.assertEquals(list[4].word, selected)
   }
@@ -58,7 +75,7 @@ class WordSelectorAlgorithmTests {
     modifyScore(list, 3, LearnScore.Good)
     modifyScore(list, 4, LearnScore.Good)
     modifyScore(list, 5, LearnScore.Good)
-    val selected = WordSelectorAlgorithm.selectNextWord(list, list.first().word, computeAverageScore(list), 4)
+    val selected = selectNextWord(list, list.first().word, computeAverageScore(list), 4)
 
     Assert.assertEquals(list[9].word, selected)
   }
@@ -67,14 +84,14 @@ class WordSelectorAlgorithmTests {
   fun testShortSequence() {
     val list = testWords.toMutableList().take(10).toMutableList()
     modifyScore(list, 0, LearnScore.Good)
-    val selected = WordSelectorAlgorithm.selectNextWord(list, list.first().word, 1.0, defaultBaseSpeed)
+    val selected = selectNextWord(list, list.first().word, 1.0, defaultBaseSpeed)
     Assert.assertEquals(list.last().word, selected)
   }
 
   @Test
   fun testShortSequenceAllGood() {
     val list = testWords.map { WordScore(it.word, LearnScore.Good) }
-    val selected = WordSelectorAlgorithm.selectNextWord(list, list.first().word, 1.0, defaultBaseSpeed)
+    val selected = selectNextWord(list, list.first().word, 1.0, defaultBaseSpeed)
     Assert.assertNull(selected)
   }
 
@@ -85,7 +102,7 @@ class WordSelectorAlgorithmTests {
     modifyScore(list, defaultBaseSpeed / 4, LearnScore.Good)
     val averageScore = computeAverageScore(list)
 
-    val selected = WordSelectorAlgorithm.selectNextWord(list, list.first().word, averageScore, defaultBaseSpeed)
+    val selected = selectNextWord(list, list.first().word, averageScore, defaultBaseSpeed)
     Assert.assertEquals(list[defaultBaseSpeed + 1].word, selected)
   }
 
@@ -93,7 +110,7 @@ class WordSelectorAlgorithmTests {
   fun testSlowSpeed() {
     val list = testWords.toMutableList()
     modifyScore(list, 0, LearnScore.Good)
-    val selected = WordSelectorAlgorithm.selectNextWord(list, list.first().word, 1.0, 1)
+    val selected = selectNextWord(list, list.first().word, 1.0, 1)
 
     Assert.assertEquals(list[1].word, selected)
   }
