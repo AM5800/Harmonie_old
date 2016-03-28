@@ -7,7 +7,6 @@ import am5800.harmonie.android.controllers.EmptyFlowContentController
 import am5800.harmonie.android.controllers.ParallelSentenceController
 import am5800.harmonie.android.controllers.StartScreenController
 import am5800.harmonie.android.logging.AndroidLoggerProvider
-import am5800.harmonie.android.model.FileEnvironment
 import am5800.harmonie.android.model.dbAccess.AndroidContentDb
 import am5800.harmonie.android.model.dbAccess.AndroidPermanentDb
 import am5800.harmonie.android.model.dbAccess.KeyValueDatabaseImpl
@@ -25,11 +24,6 @@ import am5800.harmonie.app.vm.DefaultFlowControllerOwnerViewModel
 import am5800.harmonie.app.vm.ParallelSentenceViewModel
 import am5800.harmonie.app.vm.StartScreenViewModel
 import android.app.Application
-import android.content.Context
-import android.content.res.AssetManager
-import java.io.FileNotFoundException
-import java.io.InputStream
-import java.io.OutputStream
 
 class HarmonieApplication : Application() {
   var modelContainer: ComponentContainer? = null
@@ -47,10 +41,6 @@ class HarmonieApplication : Application() {
       val container = ComponentContainer(lt, null)
       val debugOptions = DebugOptions(false, true, null)
       modelContainer = container
-
-      val env = AndroidEnvironment(assets, this)
-      container.register(env)
-
 
       val permanentDb = AndroidPermanentDb(this, lt)
       val keyValueDb = KeyValueDatabaseImpl(permanentDb)
@@ -90,40 +80,5 @@ class HarmonieApplication : Application() {
     }
 
     super.onCreate()
-  }
-}
-
-class AndroidEnvironment(private val assets: AssetManager, private val context: Context) : FileEnvironment {
-  override fun appendDataFile(path: String, func: (OutputStream) -> Unit) {
-    val stream = context.openFileOutput(path, Context.MODE_APPEND)
-    stream.use { func(it) }
-  }
-
-
-  override fun writeDataFile(path: String, func: (OutputStream) -> Unit) {
-    val stream = context.openFileOutput(path, Context.MODE_PRIVATE)
-    stream.use { func(it) }
-  }
-
-  override fun <T> tryReadDataFile(path: String, func: (InputStream) -> T?): T? {
-    try {
-      return context.openFileInput(path).use {
-        func(it)
-      }
-    } catch(e: FileNotFoundException) {
-      return null
-    }
-  }
-
-  override fun enumerateAssets(basePath: String): List<String> {
-    return assets.list(basePath).toList()
-  }
-
-  override fun <T> readAsset(path: String, func: (InputStream) -> T): T? {
-    try {
-      return assets.open(path).use(func)
-    } catch(e: FileNotFoundException) {
-      return null
-    }
   }
 }
