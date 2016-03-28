@@ -1,31 +1,18 @@
 package am5800.common
 
-enum class Language {
-  English,
-  German,
-  Russian,
-  Japanese
-}
-
-fun Language.code(): String {
-  return when (this) {
-    Language.English -> "en"
-    Language.German -> "de"
-    Language.Russian -> "ru"
-    Language.Japanese -> "jp"
-  }
+enum class Language(val code: String) {
+  English("en"),
+  German("de"),
+  Russian("ru"),
+  Japanese("jp")
 }
 
 class LanguageParser {
   companion object {
     fun parse(string: String): Language {
-      return when (string.toLowerCase()) {
-        "en" -> Language.English
-        "de" -> Language.German
-        "jp" -> Language.Japanese
-        "ru" -> Language.Russian
-        else -> throw Exception("Unknown language: $string")
-      }
+      val code = string.toLowerCase()
+      return Language.values().firstOrNull() { it.code == code }
+          ?: throw Exception("Unknown language code: $string")
     }
   }
 }

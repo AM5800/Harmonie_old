@@ -1,8 +1,5 @@
 package am5800.common
 
-import am5800.common.Language
-import am5800.common.code
-
 open class Word(val language: Language, val lemma: String) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -23,6 +20,6 @@ open class Word(val language: Language, val lemma: String) {
   }
 
   override fun toString(): String {
-    return "${language.code()}: $lemma"
+    return "${language.code}: $lemma"
   }
 }
