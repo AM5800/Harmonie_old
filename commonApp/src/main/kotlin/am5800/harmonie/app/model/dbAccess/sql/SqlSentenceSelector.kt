@@ -69,8 +69,8 @@ class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
         .singleOrNull()
   }
 
-  private fun findBestSentence(languageFrom: Language, languageTo: Language, contianingWords: List<SqlWord>): SentenceSelectorResult? {
-    if (contianingWords.isEmpty()) throw Exception("Nothing to search for")
+  private fun findBestSentence(languageFrom: Language, languageTo: Language, containingWords: List<SqlWord>): SentenceSelectorResult? {
+    if (containingWords.isEmpty()) throw Exception("Nothing to search for")
     val db = database!!
     val translations = ContentDbConstants.sentenceTranslationsTableName
     val sentences = ContentDbConstants.sentencesTableName
@@ -79,7 +79,7 @@ class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
     val difficulties = ContentDbConstants.sentenceDifficultyTableName
     val wordOccurrences = ContentDbConstants.wordOccurrencesTableName
 
-    val includeIds = contianingWords.map { it.id }.joinToString(", ")
+    val includeIds = containingWords.map { it.id }.joinToString(", ")
 
     val searchQuery = """
         SELECT s1.id, s1.text, s2.id, s2.text, $difficulties.difficulty
@@ -103,7 +103,7 @@ class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
     if (queryResult.size >= 1) {
       val minDifficulty = queryResult.first().value5
       return queryResult.takeWhile { it.value5 == minDifficulty }
-          .map { SentenceSelectorResult(SqlSentence(it.value1, languageFrom, it.value2), SqlSentence(it.value3, languageTo, it.value4), contianingWords.toSet()) }
+          .map { SentenceSelectorResult(SqlSentence(it.value1, languageFrom, it.value2), SqlSentence(it.value3, languageTo, it.value4), containingWords.toSet()) }
           .shuffle(debugOptions.randomSeed)
           .first()
     } else throw Exception("No sentences found")

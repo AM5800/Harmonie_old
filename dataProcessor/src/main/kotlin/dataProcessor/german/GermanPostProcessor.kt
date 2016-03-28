@@ -12,7 +12,7 @@ class GermanPostProcessor(private val lemmatizer: GermanLemmatizer) : SentencePo
     for (occurrence in occurrences.toList()) {
       if (shouldDelete(occurrence)) occurrences.remove(occurrence)
       else {
-        if (!isTokenized(metadata)) {
+        if (!isLemmatized(metadata)) {
           val lemma = lemmatizer.tryFindLemma(occurrence.lemma)
           if (lemma != null) occurrence.lemma = lemma
         } else occurrence.lemma = lemmatizer.normalize(occurrence.lemma)
@@ -32,7 +32,7 @@ class GermanPostProcessor(private val lemmatizer: GermanLemmatizer) : SentencePo
     return !value.toBoolean()
   }
 
-  private fun isTokenized(metadata: Map<String, String>): Boolean {
+  private fun isLemmatized(metadata: Map<String, String>): Boolean {
     val value = metadata["lemmatized"] ?: return false
     return value.toBoolean()
   }

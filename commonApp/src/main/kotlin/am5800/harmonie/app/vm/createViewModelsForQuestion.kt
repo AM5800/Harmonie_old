@@ -16,7 +16,7 @@ fun createViewModelsForQuestion(data: ParallelSentenceQuestion, lifetime: Lifeti
   var index = 0
   for ((word, range) in sortedOccurrences) {
     if (index != range.start) {
-      processNonToggleables(result, sentence, index, range.start)
+      processRegulars(result, sentence, index, range.start)
     }
     val text = sentence.substring(range.start, range.end)
 
@@ -27,15 +27,15 @@ fun createViewModelsForQuestion(data: ParallelSentenceQuestion, lifetime: Lifeti
   }
 
   if (index != sentence.length) {
-    processNonToggleables(result, sentence, index, sentence.length)
+    processRegulars(result, sentence, index, sentence.length)
   }
 
   return result
 }
 
-private fun processNonToggleables(result: MutableList<WordViewModel>, sentence: String, startIndex: Int, endIndex: Int) {
-  val substr = sentence.substring(startIndex, endIndex)
-  val words = substr.split(' ').map { it.trim() }.filterNot { it.isBlank() }
+private fun processRegulars(result: MutableList<WordViewModel>, sentence: String, startIndex: Int, endIndex: Int) {
+  val substring = sentence.substring(startIndex, endIndex)
+  val words = substring.split(' ').map { it.trim() }.filterNot { it.isBlank() }
   val needSpaceBeforeFirst = if (startIndex == 0) false else sentence[startIndex - 1] == ' ' || sentence[startIndex] == ' '
 
   words.forEachIndexed { i, s ->

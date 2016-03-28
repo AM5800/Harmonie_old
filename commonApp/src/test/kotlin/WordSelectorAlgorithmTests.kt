@@ -46,7 +46,7 @@ class WordSelectorAlgorithmTests {
 
   @Test
   fun prevWordDoesNotExist() {
-    val selected = selectNextWord(testWords, Word(Language.German, "Doesnotexist"), 1.0, 10)
+    val selected = selectNextWord(testWords, Word(Language.German, "whatever"), 1.0, 10)
     Assert.assertEquals(testWords.first().word, selected)
   }
 

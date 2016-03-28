@@ -29,6 +29,7 @@ proguard/
 .idea/*
 !.idea/codeStyleSettings.xml
 !.idea/runConfigurations
+!.idea/dictionaries
 .idea/tasks.xml
 .iws
  
