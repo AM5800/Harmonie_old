@@ -1,7 +1,7 @@
 package am5800.harmonie.app.model.dbAccess.sql
 
 import am5800.common.Language
-import am5800.common.db.Word
+import am5800.common.Word
 
 
 class SqlWord(val id: Long, language: Language, lemma: String) : Word(language, lemma) {

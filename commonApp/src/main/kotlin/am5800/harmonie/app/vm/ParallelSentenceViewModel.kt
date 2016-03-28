@@ -1,6 +1,6 @@
 package am5800.harmonie.app.vm
 
-import am5800.common.db.Word
+import am5800.common.Word
 import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
 import am5800.harmonie.app.model.flow.FlowManager

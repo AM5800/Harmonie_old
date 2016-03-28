@@ -1,5 +1,5 @@
 import am5800.common.Language
-import am5800.common.db.Word
+import am5800.common.Word
 import am5800.harmonie.app.model.WordSelectorAlgorithm
 import am5800.harmonie.app.model.repetition.BinaryLearnScore
 import org.junit.Assert

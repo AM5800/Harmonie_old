@@ -1,8 +1,8 @@
 package dataProcessor
 
-import am5800.common.db.Sentence
-import am5800.common.db.Word
-import am5800.common.db.WordOccurrence
+import am5800.common.Sentence
+import am5800.common.Word
+import am5800.common.WordOccurrence
 
 class Data(val sentenceTranslations: Map<Sentence, Sentence>,
            val wordOccurrences: List<WordOccurrence>,

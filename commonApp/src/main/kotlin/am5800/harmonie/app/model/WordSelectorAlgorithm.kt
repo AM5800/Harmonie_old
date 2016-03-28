@@ -1,6 +1,6 @@
 package am5800.harmonie.app.model
 
-import am5800.common.db.Word
+import am5800.common.Word
 import am5800.common.utils.functions.clamp
 import am5800.harmonie.app.model.repetition.BinaryLearnScore
 

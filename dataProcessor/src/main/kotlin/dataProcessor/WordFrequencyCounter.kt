@@ -2,7 +2,7 @@ package dataProcessor
 
 import am5800.common.Language
 import am5800.common.LanguageParser
-import am5800.common.db.Word
+import am5800.common.Word
 import corpus.CorpusInfo
 import corpus.parsing.CorpusParserHandler
 import corpus.parsing.ParsePartOfSpeech

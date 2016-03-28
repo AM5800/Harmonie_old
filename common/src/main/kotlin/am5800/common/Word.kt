@@ -1,4 +1,4 @@
-package am5800.common.db
+package am5800.common
 
 import am5800.common.Language
 import am5800.common.code

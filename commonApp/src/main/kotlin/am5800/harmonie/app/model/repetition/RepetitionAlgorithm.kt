@@ -8,6 +8,5 @@ enum class BinaryLearnScore {
 
 interface RepetitionAlgorithm {
   fun getNextDueDate(attempts: List<Attempt>): DateTime
-  fun getScoreAsInt(attempts: List<Attempt>): Int
   fun getBinaryScore(attempts: List<Attempt>): BinaryLearnScore?
 }

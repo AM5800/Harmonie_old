@@ -1,7 +1,7 @@
 package am5800.harmonie.app.model.dbAccess.sql
 
 import am5800.common.Language
-import am5800.common.db.Sentence
+import am5800.common.Sentence
 
 
 class SqlSentence(val id: Long, language: Language, text: String) : Sentence(language, text) {

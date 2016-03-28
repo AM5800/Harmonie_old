@@ -2,9 +2,9 @@ package dataProcessor
 
 import am5800.common.code
 import am5800.common.db.ContentDbConstants
-import am5800.common.db.Sentence
-import am5800.common.db.Word
-import am5800.common.db.WordOccurrence
+import am5800.common.Sentence
+import am5800.common.Word
+import am5800.common.WordOccurrence
 import org.tmatesoft.sqljet.core.SqlJetTransactionMode
 import org.tmatesoft.sqljet.core.table.ISqlJetTable
 import org.tmatesoft.sqljet.core.table.SqlJetDb

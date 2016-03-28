@@ -17,44 +17,37 @@ class SqlRepetitionService(private val repetitionAlgorithm: RepetitionAlgorithm,
 
   init {
     if (debugOptions.clearAttemptsOnLaunch) db.execute("DROP TABLE IF EXISTS attempts")
-    db.execute("CREATE TABLE IF NOT EXISTS attempts (entityId STRING, entityCategory STRING, dateTime INTEGER, score REAL)")
+    db.execute("CREATE TABLE IF NOT EXISTS attempts (entityId STRING, entityCategory STRING, dateTime INTEGER, score TEXT)")
   }
 
   override fun submitAttempt(entityId: String, entityCategory: String, score: AttemptScore): DateTime {
     val dueDate = computeDueDate(entityId, entityCategory, score)
     val dateTime = DateTime.now().millis
     if (!debugOptions.readonlyAttempts)
-      db.execute("INSERT INTO attempts VALUES('$entityId', '$entityCategory', $dateTime, ${convertScore(score)})")
+      db.execute("INSERT INTO attempts VALUES('$entityId', '$entityCategory', $dateTime, ${score.toString()})")
     return dueDate
   }
 
   override fun computeDueDate(entityId: String, entityCategory: String, score: AttemptScore): DateTime {
     val attempts = getAttempts(entityCategory, entityId)
-    return repetitionAlgorithm.getNextDueDate(attempts.plus(Attempt(convertScore(score), DateTime.now())))
+    return repetitionAlgorithm.getNextDueDate(attempts.plus(Attempt(score, DateTime.now())))
   }
 
   private fun getAttempts(entityCategory: String, entityId: String): List<Attempt> {
     val query = "SELECT dateTime, score FROM attempts WHERE entityId='$entityId' AND entityCategory='$entityCategory'"
     try {
-      return db.query2<Long, Double>(query).map { Attempt(it.second, DateTime(it.first)) }
+      return db.query2<Long, String>(query).map { Attempt(AttemptScore.valueOf(it.second), DateTime(it.first)) }
     } catch(e: Exception) {
       throw e
-    }
-  }
-
-  private fun convertScore(score: AttemptScore): Double {
-    return when (score) {
-      AttemptScore.Ok -> 1.0
-      else -> 0.0
     }
   }
 
   override fun getScheduledEntities(entityCategory: String, dateTime: DateTime): List<String> {
     val query = "SELECT entityId, dateTime, score FROM attempts WHERE entityCategory='$entityCategory'"
 
-    val dueDates = db.query3<String, Long, Double>(query)
+    val dueDates = db.query3<String, Long, String>(query)
         .groupBy { it.value1 }
-        .mapValues { pair -> pair.value.map { Attempt(it.value3, DateTime(it.value2)) } }
+        .mapValues { pair -> pair.value.map { Attempt(AttemptScore.valueOf(it.value3), DateTime(it.value2)) } }
         .mapValues { repetitionAlgorithm.getNextDueDate(it.value) }
 
     return dueDates.filter { it.value < DateTime.now() }.map { it.key }

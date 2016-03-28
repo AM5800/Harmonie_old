@@ -1,9 +1,9 @@
 package dataProcessor
 
 import am5800.common.LanguageParser
-import am5800.common.db.Sentence
-import am5800.common.db.Word
-import am5800.common.db.WordOccurrence
+import am5800.common.Sentence
+import am5800.common.Word
+import am5800.common.WordOccurrence
 import corpus.CorpusInfo
 import org.xml.sax.Attributes
 import org.xml.sax.helpers.DefaultHandler

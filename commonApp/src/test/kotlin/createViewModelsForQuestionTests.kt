@@ -1,6 +1,6 @@
 import am5800.common.Language
-import am5800.common.db.Sentence
-import am5800.common.db.Word
+import am5800.common.Sentence
+import am5800.common.Word
 import am5800.common.utils.Lifetime
 import am5800.common.utils.TextRange
 import am5800.harmonie.app.model.flow.ParallelSentenceQuestion

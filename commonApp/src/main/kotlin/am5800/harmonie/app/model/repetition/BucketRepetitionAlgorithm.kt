@@ -12,10 +12,6 @@ class BucketRepetitionAlgorithm() : RepetitionAlgorithm {
     return BinaryLearnScore.Bad
   }
 
-  override fun getScoreAsInt(attempts: List<Attempt>): Int {
-    return compute(attempts.sortedBy { it.dateTime }).first
-  }
-
   val buckets: List<Period> = listOf(Hours.ONE.toPeriod(), Days.ONE.toPeriod(), Weeks.TWO.toPeriod(), Months.TWO.toPeriod(), Months.SIX.toPeriod())
 
   override fun getNextDueDate(attempts: List<Attempt>): DateTime {
@@ -49,7 +45,7 @@ class BucketRepetitionAlgorithm() : RepetitionAlgorithm {
     return Pair(bucket, base.dateTime.plus(delta))
   }
 
-  private fun isSuccessful(attempt: Attempt) = attempt.score > 0.9
+  private fun isSuccessful(attempt: Attempt) = attempt.score == AttemptScore.Ok
 
   private fun isAfterDueDate(currentAttempt: Attempt, previousAttempt: Attempt, bucket: Int): Boolean {
     return previousAttempt.dateTime + buckets[bucket] <= currentAttempt.dateTime

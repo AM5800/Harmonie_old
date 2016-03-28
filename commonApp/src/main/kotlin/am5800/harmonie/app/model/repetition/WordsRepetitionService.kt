@@ -3,7 +3,7 @@ package am5800.harmonie.app.model.repetition
 import am5800.common.Language
 import am5800.common.code
 import am5800.common.db.ContentDbConstants
-import am5800.common.db.Word
+import am5800.common.Word
 import am5800.harmonie.app.model.dbAccess.sql.ContentDb
 import am5800.harmonie.app.model.dbAccess.sql.ContentDbConsumer
 import am5800.harmonie.app.model.dbAccess.sql.SqlWord
