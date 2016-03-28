@@ -1,9 +1,14 @@
 package am5800.harmonie.android
 
-import am5800.harmonie.app.vm.Visibility
 import android.view.View
 
-fun Visibility.toVisible(): Int {
+enum class Visibility {
+  Visible,
+  Invisible,
+  Collapsed
+}
+
+fun Visibility.toAndroidVisibility(): Int {
   return when (this) {
     Visibility.Visible -> View.VISIBLE
     Visibility.Invisible -> View.INVISIBLE

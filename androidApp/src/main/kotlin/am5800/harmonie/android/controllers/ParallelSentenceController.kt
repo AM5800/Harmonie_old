@@ -2,6 +2,7 @@ package am5800.harmonie.android.controllers
 
 import am5800.common.utils.Lifetime
 import am5800.harmonie.android.R
+import am5800.harmonie.android.Visibility
 import am5800.harmonie.android.viewBinding.BindableController
 import am5800.harmonie.android.viewBinding.BindableView
 import am5800.harmonie.app.model.repetition.AttemptScore
@@ -17,8 +18,7 @@ import org.apmem.tools.layouts.FlowLayout
 
 class ParallelSentenceController(lifetime: Lifetime,
                                  flowContentController: FlowController,
-                                 private val vm: ParallelSentenceViewModel
-) : BindableController {
+                                 private val vm: ParallelSentenceViewModel) : BindableController {
 
   override val id: Int = R.layout.parallel_sentence
   override fun bind(view: BindableView, bindingLifetime: Lifetime) {
@@ -26,7 +26,7 @@ class ParallelSentenceController(lifetime: Lifetime,
 
     val answer = view.getChild<TextView>(R.id.answer)
     answer.bindText(bindingLifetime, view, vm.answer)
-    answer.bindVisibility(bindingLifetime, view, vm.answerGroupVisibility)
+    answer.bindVisibility(bindingLifetime, view, vm.answerGroupVisibility, Visibility.Collapsed)
 
     val nextBtn = view.getChild<Button>(R.id.continueBtn)
     nextBtn.bindOnClick(bindingLifetime, { vm.next() })

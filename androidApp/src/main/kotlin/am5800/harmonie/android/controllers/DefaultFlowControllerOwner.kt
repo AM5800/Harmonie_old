@@ -4,6 +4,7 @@ import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
 import am5800.harmonie.android.ControllerStack
 import am5800.harmonie.android.R
+import am5800.harmonie.android.Visibility
 import am5800.harmonie.android.viewBinding.BindableController
 import am5800.harmonie.android.viewBinding.BindableView
 import am5800.harmonie.app.vm.DefaultFlowControllerOwnerViewModel
@@ -28,7 +29,7 @@ class DefaultFlowControllerOwner(private val stack: ControllerStack,
     val statusGroup = view.getChild<View>(R.id.statusGroup)
     val statusMessage = view.getChild<TextView>(R.id.statusTextView)
 
-    statusGroup.bindVisibility(bindingLifetime, view, vm.statusVisibility)
+    statusGroup.bindVisibility(bindingLifetime, view, vm.statusVisibility, Visibility.Collapsed)
     statusMessage.bindText(bindingLifetime, view, vm.timeLeft, { duration ->
       val minutes = duration.standardMinutes.toInt()
       if (minutes > 0) resources.getQuantityString(R.plurals.minutesLeft, minutes, minutes)

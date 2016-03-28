@@ -2,19 +2,19 @@ package am5800.harmonie.android.controllers
 
 import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
-import am5800.harmonie.android.toVisible
+import am5800.harmonie.android.Visibility
+import am5800.harmonie.android.toAndroidVisibility
 import am5800.harmonie.android.viewBinding.UIThreadRunner
-import am5800.harmonie.app.vm.Visibility
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 
 
-fun View.bindVisibility(lifetime: Lifetime, uiThreadRunner: UIThreadRunner, property: Property<Visibility>) {
-  property.bind(lifetime, { args ->
-    val value = args.newValue
-    if (value != null) {
-      uiThreadRunner.runOnUiThread { this.visibility = value.toVisible() }
+fun View.bindVisibility(lifetime: Lifetime, uiThreadRunner: UIThreadRunner, property: Property<Boolean>, invisibleValue: Visibility) {
+  property.bindNotNull(lifetime, { value ->
+    uiThreadRunner.runOnUiThread {
+      if (value) this.visibility = Visibility.Visible.toAndroidVisibility()
+      else this.visibility = invisibleValue.toAndroidVisibility()
     }
   })
 }

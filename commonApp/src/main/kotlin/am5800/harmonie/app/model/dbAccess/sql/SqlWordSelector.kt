@@ -6,7 +6,7 @@ import am5800.common.db.ContentDbConstants
 import am5800.harmonie.app.model.WordSelector
 import am5800.harmonie.app.model.WordSelectorAlgorithm
 import am5800.harmonie.app.model.dbAccess.KeyValueDatabase
-import am5800.harmonie.app.model.repetition.WordsRepetitionService
+import am5800.harmonie.app.model.dbAccess.WordsRepetitionService
 
 class SqlWordSelector(private val wordsRepetitionService: WordsRepetitionService, private val keyValueDatabase: KeyValueDatabase) : WordSelector, ContentDbConsumer {
   override fun dbMigrationPhase1(oldDb: ContentDb) {

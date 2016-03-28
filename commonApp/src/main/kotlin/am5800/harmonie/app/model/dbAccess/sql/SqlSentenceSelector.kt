@@ -8,7 +8,7 @@ import am5800.harmonie.app.model.SentenceSelector
 import am5800.harmonie.app.model.SentenceSelectorResult
 import am5800.harmonie.app.model.WordSelector
 import am5800.harmonie.app.model.logging.LoggerProvider
-import am5800.harmonie.app.model.repetition.WordsRepetitionService
+import am5800.harmonie.app.model.dbAccess.WordsRepetitionService
 import org.joda.time.DateTime
 
 

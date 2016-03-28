@@ -7,9 +7,9 @@ import am5800.harmonie.android.controllers.EmptyFlowContentController
 import am5800.harmonie.android.controllers.ParallelSentenceController
 import am5800.harmonie.android.controllers.StartScreenController
 import am5800.harmonie.android.logging.AndroidLoggerProvider
-import am5800.harmonie.android.model.dbAccess.AndroidContentDb
-import am5800.harmonie.android.model.dbAccess.AndroidPermanentDb
-import am5800.harmonie.android.model.dbAccess.KeyValueDatabaseImpl
+import am5800.harmonie.android.dbAccess.AndroidContentDb
+import am5800.harmonie.android.dbAccess.AndroidPermanentDb
+import am5800.harmonie.android.dbAccess.KeyValueDatabaseImpl
 import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.dbAccess.sql.SqlRepetitionService
 import am5800.harmonie.app.model.dbAccess.sql.SqlSentenceProvider
@@ -19,7 +19,7 @@ import am5800.harmonie.app.model.flow.FlowItemProviderRegistrar
 import am5800.harmonie.app.model.flow.FlowManager
 import am5800.harmonie.app.model.flow.ParallelSentenceFlowManager
 import am5800.harmonie.app.model.repetition.BucketRepetitionAlgorithm
-import am5800.harmonie.app.model.repetition.WordsRepetitionServiceImpl
+import am5800.harmonie.app.model.dbAccess.WordsRepetitionServiceImpl
 import am5800.harmonie.app.vm.DefaultFlowControllerOwnerViewModel
 import am5800.harmonie.app.vm.ParallelSentenceViewModel
 import am5800.harmonie.app.vm.StartScreenViewModel

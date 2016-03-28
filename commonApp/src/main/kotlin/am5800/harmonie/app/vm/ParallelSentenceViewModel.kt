@@ -45,16 +45,16 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
     }
   }
 
-  val answerGroupVisibility = Property(lifetime, Visibility.Collapsed)
+  val answerGroupVisibility = Property(lifetime, false)
   val question = Property(lifetime, emptyList<WordViewModel>())
   val answer = Property(lifetime, "")
 
   init {
     state.forEachValue(lifetime, { state, lt ->
       if (state == State.ShowQuestion) {
-        answerGroupVisibility.value = Visibility.Collapsed
+        answerGroupVisibility.value = false
       } else if (state == State.ShowAnswer) {
-        answerGroupVisibility.value = Visibility.Visible
+        answerGroupVisibility.value = true
       }
     })
 
