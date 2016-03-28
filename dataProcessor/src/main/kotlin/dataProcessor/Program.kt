@@ -89,7 +89,7 @@ fun extractLanguages(data: Data): List<Language> {
 }
 
 fun filterByDifficulty(data: Data, language: Language): Map<Sentence, Int> {
-  val sentences = data.sentenceTranslations.map { if (it.key.language == language) it.key else it.value }.toList()
+  val sentences = data.sentenceTranslations.filter { it.key.language == language }.map { it.key }.toList()
   val occurrences = data.wordOccurrences.filter { it.word.language == language }
   val sentenceToOccurrences: Map<Sentence, List<WordOccurrence>> = occurrences.groupBy { it.sentence }
   val totalWordsCount = data.realWorldWordsCount.values.sum()
@@ -116,7 +116,7 @@ fun filterByDifficulty(data: Data, language: Language): Map<Sentence, Int> {
 }
 
 private fun acceptOptimalSentenceSize(language: Language, size: Int): Boolean {
-  if (language == Language.Japanese) return size >= 3 && size < 10
+  if (language == Language.Japanese) return true
   return size > 4 && size < 15
 }
 
