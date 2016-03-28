@@ -14,11 +14,13 @@ class ComponentContainer(val lifetime: Lifetime, val parent: ComponentContainer?
   }
 
   val components: List<Any>
-    get() = _components
+    get() = lifetime.execute { _components }
 
 
   fun register(component: Any) {
-    _components.add(component)
+    lifetime.execute {
+      _components.add(component)
+    }
   }
 }
 
@@ -30,5 +32,5 @@ inline fun <reified T> ComponentContainer.getComponent(): T {
     container = container.parent
   }
 
-  throw Exception("Component not found" + T::class.qualifiedName)
+  throw Exception("Component not found: " + T::class.qualifiedName)
 }

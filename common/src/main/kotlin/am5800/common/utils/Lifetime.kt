@@ -3,6 +3,8 @@ package am5800.common.utils
 import java.io.Closeable
 import java.util.*
 
+class TerminatedLifetimeException : Exception("Lifetime is already terminated")
+
 class Lifetime(parentLifetime: Lifetime? = null) : Closeable {
   private val lockObject = Any()
 
@@ -40,7 +42,7 @@ class Lifetime(parentLifetime: Lifetime? = null) : Closeable {
 
   fun addAction(action: () -> Unit) {
     synchronized(lockObject) {
-      if (isTerminated) throw Exception("Lifetime is already terminated")
+      if (isTerminated) throw TerminatedLifetimeException()
       actions.add (action)
     }
   }
@@ -51,6 +53,13 @@ class Lifetime(parentLifetime: Lifetime? = null) : Closeable {
 
       actions.add(action)
       true
+    }
+  }
+
+  fun <T>execute(function: () -> T): T {
+    return synchronized(lockObject) {
+      if (isTerminated) throw TerminatedLifetimeException()
+      function()
     }
   }
 }
