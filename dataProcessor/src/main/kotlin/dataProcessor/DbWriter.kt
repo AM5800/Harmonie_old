@@ -1,10 +1,9 @@
 package dataProcessor
 
-import am5800.common.code
-import am5800.common.db.ContentDbConstants
 import am5800.common.Sentence
 import am5800.common.Word
 import am5800.common.WordOccurrence
+import am5800.common.db.ContentDbConstants
 import org.tmatesoft.sqljet.core.SqlJetTransactionMode
 import org.tmatesoft.sqljet.core.table.ISqlJetTable
 import org.tmatesoft.sqljet.core.table.SqlJetDb
@@ -37,7 +36,7 @@ class DbWriter {
 
     for (occurrencePair in wordsOccurrences.distinct().groupBy { it.word }) {
       val word = occurrencePair.key
-      val lang = word.language.code()
+      val lang = word.language.code
 
       val wordId = wordsTable.insert(lang, word.lemma)
       val count = wordCounts[word]!!
@@ -69,7 +68,7 @@ class DbWriter {
   private fun getOrInsert(sentence: Sentence, sentenceToId: MutableMap<Sentence, Long>, sentencesTable: ISqlJetTable): Long {
     val id = sentenceToId[sentence]
     if (id == null) {
-      val insertedId = sentencesTable.insert(sentence.language.code(), sentence.text)
+      val insertedId = sentencesTable.insert(sentence.language.code, sentence.text)
       sentenceToId[sentence] = insertedId
       return insertedId
     } else return id

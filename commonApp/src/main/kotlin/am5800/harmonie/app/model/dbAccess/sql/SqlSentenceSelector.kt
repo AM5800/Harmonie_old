@@ -1,7 +1,6 @@
 package am5800.harmonie.app.model.dbAccess.sql
 
 import am5800.common.Language
-import am5800.common.code
 import am5800.common.db.ContentDbConstants
 import am5800.common.utils.functions.shuffle
 import am5800.harmonie.app.model.DebugOptions
@@ -34,8 +33,6 @@ class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
   }
 
   override fun findBestSentence(languageFrom: Language, languageTo: Language): SentenceSelectorResult? {
-
-    val attempted = repetitionService.getAttemptedWords(languageFrom).filterIsInstance<SqlWord>()
     val scheduled = repetitionService.getScheduledWords(languageFrom, DateTime.now()).filterIsInstance<SqlWord>()
 
     logger.info("Looking for best sentence. ${scheduled.size} words scheduled")
@@ -53,8 +50,8 @@ class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
   private fun getRandomSentence(languageFrom: Language, languageTo: Language): SentenceSelectorResult? {
     val translations = ContentDbConstants.sentenceTranslationsTableName
     val sentences = ContentDbConstants.sentencesTableName
-    val langFrom = languageFrom.code()
-    val langTo = languageTo.code()
+    val langFrom = languageFrom.code
+    val langTo = languageTo.code
     val query = """
         SELECT s1.id, s1.text, s2.id, s2.text
           FROM $translations
@@ -77,8 +74,8 @@ class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
     val db = database!!
     val translations = ContentDbConstants.sentenceTranslationsTableName
     val sentences = ContentDbConstants.sentencesTableName
-    val langFrom = languageFrom.code()
-    val langTo = languageTo.code()
+    val langFrom = languageFrom.code
+    val langTo = languageTo.code
     val difficulties = ContentDbConstants.sentenceDifficultyTableName
     val wordOccurrences = ContentDbConstants.wordOccurrencesTableName
 

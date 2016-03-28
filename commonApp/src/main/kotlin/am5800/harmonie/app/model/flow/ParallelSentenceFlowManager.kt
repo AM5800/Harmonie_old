@@ -51,5 +51,4 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
       logger.info("'${word.lemma}' has score of $score and scheduled to ${dueDate.toString()} ")
     }
   }
-
 }

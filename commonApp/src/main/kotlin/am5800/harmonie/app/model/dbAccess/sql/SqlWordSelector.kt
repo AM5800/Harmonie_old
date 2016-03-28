@@ -1,9 +1,8 @@
 package am5800.harmonie.app.model.dbAccess.sql
 
 import am5800.common.Language
-import am5800.common.code
-import am5800.common.db.ContentDbConstants
 import am5800.common.Word
+import am5800.common.db.ContentDbConstants
 import am5800.harmonie.app.model.WordSelector
 import am5800.harmonie.app.model.WordSelectorAlgorithm
 import am5800.harmonie.app.model.dbAccess.KeyValueDatabase
@@ -27,7 +26,7 @@ class SqlWordSelector(private val wordsRepetitionService: WordsRepetitionService
   override fun findBestWord(language: Language): Word? {
     val orderedWords = getOrderedWords(language)
 
-    val settingsKey = "latestSelected-${language.code()}"
+    val settingsKey = "latestSelected-${language.code}"
     val prevLemma = keyValueDatabase.tryGetValue(settingsKey)
     val prevWord = if (prevLemma == null) null else Word(language, prevLemma)
 
@@ -42,7 +41,7 @@ class SqlWordSelector(private val wordsRepetitionService: WordsRepetitionService
   private fun getOrderedWords(language: Language): List<SqlWord> {
     val counts = ContentDbConstants.wordCountsTableName
     val words = ContentDbConstants.wordsTableName
-    val lang = language.code()
+    val lang = language.code
     val query = """
         SELECT $words.id, $words.lemma
           FROM $words

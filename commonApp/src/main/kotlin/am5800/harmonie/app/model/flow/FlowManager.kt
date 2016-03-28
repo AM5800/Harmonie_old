@@ -46,7 +46,7 @@ class FlowManager(private val lifetime: Lifetime, private val loggerProvider: Lo
   }
 
   fun next() {
-    if (timeLeft.value == org.joda.time.Duration.ZERO) {
+    if (timeLeft.value == Duration.ZERO) {
       finishFlow()
       return
     }

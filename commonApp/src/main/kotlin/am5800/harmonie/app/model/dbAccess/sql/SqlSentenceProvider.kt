@@ -1,9 +1,9 @@
 package am5800.harmonie.app.model.dbAccess.sql
 
-import am5800.common.db.ContentDbConstants
 import am5800.common.Sentence
 import am5800.common.Word
 import am5800.common.WordOccurrence
+import am5800.common.db.ContentDbConstants
 import am5800.harmonie.app.model.dbAccess.SentenceProvider
 
 class SqlSentenceProvider() : SentenceProvider, ContentDbConsumer {

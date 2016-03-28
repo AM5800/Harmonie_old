@@ -56,7 +56,7 @@ class Lifetime(parentLifetime: Lifetime? = null) : Closeable {
     }
   }
 
-  fun <T>execute(function: () -> T): T {
+  fun <T> execute(function: () -> T): T {
     return synchronized(lockObject) {
       if (isTerminated) throw TerminatedLifetimeException()
       function()

@@ -1,9 +1,8 @@
 package am5800.harmonie.app.model.repetition
 
 import am5800.common.Language
-import am5800.common.code
-import am5800.common.db.ContentDbConstants
 import am5800.common.Word
+import am5800.common.db.ContentDbConstants
 import am5800.harmonie.app.model.dbAccess.sql.ContentDb
 import am5800.harmonie.app.model.dbAccess.sql.ContentDbConsumer
 import am5800.harmonie.app.model.dbAccess.sql.SqlWord
@@ -52,7 +51,7 @@ class WordsRepetitionServiceImpl(private val repetitionService: RepetitionServic
   }
 
   private val attemptCategory = "ParallelSentenceWords"
-  private fun getCategory(language: Language) = attemptCategory + language.code()
+  private fun getCategory(language: Language) = attemptCategory + language.code
 
   override fun submitAttempt(word: Word, score: AttemptScore): DateTime {
     val category = getCategory(word.language)
@@ -85,7 +84,7 @@ class WordsRepetitionServiceImpl(private val repetitionService: RepetitionServic
 
     val words = ContentDbConstants.wordsTableName
     val joinedLemmas = lemmasToSearch.map { "'$it'" }.joinToString(", ")
-    val langCode = language.code()
+    val langCode = language.code
     val query = "SELECT id, lemma FROM $words WHERE language='$langCode' AND lemma IN ($joinedLemmas)"
     val queryResult = database!!.query2<Long, String>(query).map { SqlWord(it.first, language, it.second) }
     for (word in queryResult) {
