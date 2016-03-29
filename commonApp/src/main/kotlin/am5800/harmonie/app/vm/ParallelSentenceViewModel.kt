@@ -5,18 +5,18 @@ import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
 import am5800.harmonie.app.model.flow.FlowManager
 import am5800.harmonie.app.model.flow.ParallelSentenceFlowManager
-import am5800.harmonie.app.model.repetition.AttemptScore
+import am5800.harmonie.app.model.repetition.LearnScore
 import java.util.*
 
 open class WordViewModel(val text: String, val needSpaceBefore: Boolean)
 
 class ToggleableWordViewModel(val word: Word, text: String,
-                              val state: Property<AttemptScore>,
+                              val state: Property<LearnScore>,
                               needSpaceBefore: Boolean,
                               val highlight: Boolean) : WordViewModel(text, needSpaceBefore) {
   fun toggle() {
-    if (state.value == AttemptScore.Ok) state.value = AttemptScore.Wrong
-    else state.value = AttemptScore.Ok
+    if (state.value == LearnScore.Good) state.value = LearnScore.Bad
+    else state.value = LearnScore.Good
   }
 }
 
@@ -35,7 +35,7 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
     if (state.value == State.ShowQuestion) {
       state.value = State.ShowAnswer
     } else {
-      val scores = LinkedHashMap<Word, AttemptScore>()
+      val scores = LinkedHashMap<Word, LearnScore>()
       val vms = question.value?.filterIsInstance<ToggleableWordViewModel>() ?: emptyList()
       for (vm in vms) {
         scores.put(vm.word, vm.state.value!!)

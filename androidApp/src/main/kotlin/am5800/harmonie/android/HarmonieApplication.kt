@@ -39,17 +39,17 @@ class HarmonieApplication : Application() {
     try {
       val lt = Lifetime()
       val container = ComponentContainer(lt, null)
-      val debugOptions = DebugOptions(false, false, null)
+      val debugOptions = DebugOptions(true, null)
       modelContainer = container
 
       val permanentDb = AndroidPermanentDb(this, lt)
       val keyValueDb = KeyValueDatabaseImpl(permanentDb)
 
       val repetitionService = SqlRepetitionService(BucketRepetitionAlgorithm(), permanentDb, debugOptions)
-      val wordsRepetitionService = WordsRepetitionServiceImpl(repetitionService)
+      val wordsRepetitionService = WordsRepetitionServiceImpl(repetitionService, lt)
 
       val sentenceProvider = SqlSentenceProvider()
-      val wordSelector = SqlWordSelector(wordsRepetitionService, keyValueDb)
+      val wordSelector = SqlWordSelector(wordsRepetitionService, keyValueDb, lt, debugOptions)
       val sentenceSelector = SqlSentenceSelector(wordsRepetitionService, loggerProvider, debugOptions, wordSelector)
       val dbConsumers = listOf(sentenceProvider, sentenceSelector, wordsRepetitionService, wordSelector)
       AndroidContentDb(this, keyValueDb, loggerProvider, dbConsumers, lt)

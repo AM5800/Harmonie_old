@@ -1,5 +1,5 @@
 import am5800.harmonie.app.model.repetition.Attempt
-import am5800.harmonie.app.model.repetition.AttemptScore
+import am5800.harmonie.app.model.repetition.LearnScore
 import am5800.harmonie.app.model.repetition.BinaryLearnScore
 import am5800.harmonie.app.model.repetition.BucketRepetitionAlgorithm
 import org.joda.time.DateTime
@@ -164,20 +164,20 @@ class BucketRepetitionAlgorithmTests {
   private class AttemptsBuilder {
     val result = mutableListOf<Attempt>()
 
-    fun start(score: AttemptScore) {
+    fun start(score: LearnScore) {
       if (result.isNotEmpty()) throw Exception("Start should only be called on empty builder")
       result.add(Attempt(score, DateTime.now()))
     }
 
-    fun next(period: ReadablePeriod, score: AttemptScore) {
+    fun next(period: ReadablePeriod, score: LearnScore) {
       if (result.isEmpty()) throw Exception("Start was not called!")
       val last = result.last()
       result.add(Attempt(score, last.dateTime.plus(period)))
     }
 
-    fun wrong() = start(AttemptScore.Wrong)
-    fun wrong(period: ReadablePeriod) = next(period, AttemptScore.Wrong)
-    fun ok() = start(AttemptScore.Ok)
-    fun ok(period: ReadablePeriod) = next(period, AttemptScore.Ok)
+    fun wrong() = start(LearnScore.Bad)
+    fun wrong(period: ReadablePeriod) = next(period, LearnScore.Bad)
+    fun ok() = start(LearnScore.Good)
+    fun ok(period: ReadablePeriod) = next(period, LearnScore.Good)
   }
 }

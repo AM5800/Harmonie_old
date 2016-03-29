@@ -5,7 +5,7 @@ import am5800.harmonie.android.R
 import am5800.harmonie.android.Visibility
 import am5800.harmonie.android.viewBinding.BindableController
 import am5800.harmonie.android.viewBinding.BindableView
-import am5800.harmonie.app.model.repetition.AttemptScore
+import am5800.harmonie.app.model.repetition.LearnScore
 import am5800.harmonie.app.vm.ParallelSentenceViewModel
 import am5800.harmonie.app.vm.ToggleableWordViewModel
 import am5800.harmonie.app.vm.WordViewModel
@@ -53,7 +53,7 @@ class ParallelSentenceController(lifetime: Lifetime,
       }
 
       childVm.state.bind(bindingLifetime, {
-        if (it.newValue == AttemptScore.Ok) wordView.setTextColor(Color.BLACK)
+        if (it.newValue == LearnScore.Good) wordView.setTextColor(Color.BLACK)
         else wordView.setTextColor(Color.RED)
       })
     }

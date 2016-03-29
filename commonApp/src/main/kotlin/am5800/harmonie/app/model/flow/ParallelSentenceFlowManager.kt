@@ -9,7 +9,7 @@ import am5800.harmonie.app.model.SentenceSelector
 import am5800.harmonie.app.model.SentenceSelectorResult
 import am5800.harmonie.app.model.dbAccess.SentenceProvider
 import am5800.harmonie.app.model.logging.LoggerProvider
-import am5800.harmonie.app.model.repetition.AttemptScore
+import am5800.harmonie.app.model.repetition.LearnScore
 import am5800.harmonie.app.model.dbAccess.WordsRepetitionService
 import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.Multimap
@@ -45,10 +45,9 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
     return ParallelSentenceQuestion(findResult.question, findResult.answer, occurrences, findResult.highlightedWords)
   }
 
-  fun submitScore(scores: Map<Word, AttemptScore>) {
+  fun submitScore(scores: Map<Word, LearnScore>) {
     for ((word, score) in scores) {
-      val dueDate = repetitionService.submitAttempt(word, score)
-      logger.info("'${word.lemma}' has score of $score and scheduled to ${dueDate.toString()} ")
+      repetitionService.submitAttempt(word, score)
     }
   }
 }

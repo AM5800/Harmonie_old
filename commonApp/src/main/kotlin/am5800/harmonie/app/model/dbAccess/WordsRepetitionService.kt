@@ -3,27 +3,32 @@ package am5800.harmonie.app.model.dbAccess
 import am5800.common.Language
 import am5800.common.Word
 import am5800.common.db.ContentDbConstants
+import am5800.common.utils.Lifetime
+import am5800.common.utils.Signal
 import am5800.harmonie.app.model.dbAccess.sql.ContentDb
 import am5800.harmonie.app.model.dbAccess.sql.ContentDbConsumer
 import am5800.harmonie.app.model.dbAccess.sql.SqlWord
 import am5800.harmonie.app.model.dbAccess.sql.query2
-import am5800.harmonie.app.model.repetition.AttemptScore
-import am5800.harmonie.app.model.repetition.BinaryLearnScore
+import am5800.harmonie.app.model.repetition.LearnScore
 import am5800.harmonie.app.model.repetition.RepetitionService
 import org.joda.time.DateTime
 
+class WordAttemptResult(val word: Word, val dueDate: DateTime, val score: LearnScore)
+
 interface WordsRepetitionService {
-  fun submitAttempt(word: Word, score: AttemptScore): DateTime
-  fun computeDueDate(word: Word, score: AttemptScore): DateTime
+  fun submitAttempt(word: Word, score: LearnScore)
+  fun computeDueDate(word: Word, score: LearnScore): DateTime
   fun getScheduledWords(language: Language, dateTime: DateTime): List<Word>
   fun getAttemptedWords(language: Language): List<Word>
-
-  fun getBinaryWordScore(word: Word): BinaryLearnScore?
+  val attemptResultReceived: Signal<WordAttemptResult>
+  fun getBinaryWordScore(word: Word): LearnScore?
   fun getAverageBinaryScore(language: Language): Double
 }
 
-class WordsRepetitionServiceImpl(private val repetitionService: RepetitionService) : WordsRepetitionService, ContentDbConsumer {
-  override fun getBinaryWordScore(word: Word): BinaryLearnScore? {
+class WordsRepetitionServiceImpl(private val repetitionService: RepetitionService, lifetime: Lifetime) : WordsRepetitionService, ContentDbConsumer {
+  private val cache = mutableMapOf<Pair<String, Language>, SqlWord>()
+
+  override fun getBinaryWordScore(word: Word): LearnScore? {
     return repetitionService.getBinaryScore(word.lemma, getCategory(word.language))
   }
 
@@ -32,13 +37,13 @@ class WordsRepetitionServiceImpl(private val repetitionService: RepetitionServic
         .map { getBinaryWordScore(it) }.filterNotNull()
         .map {
           when (it) {
-            BinaryLearnScore.Good -> 1.0
-            BinaryLearnScore.Bad -> 0.0
+            LearnScore.Good -> 1.0
+            LearnScore.Bad -> 0.0
           }
         }.average()
   }
 
-  private val cache = mutableMapOf<Pair<String, Language>, SqlWord>()
+  override val attemptResultReceived = Signal<WordAttemptResult>(lifetime)
 
   override fun dbMigrationPhase1(oldDb: ContentDb) {
 
@@ -56,12 +61,13 @@ class WordsRepetitionServiceImpl(private val repetitionService: RepetitionServic
   private val attemptCategory = "ParallelSentenceWords"
   private fun getCategory(language: Language) = attemptCategory + language.code
 
-  override fun submitAttempt(word: Word, score: AttemptScore): DateTime {
+  override fun submitAttempt(word: Word, score: LearnScore) {
     val category = getCategory(word.language)
-    return repetitionService.submitAttempt(word.lemma, category, score)
+    val dueDate = repetitionService.submitAttempt(word.lemma, category, score)
+    attemptResultReceived.fire(WordAttemptResult(word, dueDate, score))
   }
 
-  override fun computeDueDate(word: Word, score: AttemptScore): DateTime {
+  override fun computeDueDate(word: Word, score: LearnScore): DateTime {
     val category = getCategory(word.language)
     return repetitionService.computeDueDate(word.lemma, category, score)
   }

@@ -4,12 +4,12 @@ import org.joda.time.*
 
 
 class BucketRepetitionAlgorithm() : RepetitionAlgorithm {
-  override fun getBinaryScore(attempts: List<Attempt>): BinaryLearnScore? {
+  override fun getBinaryScore(attempts: List<Attempt>): LearnScore? {
     if (attempts.isEmpty()) return null
     val sortedAndFiltered = attempts.sortedBy { it.dateTime }.takeLast(10)
     val score = sortedAndFiltered.count { isSuccessful(it) } / sortedAndFiltered.count().toDouble()
-    if (score >= 0.5) return BinaryLearnScore.Good
-    return BinaryLearnScore.Bad
+    if (score >= 0.5) return LearnScore.Good
+    return LearnScore.Bad
   }
 
   val buckets: List<Period> = listOf(Hours.ONE.toPeriod(), Days.ONE.toPeriod(), Weeks.TWO.toPeriod(), Months.TWO.toPeriod(), Months.SIX.toPeriod())
@@ -45,7 +45,7 @@ class BucketRepetitionAlgorithm() : RepetitionAlgorithm {
     return Pair(bucket, base.dateTime.plus(delta))
   }
 
-  private fun isSuccessful(attempt: Attempt) = attempt.score == AttemptScore.Ok
+  private fun isSuccessful(attempt: Attempt) = attempt.score == LearnScore.Good
 
   private fun isAfterDueDate(currentAttempt: Attempt, previousAttempt: Attempt, bucket: Int): Boolean {
     return previousAttempt.dateTime + buckets[bucket] <= currentAttempt.dateTime
