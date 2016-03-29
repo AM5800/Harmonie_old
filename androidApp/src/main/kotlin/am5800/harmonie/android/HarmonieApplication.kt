@@ -39,7 +39,7 @@ class HarmonieApplication : Application() {
     try {
       val lt = Lifetime()
       val container = ComponentContainer(lt, null)
-      val debugOptions = DebugOptions(true, null)
+      val debugOptions = DebugOptions(false, null)
       modelContainer = container
 
       val permanentDb = AndroidPermanentDb(this, lt)
