@@ -8,9 +8,8 @@ import am5800.common.utils.TextRange
 import am5800.harmonie.app.model.SentenceSelector
 import am5800.harmonie.app.model.SentenceSelectorResult
 import am5800.harmonie.app.model.dbAccess.SentenceProvider
-import am5800.harmonie.app.model.logging.LoggerProvider
-import am5800.harmonie.app.model.repetition.LearnScore
 import am5800.harmonie.app.model.dbAccess.WordsRepetitionService
+import am5800.harmonie.app.model.repetition.LearnScore
 import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.Multimap
 
@@ -22,12 +21,10 @@ class ParallelSentenceQuestion(val question: Sentence,
 
 class ParallelSentenceFlowManager(lifetime: Lifetime,
                                   private val sentenceProvider: SentenceProvider,
-                                  loggerProvider: LoggerProvider,
                                   private val repetitionService: WordsRepetitionService,
                                   private val sentenceSelector: SentenceSelector) : FlowItemProvider {
 
   val question = Property<ParallelSentenceQuestion>(lifetime, null)
-  private val logger = loggerProvider.getLogger(javaClass)
 
   override fun tryPresentNextItem(flowSettings: FlowSettings): Boolean {
     val findResult = sentenceSelector.findBestSentence(flowSettings.questionLanguage, flowSettings.answerLanguage) ?: return false

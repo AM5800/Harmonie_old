@@ -1,7 +1,6 @@
 import am5800.harmonie.app.model.repetition.Attempt
-import am5800.harmonie.app.model.repetition.LearnScore
-import am5800.harmonie.app.model.repetition.BinaryLearnScore
 import am5800.harmonie.app.model.repetition.BucketRepetitionAlgorithm
+import am5800.harmonie.app.model.repetition.LearnScore
 import org.joda.time.DateTime
 import org.joda.time.Days
 import org.joda.time.Minutes
@@ -28,7 +27,7 @@ class BucketRepetitionAlgorithmTests {
     }
 
     val score = alg.getBinaryScore(attempts)
-    Assert.assertEquals(BinaryLearnScore.Bad, score)
+    Assert.assertEquals(LearnScore.Bad, score)
   }
 
   @Test
@@ -47,7 +46,7 @@ class BucketRepetitionAlgorithmTests {
     }
 
     val score = alg.getBinaryScore(attempts)
-    Assert.assertEquals(BinaryLearnScore.Good, score)
+    Assert.assertEquals(LearnScore.Good, score)
   }
 
   @Test
@@ -69,7 +68,7 @@ class BucketRepetitionAlgorithmTests {
     }
 
     val score = alg.getBinaryScore(attempts)
-    Assert.assertEquals(BinaryLearnScore.Bad, score)
+    Assert.assertEquals(LearnScore.Bad, score)
   }
 
 
@@ -93,7 +92,7 @@ class BucketRepetitionAlgorithmTests {
     }
 
     val score = alg.getBinaryScore(attempts)
-    Assert.assertEquals(BinaryLearnScore.Good, score)
+    Assert.assertEquals(LearnScore.Good, score)
   }
 
   @Test

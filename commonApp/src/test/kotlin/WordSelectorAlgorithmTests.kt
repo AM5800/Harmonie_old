@@ -1,11 +1,11 @@
 import am5800.common.Language
 import am5800.common.Word
 import am5800.harmonie.app.model.WordSelectorAlgorithm
-import am5800.harmonie.app.model.repetition.BinaryLearnScore
+import am5800.harmonie.app.model.repetition.LearnScore
 import org.junit.Assert
 import org.junit.Test
 
-data class WordScore(val word: Word, val score: BinaryLearnScore?)
+data class WordScore(val word: Word, val score: LearnScore?)
 
 
 class WordSelectorAlgorithmTests {
@@ -27,8 +27,8 @@ class WordSelectorAlgorithmTests {
   @Test
   fun testMiddleWordIsBad() {
     val list = testWords.toMutableList()
-    modifyScore(list, 0, BinaryLearnScore.Good)
-    modifyScore(list, 10, BinaryLearnScore.Bad)
+    modifyScore(list, 0, LearnScore.Good)
+    modifyScore(list, 10, LearnScore.Bad)
     val averageScore = computeAverageScore(list)
 
     val selected = selectNextWord(list, list.first().word, averageScore, 50)
@@ -38,7 +38,7 @@ class WordSelectorAlgorithmTests {
   @Test
   fun testPrevIsNull() {
     val list = testWords.toMutableList()
-    modifyScore(list, 0, BinaryLearnScore.Good)
+    modifyScore(list, 0, LearnScore.Good)
 
     val selected = selectNextWord(list, null, 1.0, 50)
     Assert.assertEquals(list[1].word, selected)
@@ -53,8 +53,8 @@ class WordSelectorAlgorithmTests {
   @Test
   fun testSecondWordIsBad() {
     val list = testWords.toMutableList()
-    modifyScore(list, 0, BinaryLearnScore.Good)
-    modifyScore(list, 1, BinaryLearnScore.Bad)
+    modifyScore(list, 0, LearnScore.Good)
+    modifyScore(list, 1, LearnScore.Bad)
     val selected = selectNextWord(list, list.first().word, 0.5, defaultBaseSpeed)
 
     Assert.assertEquals(list[2].word, selected)
@@ -63,10 +63,10 @@ class WordSelectorAlgorithmTests {
   @Test
   fun testSecondWordIsBadAndNextIsGood() {
     val list = testWords.toMutableList()
-    modifyScore(list, 0, BinaryLearnScore.Good)
-    modifyScore(list, 1, BinaryLearnScore.Bad)
-    modifyScore(list, 2, BinaryLearnScore.Good)
-    modifyScore(list, 3, BinaryLearnScore.Good)
+    modifyScore(list, 0, LearnScore.Good)
+    modifyScore(list, 1, LearnScore.Bad)
+    modifyScore(list, 2, LearnScore.Good)
+    modifyScore(list, 3, LearnScore.Good)
     val selected = selectNextWord(list, list.first().word, computeAverageScore(list), defaultBaseSpeed)
 
     Assert.assertEquals(list[4].word, selected)
@@ -75,12 +75,12 @@ class WordSelectorAlgorithmTests {
   @Test
   fun testAllWordsInSpeedAreGood() {
     val list = testWords.toMutableList()
-    modifyScore(list, 0, BinaryLearnScore.Good)
-    modifyScore(list, 1, BinaryLearnScore.Good)
-    modifyScore(list, 2, BinaryLearnScore.Good)
-    modifyScore(list, 3, BinaryLearnScore.Good)
-    modifyScore(list, 4, BinaryLearnScore.Good)
-    modifyScore(list, 5, BinaryLearnScore.Good)
+    modifyScore(list, 0, LearnScore.Good)
+    modifyScore(list, 1, LearnScore.Good)
+    modifyScore(list, 2, LearnScore.Good)
+    modifyScore(list, 3, LearnScore.Good)
+    modifyScore(list, 4, LearnScore.Good)
+    modifyScore(list, 5, LearnScore.Good)
     val selected = selectNextWord(list, list.first().word, computeAverageScore(list), 4)
 
     Assert.assertEquals(list[9].word, selected)
@@ -89,14 +89,14 @@ class WordSelectorAlgorithmTests {
   @Test
   fun testShortSequence() {
     val list = testWords.toMutableList().take(10).toMutableList()
-    modifyScore(list, 0, BinaryLearnScore.Good)
+    modifyScore(list, 0, LearnScore.Good)
     val selected = selectNextWord(list, list.first().word, 1.0, defaultBaseSpeed)
     Assert.assertEquals(list.last().word, selected)
   }
 
   @Test
   fun testShortSequenceAllGood() {
-    val list = testWords.map { WordScore(it.word, BinaryLearnScore.Good) }
+    val list = testWords.map { WordScore(it.word, LearnScore.Good) }
     val selected = selectNextWord(list, list.first().word, 1.0, defaultBaseSpeed)
     Assert.assertNull(selected)
   }
@@ -104,8 +104,8 @@ class WordSelectorAlgorithmTests {
   @Test
   fun testMiddleWordIsGood() {
     val list = testWords.toMutableList()
-    modifyScore(list, 0, BinaryLearnScore.Good)
-    modifyScore(list, defaultBaseSpeed / 4, BinaryLearnScore.Good)
+    modifyScore(list, 0, LearnScore.Good)
+    modifyScore(list, defaultBaseSpeed / 4, LearnScore.Good)
     val averageScore = computeAverageScore(list)
 
     val selected = selectNextWord(list, list.first().word, averageScore, defaultBaseSpeed)
@@ -115,7 +115,7 @@ class WordSelectorAlgorithmTests {
   @Test
   fun testSlowSpeed() {
     val list = testWords.toMutableList()
-    modifyScore(list, 0, BinaryLearnScore.Good)
+    modifyScore(list, 0, LearnScore.Good)
     val selected = selectNextWord(list, list.first().word, 1.0, 1)
 
     Assert.assertEquals(list[1].word, selected)
@@ -124,14 +124,14 @@ class WordSelectorAlgorithmTests {
   private fun computeAverageScore(list: List<WordScore>): Double {
     return list.filter { it.score != null }.map {
       when (it.score) {
-        BinaryLearnScore.Good -> 1.0
-        BinaryLearnScore.Bad -> 0.0
+        LearnScore.Good -> 1.0
+        LearnScore.Bad -> 0.0
         else -> throw Exception("Unexpected enum value: ${it.score}")
       }
     }.average()
   }
 
-  private fun modifyScore(list: MutableList<WordScore>, index: Int, score: BinaryLearnScore) {
+  private fun modifyScore(list: MutableList<WordScore>, index: Int, score: LearnScore) {
     list[index] = WordScore(list[index].word, score)
   }
 }
