@@ -3,6 +3,7 @@ package am5800.harmonie.app.vm
 import am5800.common.Word
 import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
+import am5800.common.utils.ReadonlyProperty
 import am5800.harmonie.app.model.flow.FlowManager
 import am5800.harmonie.app.model.flow.ParallelSentenceFlowManager
 import am5800.harmonie.app.model.repetition.LearnScore
@@ -23,17 +24,19 @@ class ToggleableWordViewModel(val word: Word, text: String,
 class ParallelSentenceViewModel(lifetime: Lifetime,
                                 private val parallelSentenceFlowManager: ParallelSentenceFlowManager,
                                 private val flowManager: FlowManager) : ViewModel by ViewModelBase(lifetime) {
-  private enum class State {
+  enum class State {
     ShowQuestion,
     ShowAnswer
   }
 
-  private val state = Property(lifetime, State.ShowQuestion)
+  private val _state = Property(lifetime, State.ShowQuestion)
+  val state: ReadonlyProperty<State>
+    get() = _state
 
 
   fun next() {
-    if (state.value == State.ShowQuestion) {
-      state.value = State.ShowAnswer
+    if (_state.value == State.ShowQuestion) {
+      _state.value = State.ShowAnswer
     } else {
       val scores = LinkedHashMap<Word, LearnScore>()
       val vms = question.value?.filterIsInstance<ToggleableWordViewModel>() ?: emptyList()
@@ -50,7 +53,7 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
   val answer = Property(lifetime, "")
 
   init {
-    state.forEachValue(lifetime, { state, lt ->
+    _state.forEachValue(lifetime, { state, lt ->
       if (state == State.ShowQuestion) {
         answerGroupVisibility.value = false
       } else if (state == State.ShowAnswer) {
@@ -60,7 +63,7 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
 
     parallelSentenceFlowManager.question.forEachValue(lifetime, { data, lt ->
       data!!
-      state.value = State.ShowQuestion
+      _state.value = State.ShowQuestion
       question.value = createViewModelsForQuestion(data, lifetime)
       answer.value = data.answer.text
       activationRequired.fire(Unit)
