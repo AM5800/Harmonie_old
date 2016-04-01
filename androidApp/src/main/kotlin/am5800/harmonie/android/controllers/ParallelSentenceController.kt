@@ -30,6 +30,7 @@ class ParallelSentenceController(lifetime: Lifetime,
 
     val nextBtn = view.getChild<Button>(R.id.continueBtn)
     nextBtn.bindOnClick(bindingLifetime, { vm.next() })
+    nextBtn.bindText(bindingLifetime, view, vm.continueBtnText)
 
     val flowLayout = view.getChild<FlowLayout>(R.id.question)
     vm.question.bind(bindingLifetime, {

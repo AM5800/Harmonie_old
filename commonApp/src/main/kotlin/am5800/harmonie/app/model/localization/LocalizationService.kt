@@ -7,9 +7,11 @@ import am5800.common.utils.Property
 import am5800.common.utils.ReadonlyProperty
 import am5800.common.utils.convert
 import am5800.harmonie.app.model.dbAccess.KeyValueDatabase
+import am5800.harmonie.app.model.localization.languages.EnglishLocalizationTable
+import am5800.harmonie.app.model.localization.languages.RussianLocalizationTable
 
 interface LocalizationService {
-  fun createProperty(valueGetter: (LocalizationTable) -> String, lifetime: Lifetime): ReadonlyProperty<String>
+  fun createProperty(lifetime: Lifetime, valueGetter: (LocalizationTable) -> String): ReadonlyProperty<String>
   fun createQuantityProperty(valueGetter: (LocalizationTable) -> QuantityString, quantity: ReadonlyProperty<Int>, lifetime: Lifetime): ReadonlyProperty<String>
   fun setLanguage(language: Language)
   fun getCurrentTable(): LocalizationTable
@@ -22,9 +24,9 @@ open class LocalizationServiceImpl(private val defaultLanguage: Language,
   private val currentLanguage = keyValueDatabase.createProperty(lifetime, "LocalizationService.currentLanguage", defaultLanguage.toString())
       .convert<String, Language>(lifetime, { LanguageParser.tryParse(it) ?: defaultLanguage }, { it!!.toString() })
 
-  private val tables = listOf(EnglishLocalizationTable())
+  private val tables = listOf(EnglishLocalizationTable(), RussianLocalizationTable())
 
-  override fun createProperty(valueGetter: (LocalizationTable) -> String, lifetime: Lifetime): ReadonlyProperty<String> {
+  override fun createProperty(lifetime: Lifetime, valueGetter: (LocalizationTable) -> String): ReadonlyProperty<String> {
     val result = Property(lifetime, "")
     currentLanguage.bindNotNull(lifetime, { result.value = valueGetter(getCurrentTable()) })
     return result

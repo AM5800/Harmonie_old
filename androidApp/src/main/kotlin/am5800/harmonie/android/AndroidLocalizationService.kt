@@ -20,8 +20,6 @@ class AndroidLocalizationService {
       // https://en.wikipedia.org/wiki/ISO_639-1
       return when (locale.language) {
         "ru" -> Language.Russian
-        "de" -> Language.German
-        "ja" -> Language.Japanese
         "en" -> Language.English
         else -> defaultLanguage
       }

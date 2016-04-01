@@ -6,6 +6,7 @@ import am5800.common.utils.Property
 import am5800.common.utils.ReadonlyProperty
 import am5800.harmonie.app.model.flow.FlowManager
 import am5800.harmonie.app.model.flow.ParallelSentenceFlowManager
+import am5800.harmonie.app.model.localization.LocalizationService
 import am5800.harmonie.app.model.repetition.LearnScore
 import java.util.*
 
@@ -23,11 +24,14 @@ class ToggleableWordViewModel(val word: Word, text: String,
 
 class ParallelSentenceViewModel(lifetime: Lifetime,
                                 private val parallelSentenceFlowManager: ParallelSentenceFlowManager,
-                                private val flowManager: FlowManager) : ViewModel by ViewModelBase(lifetime) {
+                                private val flowManager: FlowManager,
+                                localizationService: LocalizationService) : ViewModel by ViewModelBase(lifetime) {
   enum class State {
     ShowQuestion,
     ShowAnswer
   }
+
+  val continueBtnText = localizationService.createProperty(lifetime, { it.continueButton })
 
   private val _state = Property(lifetime, State.ShowQuestion)
   val state: ReadonlyProperty<State>

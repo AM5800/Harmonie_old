@@ -2,6 +2,7 @@ package am5800.harmonie.android.controllers
 
 import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
+import am5800.common.utils.ReadonlyProperty
 import am5800.harmonie.android.Visibility
 import am5800.harmonie.android.toAndroidVisibility
 import am5800.harmonie.android.viewBinding.UIThreadRunner
@@ -19,7 +20,7 @@ fun View.bindVisibility(lifetime: Lifetime, uiThreadRunner: UIThreadRunner, prop
   })
 }
 
-fun TextView.bindText(lifetime: Lifetime, uiThreadRunner: UIThreadRunner, property: Property<String>) {
+fun TextView.bindText(lifetime: Lifetime, uiThreadRunner: UIThreadRunner, property: ReadonlyProperty<String>) {
   property.bind(lifetime, { args ->
     uiThreadRunner.runOnUiThread {
       this.text = args.newValue ?: ""
