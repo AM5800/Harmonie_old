@@ -3,10 +3,12 @@ package am5800.harmonie.app.vm
 import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
 import am5800.harmonie.app.model.flow.FlowManager
+import am5800.harmonie.app.model.localization.LocalizationService
+import am5800.harmonie.app.model.localization.LocalizationTable
 import org.joda.time.Duration
 
-class DefaultFlowControllerOwnerViewModel(private val flowManager: FlowManager, lifetime: Lifetime) {
-  val timeLeft = Property<Duration>(lifetime, null)
+class DefaultFlowControllerOwnerViewModel(private val flowManager: FlowManager, lifetime: Lifetime, localizationService: LocalizationService) {
+  val timeLeft = Property<String>(lifetime, null)
   val statusVisibility = Property(lifetime, true)
 
   init {
@@ -16,8 +18,18 @@ class DefaultFlowControllerOwnerViewModel(private val flowManager: FlowManager, 
         statusVisibility.value = false
       } else {
         statusVisibility.value = true
-        this.timeLeft.value = timeLeft
+        val table = localizationService.getCurrentTable()
+        this.timeLeft.value = formatTimeLeft(timeLeft, table)
       }
     })
+  }
+
+  private fun formatTimeLeft(timeLeft: Duration, localizationTable: LocalizationTable): String {
+    val minutes = timeLeft.standardMinutes.toInt()
+    if (minutes > 0) return localizationTable.minutesLeft.build(minutes)
+    else {
+      val seconds = timeLeft.standardSeconds.toInt()
+      return localizationTable.secondsLeft.build(seconds)
+    }
   }
 }

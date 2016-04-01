@@ -59,13 +59,15 @@ class HarmonieApplication : Application() {
       val flowItemProviderRegistrar = FlowItemProviderRegistrar(parallelSentenceFlowManager)
 
       // ViewModels
+      val localizationService = AndroidLocalizationService.create(resources, keyValueDb, lt)
+
       val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager)
       val startScreenViewModel = StartScreenViewModel(flowManager, flowItemProviderRegistrar)
-      val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt)
+      val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt, localizationService)
 
       // View components
       val controllerStack = ControllerStack(loggerProvider)
-      val defaultFlowController = DefaultFlowControllerOwner(controllerStack, lt, defaultFlowControllerOwnerViewModel, resources)
+      val defaultFlowController = DefaultFlowControllerOwner(controllerStack, lt, defaultFlowControllerOwnerViewModel)
 
       EmptyFlowContentController(defaultFlowController, flowManager, lt)
       ParallelSentenceController(lt, defaultFlowController, parallelSentenceViewModel)

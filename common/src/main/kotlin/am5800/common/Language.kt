@@ -10,9 +10,13 @@ enum class Language(val code: String) {
 class LanguageParser {
   companion object {
     fun parse(string: String): Language {
+      return tryParse(string) ?: throw Exception("Unknown language code: $string")
+    }
+
+    fun tryParse(string: String?): Language? {
+      if (string == null) return null
       val code = string.toLowerCase()
       return Language.values().firstOrNull() { it.code == code }
-          ?: throw Exception("Unknown language code: $string")
     }
   }
 }

@@ -8,15 +8,13 @@ import am5800.harmonie.android.Visibility
 import am5800.harmonie.android.viewBinding.BindableController
 import am5800.harmonie.android.viewBinding.BindableView
 import am5800.harmonie.app.vm.DefaultFlowControllerOwnerViewModel
-import android.content.res.Resources
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 
 class DefaultFlowControllerOwner(private val stack: ControllerStack,
                                  lifetime: Lifetime,
-                                 private val vm: DefaultFlowControllerOwnerViewModel,
-                                 private val resources: Resources) : FlowController, BindableController {
+                                 private val vm: DefaultFlowControllerOwnerViewModel) : FlowController, BindableController {
   private val content = Property<BindableController>(lifetime, null)
   override val id: Int = R.layout.flow_fragment
 
@@ -30,14 +28,7 @@ class DefaultFlowControllerOwner(private val stack: ControllerStack,
     val statusMessage = view.getChild<TextView>(R.id.statusTextView)
 
     statusGroup.bindVisibility(bindingLifetime, view, vm.statusVisibility, Visibility.Collapsed)
-    statusMessage.bindText(bindingLifetime, view, vm.timeLeft, { duration ->
-      val minutes = duration.standardMinutes.toInt()
-      if (minutes > 0) resources.getQuantityString(R.plurals.minutesLeft, minutes, minutes)
-      else {
-        val seconds = duration.standardSeconds.toInt()
-        resources.getQuantityString(R.plurals.secondsLeft, seconds, seconds)
-      }
-    })
+    statusMessage.bindText(bindingLifetime, view, vm.timeLeft)
 
     val placeholder = view.getChild<LinearLayout>(R.id.placeholder)
     content.bindNotNull(bindingLifetime, {

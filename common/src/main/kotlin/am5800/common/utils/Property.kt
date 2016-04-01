@@ -55,3 +55,10 @@ class Property<T : Any>(lifetime: Lifetime, initialValue: T?) : ReadonlyProperty
     })
   }
 }
+
+fun <TSrc : Any, TDst : Any> Property<TSrc>.convert(lifetime: Lifetime, srcDst: (TSrc?) -> TDst?, dstSrc: (TDst?) -> TSrc?): Property<TDst> {
+  val result = Property<TDst>(lifetime, null)
+  bind(lifetime, { result.value = srcDst(it.newValue) })
+  result.bind(lifetime, { value = dstSrc(it.newValue) })
+  return result
+}
