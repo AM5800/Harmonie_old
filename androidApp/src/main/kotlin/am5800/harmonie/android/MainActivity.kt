@@ -2,7 +2,6 @@ package am5800.harmonie.android
 
 import am5800.common.componentContainer.getComponent
 import am5800.common.utils.Lifetime
-import am5800.harmonie.android.controllers.WelcomeScreenController
 import am5800.harmonie.android.viewBinding.BindableController
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity

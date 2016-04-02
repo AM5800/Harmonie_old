@@ -8,14 +8,16 @@ import am5800.harmonie.android.dbAccess.AndroidPermanentDb
 import am5800.harmonie.android.dbAccess.KeyValueDatabaseImpl
 import am5800.harmonie.android.logging.AndroidLoggerProvider
 import am5800.harmonie.app.model.DebugOptions
-import am5800.harmonie.app.model.dbAccess.PreferredLanguagesService
 import am5800.harmonie.app.model.dbAccess.WordsRepetitionServiceImpl
 import am5800.harmonie.app.model.dbAccess.sql.*
 import am5800.harmonie.app.model.flow.FlowItemProviderRegistrar
 import am5800.harmonie.app.model.flow.FlowManager
 import am5800.harmonie.app.model.flow.ParallelSentenceFlowManager
 import am5800.harmonie.app.model.repetition.BucketRepetitionAlgorithm
-import am5800.harmonie.app.vm.*
+import am5800.harmonie.app.vm.DefaultFlowControllerOwnerViewModel
+import am5800.harmonie.app.vm.ParallelSentenceViewModel
+import am5800.harmonie.app.vm.StartScreenViewModel
+import am5800.harmonie.app.vm.WelcomeScreenViewModel
 import android.app.Application
 
 class HarmonieApplication : Application() {
