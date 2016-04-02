@@ -22,6 +22,8 @@ class WelcomeScreenViewModel(private val lifetime: Lifetime,
   val continueBtnVisible = Property(lifetime, false)
 
   fun next() {
+    preferredLanguagesService.knownLanguages.value = knownLanguages.filter { it.checked.value!! }.map { it.language }
+    preferredLanguagesService.learnLanguages.value = learnLanguages.filter { it.checked.value!! }.map { it.language }
     startScreenViewModel.activationRequired.fire(Unit)
   }
 

@@ -34,7 +34,7 @@ class HarmonieApplication : Application() {
     try {
       val lt = Lifetime()
       val container = ComponentContainer(lt, null)
-      val debugOptions = DebugOptions(false, null)
+      val debugOptions = DebugOptions(false, false, null)
       modelContainer = container
 
       val permanentDb = AndroidPermanentDb(this, lt)
@@ -70,7 +70,7 @@ class HarmonieApplication : Application() {
       ParallelSentenceController(lt, defaultFlowController, parallelSentenceViewModel)
       val startScreen = StartScreenController(startScreenViewModel, lt, controllerStack)
 
-      if (languageService.configurationRequired) {
+      if (languageService.configurationRequired || debugOptions.forceShowWelcomeScreen) {
         val welcomeScreenViewModel = WelcomeScreenViewModel(lt, localizationService, languageService, startScreenViewModel)
         val welcomeScreen = WelcomeScreenController(welcomeScreenViewModel)
         container.register(welcomeScreen)
