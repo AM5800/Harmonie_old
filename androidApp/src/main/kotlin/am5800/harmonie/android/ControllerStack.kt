@@ -21,7 +21,7 @@ class ControllerStack(loggerProvider: LoggerProvider) {
     return controllerStack.last().second
   }
 
-  fun bringToFront(controller: BindableController, key: String) {
+  fun push(controller: BindableController, key: String) {
     logger.info("bringToFront: $key")
     if (controllerStack.isEmpty() || controllerStack.last().first != key) {
       controllerStack.addLast(Pair(key, controller))
@@ -50,13 +50,18 @@ class ControllerStack(loggerProvider: LoggerProvider) {
 
   private var fragmentManager: FragmentManager? = null
 
-  fun start(supportFragmentManager: FragmentManager, rootController: BindableController) {
+  fun start(supportFragmentManager: FragmentManager, rootController: BindableController, key: String) {
     logger.info("Started")
-    controllerStack.addLast(Pair("root", rootController))
+    controllerStack.addLast(Pair(key, rootController))
     fragmentManager = supportFragmentManager
 
     val transaction = supportFragmentManager.beginTransaction()
     transaction.add(R.id.main_layout, BindableFragment())
     transaction.commit()
+  }
+
+  fun setRoot(controller: BindableController, key: String) {
+    controllerStack.clear()
+    push(controller, key)
   }
 }

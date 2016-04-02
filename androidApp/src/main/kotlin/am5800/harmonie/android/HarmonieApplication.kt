@@ -57,9 +57,9 @@ class HarmonieApplication : Application() {
       val localizationService = AndroidLocalizationService.create(resources, keyValueDb, lt)
 
       val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService)
-      val startScreenViewModel = StartScreenViewModel(flowManager, flowItemProviderRegistrar)
+      val startScreenViewModel = StartScreenViewModel(flowManager, flowItemProviderRegistrar, lt)
       val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt, localizationService)
-      val welcomeScreenViewModel = WelcomeScreenViewModel(lt, localizationService, LanguageAvailability(), loggerProvider)
+      val welcomeScreenViewModel = WelcomeScreenViewModel(lt, localizationService, LanguageAvailability(), startScreenViewModel)
 
       // View components
       val controllerStack = ControllerStack(loggerProvider)
@@ -67,12 +67,11 @@ class HarmonieApplication : Application() {
 
       EmptyFlowContentController(defaultFlowController, flowManager, lt)
       ParallelSentenceController(lt, defaultFlowController, parallelSentenceViewModel)
-      val startScreen = StartScreenController(startScreenViewModel)
+      StartScreenController(startScreenViewModel, lt, controllerStack)
       val welcomeScreen = WelcomeScreenController(welcomeScreenViewModel)
 
       container.register(controllerStack)
       container.register(loggerProvider)
-      container.register(startScreen)
       container.register(welcomeScreen)
     } catch (e: Exception) {
       logger.exception(e)

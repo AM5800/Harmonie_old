@@ -34,6 +34,7 @@ class WelcomeScreenController(private val vm: WelcomeScreenViewModel) : Bindable
     val continueBtn = view.getChild<Button>(R.id.continueBtn)
     continueBtn.bindText(bindingLifetime, view, vm.continueBtnText)
     continueBtn.bindVisibility(bindingLifetime, view, vm.continueBtnVisible, Visibility.Collapsed)
+    continueBtn.bindOnClick(bindingLifetime, { vm.next() })
   }
 
   private fun <T : BindableController> bindLinearLayoutToObservableCollection(lifetime: Lifetime, layout: LinearLayout, parentView: BindableView, collection: ObservableCollection<T>) {

@@ -19,7 +19,7 @@ class DefaultFlowControllerOwner(private val stack: ControllerStack,
   override val id: Int = R.layout.flow_fragment
 
   override fun setContent(controller: BindableController) {
-    stack.bringToFront(this, javaClass.name)
+    stack.push(this, javaClass.name)
     content.value = controller
   }
 

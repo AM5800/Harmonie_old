@@ -1,13 +1,14 @@
 package am5800.harmonie.app.vm
 
 import am5800.common.Language
+import am5800.common.utils.Lifetime
 import am5800.harmonie.app.model.flow.FlowItemProviderRegistrar
 import am5800.harmonie.app.model.flow.FlowManager
 import am5800.harmonie.app.model.flow.FlowSettings
 import org.joda.time.Minutes
 
 class StartScreenViewModel(private val flowManager: FlowManager,
-                           private val providerRegistrar: FlowItemProviderRegistrar) {
+                           private val providerRegistrar: FlowItemProviderRegistrar, lifetime: Lifetime) : ViewModelBase(lifetime) {
   private val defaultDuration = Minutes.minutes(10).toStandardDuration()
 
   fun startLearningDeEn() {

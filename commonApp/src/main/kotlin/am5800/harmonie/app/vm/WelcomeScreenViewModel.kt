@@ -23,9 +23,8 @@ class LanguageAvailability {
 class WelcomeScreenViewModel(private val lifetime: Lifetime,
                              localizationService: LocalizationService,
                              private val languageAvailability: LanguageAvailability,
-                             loggerProvider: LoggerProvider) : ViewModelBase(lifetime) {
+                             private val startScreenViewModel: StartScreenViewModel) : ViewModelBase(lifetime) {
 
-  private val logger = loggerProvider.getLogger(this.javaClass)
   val knownLanguages = ObservableCollection<CheckableLanguageViewModel>(lifetime)
   val learnLanguages = ObservableCollection<CheckableLanguageViewModel>(lifetime)
   val welcome = localizationService.createProperty(lifetime, { it.welcomeToHarmonie })
@@ -36,6 +35,9 @@ class WelcomeScreenViewModel(private val lifetime: Lifetime,
   val learnGroupVisible = Property(lifetime, false)
   val continueBtnVisible = Property(lifetime, false)
 
+  fun next() {
+    startScreenViewModel.activationRequired.fire(Unit)
+  }
 
   init {
     languageAvailability.getAvailableLanguages().forEach { lang -> setupCheckableVm(lang, knownLanguages) }
