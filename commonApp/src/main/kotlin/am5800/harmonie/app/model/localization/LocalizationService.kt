@@ -22,7 +22,7 @@ open class LocalizationServiceImpl(private val defaultLanguage: Language,
                                    keyValueDatabase: KeyValueDatabase) : LocalizationService {
 
   private val currentLanguage = keyValueDatabase.createProperty(lifetime, "LocalizationService.currentLanguage", defaultLanguage.toString())
-      .convert<String, Language>(lifetime, { LanguageParser.tryParse(it) ?: defaultLanguage }, { it!!.toString() })
+      .convert<String, Language>({ LanguageParser.tryParse(it) ?: defaultLanguage }, { it!!.toString() })
 
   private val tables = listOf(EnglishLocalizationTable(), RussianLocalizationTable())
 

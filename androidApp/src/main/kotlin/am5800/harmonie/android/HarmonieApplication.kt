@@ -8,11 +8,9 @@ import am5800.harmonie.android.dbAccess.AndroidPermanentDb
 import am5800.harmonie.android.dbAccess.KeyValueDatabaseImpl
 import am5800.harmonie.android.logging.AndroidLoggerProvider
 import am5800.harmonie.app.model.DebugOptions
+import am5800.harmonie.app.model.dbAccess.PreferredLanguagesService
 import am5800.harmonie.app.model.dbAccess.WordsRepetitionServiceImpl
-import am5800.harmonie.app.model.dbAccess.sql.SqlRepetitionService
-import am5800.harmonie.app.model.dbAccess.sql.SqlSentenceProvider
-import am5800.harmonie.app.model.dbAccess.sql.SqlSentenceSelector
-import am5800.harmonie.app.model.dbAccess.sql.SqlWordSelector
+import am5800.harmonie.app.model.dbAccess.sql.*
 import am5800.harmonie.app.model.flow.FlowItemProviderRegistrar
 import am5800.harmonie.app.model.flow.FlowManager
 import am5800.harmonie.app.model.flow.ParallelSentenceFlowManager
@@ -46,12 +44,14 @@ class HarmonieApplication : Application() {
       val sentenceProvider = SqlSentenceProvider()
       val wordSelector = SqlWordSelector(wordsRepetitionService, keyValueDb, lt, debugOptions)
       val sentenceSelector = SqlSentenceSelector(wordsRepetitionService, loggerProvider, debugOptions, wordSelector)
-      val dbConsumers = listOf(sentenceProvider, sentenceSelector, wordsRepetitionService, wordSelector)
+      val languageService = SqlPreferredLanguagesService(keyValueDb, lt)
+      val dbConsumers = listOf(sentenceProvider, sentenceSelector, wordsRepetitionService, wordSelector, languageService)
       AndroidContentDb(this, keyValueDb, loggerProvider, dbConsumers, lt)
 
       val flowManager = FlowManager(lt, loggerProvider)
       val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceProvider, wordsRepetitionService, sentenceSelector)
       val flowItemProviderRegistrar = FlowItemProviderRegistrar(parallelSentenceFlowManager)
+
 
       // ViewModels
       val localizationService = AndroidLocalizationService.create(resources, keyValueDb, lt)
@@ -59,7 +59,6 @@ class HarmonieApplication : Application() {
       val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService)
       val startScreenViewModel = StartScreenViewModel(flowManager, flowItemProviderRegistrar, lt)
       val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt, localizationService)
-      val welcomeScreenViewModel = WelcomeScreenViewModel(lt, localizationService, LanguageAvailability(), startScreenViewModel)
 
       // View components
       val controllerStack = ControllerStack(loggerProvider)
@@ -67,12 +66,18 @@ class HarmonieApplication : Application() {
 
       EmptyFlowContentController(defaultFlowController, flowManager, lt)
       ParallelSentenceController(lt, defaultFlowController, parallelSentenceViewModel)
-      StartScreenController(startScreenViewModel, lt, controllerStack)
-      val welcomeScreen = WelcomeScreenController(welcomeScreenViewModel)
+      val startScreen = StartScreenController(startScreenViewModel, lt, controllerStack)
+
+      if (languageService.configurationRequired) {
+        val welcomeScreenViewModel = WelcomeScreenViewModel(lt, localizationService, languageService, startScreenViewModel)
+        val welcomeScreen = WelcomeScreenController(welcomeScreenViewModel)
+        container.register(welcomeScreen)
+      } else {
+        container.register(startScreen)
+      }
 
       container.register(controllerStack)
       container.register(loggerProvider)
-      container.register(welcomeScreen)
     } catch (e: Exception) {
       logger.exception(e)
       throw e

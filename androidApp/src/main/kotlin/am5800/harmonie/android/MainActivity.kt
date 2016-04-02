@@ -3,6 +3,7 @@ package am5800.harmonie.android
 import am5800.common.componentContainer.getComponent
 import am5800.common.utils.Lifetime
 import am5800.harmonie.android.controllers.WelcomeScreenController
+import am5800.harmonie.android.viewBinding.BindableController
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
@@ -29,7 +30,7 @@ class MainActivity : AppCompatActivity() {
     if (savedInstanceState != null) {
       stack.restore(supportFragmentManager)
     } else {
-      val rootController = modelContainer.getComponent<WelcomeScreenController>()
+      val rootController = modelContainer.getComponent<BindableController>()
       stack.start(supportFragmentManager, rootController, rootController.javaClass.name)
     }
   }

@@ -15,7 +15,7 @@ class PropertyChangedArg<T>(private val old: T?, val newValue: T?, val hasOld: B
     get() = if (hasOld) old else throw Exception("Old value is not available")
 }
 
-class Property<T : Any>(lifetime: Lifetime, initialValue: T?) : ReadonlyProperty<T> {
+class Property<T : Any>(val lifetime: Lifetime, initialValue: T?) : ReadonlyProperty<T> {
   init {
     lifetime.addAction { binders.clear() }
   }
@@ -56,9 +56,9 @@ class Property<T : Any>(lifetime: Lifetime, initialValue: T?) : ReadonlyProperty
   }
 }
 
-fun <TSrc : Any, TDst : Any> Property<TSrc>.convert(lifetime: Lifetime, srcDst: (TSrc?) -> TDst?, dstSrc: (TDst?) -> TSrc?): Property<TDst> {
-  val result = Property<TDst>(lifetime, null)
-  onChange(lifetime, { result.value = srcDst(it.newValue) })
-  result.onChange(lifetime, { value = dstSrc(it.newValue) })
+fun <TSrc : Any, TDst : Any> Property<TSrc>.convert(srcDst: (TSrc?) -> TDst?, dstSrc: (TDst?) -> TSrc?): Property<TDst> {
+  val result = Property<TDst>(this.lifetime, null)
+  onChange(this.lifetime, { result.value = srcDst(it.newValue) })
+  result.onChange(this.lifetime, { value = dstSrc(it.newValue) })
   return result
 }

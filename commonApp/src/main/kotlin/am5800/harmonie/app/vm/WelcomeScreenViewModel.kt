@@ -3,26 +3,12 @@ package am5800.harmonie.app.vm
 import am5800.common.Language
 import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
+import am5800.harmonie.app.model.dbAccess.PreferredLanguagesService
 import am5800.harmonie.app.model.localization.LocalizationService
-import am5800.harmonie.app.model.logging.LoggerProvider
-
-class LanguageAvailability {
-  fun getAvailableLanguages(): List<Language> {
-    return listOf(Language.Russian, Language.English)
-  }
-
-  fun getAvailableTranslations(language: Language): List<Language> {
-    return when (language) {
-      Language.Russian -> listOf(Language.German, Language.English, Language.Japanese)
-      Language.English -> listOf(Language.German, Language.Russian)
-      else -> emptyList()
-    }
-  }
-}
 
 class WelcomeScreenViewModel(private val lifetime: Lifetime,
                              localizationService: LocalizationService,
-                             private val languageAvailability: LanguageAvailability,
+                             private val preferredLanguagesService: PreferredLanguagesService,
                              private val startScreenViewModel: StartScreenViewModel) : ViewModelBase(lifetime) {
 
   val knownLanguages = ObservableCollection<CheckableLanguageViewModel>(lifetime)
@@ -40,13 +26,13 @@ class WelcomeScreenViewModel(private val lifetime: Lifetime,
   }
 
   init {
-    languageAvailability.getAvailableLanguages().forEach { lang -> setupCheckableVm(lang, knownLanguages) }
+    preferredLanguagesService.getAvailableLanguages().forEach { lang -> setupCheckableVm(lang, knownLanguages) }
 
     val checkedKnownLanguages = knownLanguages.filterObservable { it.checked.value!! }
 
     checkedKnownLanguages.changed.subscribe(lifetime, {
       learnLanguages.clear()
-      val translationLanguages = checkedKnownLanguages.map { it.language }.flatMap { languageAvailability.getAvailableTranslations(it) }.distinct()
+      val translationLanguages = checkedKnownLanguages.map { it.language }.flatMap { preferredLanguagesService.getAvailableTranslations(it) }.distinct()
       translationLanguages.forEach { lang -> setupCheckableVm(lang, learnLanguages) }
     })
 
