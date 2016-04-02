@@ -8,11 +8,12 @@ import am5800.harmonie.android.toAndroidVisibility
 import am5800.harmonie.android.viewBinding.UIThreadRunner
 import android.view.View
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.TextView
 
 
 fun View.bindVisibility(lifetime: Lifetime, uiThreadRunner: UIThreadRunner, property: Property<Boolean>, invisibleValue: Visibility) {
-  property.bindNotNull(lifetime, { value ->
+  property.onChangeNotNull(lifetime, { value ->
     uiThreadRunner.runOnUiThread {
       if (value) this.visibility = Visibility.Visible.toAndroidVisibility()
       else this.visibility = invisibleValue.toAndroidVisibility()
@@ -21,15 +22,25 @@ fun View.bindVisibility(lifetime: Lifetime, uiThreadRunner: UIThreadRunner, prop
 }
 
 fun TextView.bindText(lifetime: Lifetime, uiThreadRunner: UIThreadRunner, property: ReadonlyProperty<String>) {
-  property.bind(lifetime, { args ->
+  property.onChange(lifetime, { args ->
     uiThreadRunner.runOnUiThread {
       this.text = args.newValue ?: ""
     }
   })
 }
 
+fun CheckBox.bindCheckedTwoWay(lifetime: Lifetime, uiThreadRunner: UIThreadRunner, property: Property<Boolean>) {
+  property.onChangeNotNull(lifetime, {
+    uiThreadRunner.runOnUiThread {
+      this.isChecked = it
+    }
+  })
+
+  this.setOnClickListener { property.value = this.isChecked }
+}
+
 fun <T : Any> TextView.bindText(lifetime: Lifetime, uiThreadRunner: UIThreadRunner, property: Property<T>, mapper: (T) -> String) {
-  property.bind(lifetime, { args ->
+  property.onChange(lifetime, { args ->
     val value = args.newValue
 
     uiThreadRunner.runOnUiThread {

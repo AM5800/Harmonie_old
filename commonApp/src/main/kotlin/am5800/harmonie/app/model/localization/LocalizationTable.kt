@@ -8,4 +8,7 @@ interface LocalizationTable {
   val continueButton: String
   val minutesLeft: QuantityString
   val secondsLeft: QuantityString
+  val welcomeToHarmonie: String
+  val chooseKnownLanguage: String
+  val chooseLearnLanguage: String
 }

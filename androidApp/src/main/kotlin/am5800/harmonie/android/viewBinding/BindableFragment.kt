@@ -28,7 +28,7 @@ class BindableFragment : Fragment() {
           registry.restoreController(layoutId)
         }
 
-    val bindableView = BindableViewImpl(inflater!!, vm.id, activity)
+    val bindableView = BindableViewImpl(vm.id, activity)
     vm.bind(bindableView, fragmentLifetime)
     vm.onActivated()
     return bindableView.view

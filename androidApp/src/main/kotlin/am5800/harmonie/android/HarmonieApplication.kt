@@ -2,10 +2,7 @@ package am5800.harmonie.android
 
 import am5800.common.componentContainer.ComponentContainer
 import am5800.common.utils.Lifetime
-import am5800.harmonie.android.controllers.DefaultFlowControllerOwner
-import am5800.harmonie.android.controllers.EmptyFlowContentController
-import am5800.harmonie.android.controllers.ParallelSentenceController
-import am5800.harmonie.android.controllers.StartScreenController
+import am5800.harmonie.android.controllers.*
 import am5800.harmonie.android.dbAccess.AndroidContentDb
 import am5800.harmonie.android.dbAccess.AndroidPermanentDb
 import am5800.harmonie.android.dbAccess.KeyValueDatabaseImpl
@@ -20,9 +17,7 @@ import am5800.harmonie.app.model.flow.FlowItemProviderRegistrar
 import am5800.harmonie.app.model.flow.FlowManager
 import am5800.harmonie.app.model.flow.ParallelSentenceFlowManager
 import am5800.harmonie.app.model.repetition.BucketRepetitionAlgorithm
-import am5800.harmonie.app.vm.DefaultFlowControllerOwnerViewModel
-import am5800.harmonie.app.vm.ParallelSentenceViewModel
-import am5800.harmonie.app.vm.StartScreenViewModel
+import am5800.harmonie.app.vm.*
 import android.app.Application
 
 class HarmonieApplication : Application() {
@@ -64,6 +59,7 @@ class HarmonieApplication : Application() {
       val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService)
       val startScreenViewModel = StartScreenViewModel(flowManager, flowItemProviderRegistrar)
       val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt, localizationService)
+      val welcomeScreenViewModel = WelcomeScreenViewModel(lt, localizationService, LanguageAvailability(), loggerProvider)
 
       // View components
       val controllerStack = ControllerStack(loggerProvider)
@@ -72,10 +68,12 @@ class HarmonieApplication : Application() {
       EmptyFlowContentController(defaultFlowController, flowManager, lt)
       ParallelSentenceController(lt, defaultFlowController, parallelSentenceViewModel)
       val startScreen = StartScreenController(startScreenViewModel)
+      val welcomeScreen = WelcomeScreenController(welcomeScreenViewModel)
 
       container.register(controllerStack)
       container.register(loggerProvider)
       container.register(startScreen)
+      container.register(welcomeScreen)
     } catch (e: Exception) {
       logger.exception(e)
       throw e

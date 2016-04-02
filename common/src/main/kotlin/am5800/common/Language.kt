@@ -1,10 +1,28 @@
 package am5800.common
 
 enum class Language(val code: String) {
-  English("en"),
-  German("de"),
-  Russian("ru"),
-  Japanese("jp")
+  English("en") {
+    override fun nameInLanguage(): String {
+      return "English"
+    }
+  },
+  German("de") {
+    override fun nameInLanguage(): String {
+      return "Deutsch"
+    }
+  },
+  Russian("ru") {
+    override fun nameInLanguage(): String {
+      return "Русский"
+    }
+  },
+  Japanese("jp") {
+    override fun nameInLanguage(): String {
+      return "日本語"
+    }
+  };
+
+  abstract fun nameInLanguage(): String
 }
 
 class LanguageParser {

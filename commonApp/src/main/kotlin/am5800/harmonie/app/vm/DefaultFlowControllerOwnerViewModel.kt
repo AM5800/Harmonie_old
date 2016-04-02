@@ -12,7 +12,7 @@ class DefaultFlowControllerOwnerViewModel(private val flowManager: FlowManager, 
   val statusVisibility = Property(lifetime, true)
 
   init {
-    flowManager.timeLeft.bind(lifetime, { args ->
+    flowManager.timeLeft.onChange(lifetime, { args ->
       val timeLeft = args.newValue
       if (timeLeft == null) {
         statusVisibility.value = false

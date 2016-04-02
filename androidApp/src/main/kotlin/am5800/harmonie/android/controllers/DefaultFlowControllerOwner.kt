@@ -31,9 +31,9 @@ class DefaultFlowControllerOwner(private val stack: ControllerStack,
     statusMessage.bindText(bindingLifetime, view, vm.timeLeft)
 
     val placeholder = view.getChild<LinearLayout>(R.id.placeholder)
-    content.bindNotNull(bindingLifetime, {
+    content.onChangeNotNull(bindingLifetime, {
       placeholder.removeAllViews()
-      placeholder.addView(view.createViewAndBind(it, bindingLifetime))
+      placeholder.addView(view.createChildViewAndBind(it, bindingLifetime))
     })
   }
 }

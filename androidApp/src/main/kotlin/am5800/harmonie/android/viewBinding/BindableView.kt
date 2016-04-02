@@ -7,5 +7,5 @@ import android.view.View
 interface BindableView : UIThreadRunner {
   val activity: Activity
   fun <T> getChild(layoutId: Int): T
-  fun createViewAndBind(vm: BindableController, bindingLifetime: Lifetime): View
+  fun createChildViewAndBind(controller: BindableController, bindingLifetime: Lifetime): View
 }

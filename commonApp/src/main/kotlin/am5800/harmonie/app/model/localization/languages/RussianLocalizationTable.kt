@@ -8,5 +8,8 @@ class RussianLocalizationTable : LocalizationTable {
   override val continueButton: String = "Продолжить"
   override val minutesLeft = RussianQuantityString("Осталась %i минута", "Осталось %i минуты", "Осталось %i минут")
   override val secondsLeft = RussianQuantityString("Осталась %i секунда", "Осталось %i секунды", "Осталось %i секунд")
+  override val welcomeToHarmonie = "Добро пожаловать в Harmonie!"
+  override val chooseKnownLanguage = "Выберите языки, которые вы знаете хорошо:"
+  override val chooseLearnLanguage = "Выберите языки, которые хотели бы изучить:"
 }
 

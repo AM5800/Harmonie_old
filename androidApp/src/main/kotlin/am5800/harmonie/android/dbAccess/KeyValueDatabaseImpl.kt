@@ -8,9 +8,9 @@ import am5800.harmonie.app.model.dbAccess.sql.query1
 class KeyValueDatabaseImpl(private val db: AndroidPermanentDb) : KeyValueDatabase {
   override fun createProperty(lifetime: Lifetime, key: String, defaultValue: String): Property<String> {
     val result = Property(lifetime, getValue(key, defaultValue))
-    result.bind(lifetime, {
+    result.onChange(lifetime, {
       val newValue = it.newValue
-      if (newValue == null || !it.hasOld) return@bind
+      if (newValue == null || !it.hasOld) return@onChange
       setValue(key, newValue)
     })
     return result

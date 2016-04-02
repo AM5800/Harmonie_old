@@ -4,9 +4,9 @@ import java.util.*
 
 interface ReadonlyProperty<T : Any> {
   val value: T?
-  fun bind(lifetime: Lifetime, binder: (PropertyChangedArg<T?>) -> Unit)
-  fun bind(lifetime: Lifetime, sourceProperty: Property<T>)
-  fun bindNotNull(lifetime: Lifetime, binder: (T) -> Unit)
+  fun onChange(lifetime: Lifetime, binder: (PropertyChangedArg<T?>) -> Unit)
+  fun onChange(lifetime: Lifetime, targetProperty: Property<T>)
+  fun onChangeNotNull(lifetime: Lifetime, binder: (T) -> Unit)
   fun forEachValue(lifetime: Lifetime, binder: (T?, Lifetime) -> Unit)
 }
 
@@ -30,27 +30,27 @@ class Property<T : Any>(lifetime: Lifetime, initialValue: T?) : ReadonlyProperty
       valueLifetime.next()
       val arg: PropertyChangedArg<T?> = PropertyChangedArg(field, newValue, true)
       field = newValue
-      binders.forEach { b -> b(arg) }
+      binders.toList().forEach { b -> b(arg) }
     }
 
-  override fun bind(lifetime: Lifetime, binder: (PropertyChangedArg<T?>) -> Unit) {
+  override fun onChange(lifetime: Lifetime, binder: (PropertyChangedArg<T?>) -> Unit) {
     binders.add(binder)
     lifetime.addAction { binders.remove (binder) }
     binder(PropertyChangedArg(null, value, false))
   }
 
-  override fun bind(lifetime: Lifetime, sourceProperty: Property<T>) {
-    sourceProperty.bind(lifetime, {
-      value = it.newValue
+  override fun onChange(lifetime: Lifetime, targetProperty: Property<T>) {
+    this.onChange(lifetime, {
+      targetProperty.value = it.newValue
     })
   }
 
-  override fun bindNotNull(lifetime: Lifetime, binder: (T) -> Unit) {
-    bind(lifetime, { arg -> if (arg.newValue != null) binder(arg.newValue) })
+  override fun onChangeNotNull(lifetime: Lifetime, binder: (T) -> Unit) {
+    onChange(lifetime, { arg -> if (arg.newValue != null) binder(arg.newValue) })
   }
 
   override fun forEachValue(lifetime: Lifetime, binder: (T?, Lifetime) -> Unit) {
-    bindNotNull(lifetime, { args ->
+    onChangeNotNull(lifetime, { args ->
       binder(args, valueLifetime.current)
     })
   }
@@ -58,7 +58,7 @@ class Property<T : Any>(lifetime: Lifetime, initialValue: T?) : ReadonlyProperty
 
 fun <TSrc : Any, TDst : Any> Property<TSrc>.convert(lifetime: Lifetime, srcDst: (TSrc?) -> TDst?, dstSrc: (TDst?) -> TSrc?): Property<TDst> {
   val result = Property<TDst>(lifetime, null)
-  bind(lifetime, { result.value = srcDst(it.newValue) })
-  result.bind(lifetime, { value = dstSrc(it.newValue) })
+  onChange(lifetime, { result.value = srcDst(it.newValue) })
+  result.onChange(lifetime, { value = dstSrc(it.newValue) })
   return result
 }

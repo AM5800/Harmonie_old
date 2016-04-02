@@ -33,7 +33,7 @@ class ParallelSentenceController(lifetime: Lifetime,
     nextBtn.bindText(bindingLifetime, view, vm.continueBtnText)
 
     val flowLayout = view.getChild<FlowLayout>(R.id.question)
-    vm.question.bind(bindingLifetime, {
+    vm.question.onChange(bindingLifetime, {
       flowLayout.removeAllViews()
       for (childVm in it.newValue!!) {
         val wordView = TextView(view.activity)
@@ -53,7 +53,7 @@ class ParallelSentenceController(lifetime: Lifetime,
         wordView.text = Html.fromHtml("<u>$text</u>")
       }
 
-      childVm.state.bind(bindingLifetime, {
+      childVm.state.onChange(bindingLifetime, {
         if (it.newValue == LearnScore.Good) wordView.setTextColor(Color.BLACK)
         else wordView.setTextColor(Color.RED)
       })

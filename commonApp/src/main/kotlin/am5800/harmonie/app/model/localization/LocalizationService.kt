@@ -28,7 +28,7 @@ open class LocalizationServiceImpl(private val defaultLanguage: Language,
 
   override fun createProperty(lifetime: Lifetime, valueGetter: (LocalizationTable) -> String): ReadonlyProperty<String> {
     val result = Property(lifetime, "")
-    currentLanguage.bindNotNull(lifetime, { result.value = valueGetter(getCurrentTable()) })
+    currentLanguage.onChangeNotNull(lifetime, { result.value = valueGetter(getCurrentTable()) })
     return result
   }
 
@@ -40,8 +40,8 @@ open class LocalizationServiceImpl(private val defaultLanguage: Language,
   override fun createQuantityProperty(valueGetter: (LocalizationTable) -> QuantityString, quantity: ReadonlyProperty<Int>, lifetime: Lifetime): ReadonlyProperty<String> {
     val result = Property(lifetime, "")
     val updateValue = { result.value = valueGetter(getCurrentTable()).build(quantity.value!!) }
-    currentLanguage.bindNotNull(lifetime, { updateValue() })
-    quantity.bindNotNull(lifetime, { updateValue() })
+    currentLanguage.onChangeNotNull(lifetime, { updateValue() })
+    quantity.onChangeNotNull(lifetime, { updateValue() })
     return result
   }
 
