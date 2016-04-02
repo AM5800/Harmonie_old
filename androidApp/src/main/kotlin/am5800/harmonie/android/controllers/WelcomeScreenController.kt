@@ -1,6 +1,7 @@
 package am5800.harmonie.android.controllers
 
 import am5800.common.utils.Lifetime
+import am5800.harmonie.android.ControllerStack
 import am5800.harmonie.android.R
 import am5800.harmonie.android.Visibility
 import am5800.harmonie.android.viewBinding.BindableController
@@ -12,7 +13,9 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 
-class WelcomeScreenController(private val vm: WelcomeScreenViewModel) : BindableController {
+class WelcomeScreenController(private val vm: WelcomeScreenViewModel,
+                              private val lifetime: Lifetime,
+                              private val controllerStack: ControllerStack) : BindableController {
   override fun bind(view: BindableView, bindingLifetime: Lifetime) {
     // always visible group
     view.getChild<TextView>(R.id.welcomeView).bindText(bindingLifetime, view, vm.welcome)
@@ -50,4 +53,10 @@ class WelcomeScreenController(private val vm: WelcomeScreenViewModel) : Bindable
   }
 
   override val id: Int = R.layout.welcome_screen
+
+  init {
+    vm.activationRequired.subscribe(lifetime, {
+      controllerStack.pushReplaceable(this)
+    })
+  }
 }

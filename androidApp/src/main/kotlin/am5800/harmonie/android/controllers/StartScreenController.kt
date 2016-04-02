@@ -28,7 +28,7 @@ class StartScreenController(private val viewModel: StartScreenViewModel, lifetim
 
   init {
     viewModel.activationRequired.subscribe(lifetime, {
-      stack.setRoot(this, this.javaClass.name)
+      stack.push(this, javaClass.name)
     })
   }
 }

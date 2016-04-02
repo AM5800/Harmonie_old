@@ -62,22 +62,22 @@ class HarmonieApplication : Application() {
       val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt, localizationService)
 
       // View components
-      val controllerStack = ControllerStack(loggerProvider)
+      val controllerStack = ControllerStack()
       val defaultFlowController = DefaultFlowControllerOwner(controllerStack, lt, defaultFlowControllerOwnerViewModel)
 
       EmptyFlowContentController(defaultFlowController, flowManager, lt)
       ParallelSentenceController(lt, defaultFlowController, parallelSentenceViewModel)
-      val startScreen = StartScreenController(startScreenViewModel, lt, controllerStack)
+      StartScreenController(startScreenViewModel, lt, controllerStack)
 
       if (languageService.configurationRequired) {
         val welcomeScreenViewModel = WelcomeScreenViewModel(lt, localizationService, languageService, startScreenViewModel)
-        val welcomeScreen = WelcomeScreenController(welcomeScreenViewModel)
-        container.register(welcomeScreen)
+        WelcomeScreenController(welcomeScreenViewModel, lt, controllerStack)
+        container.register(welcomeScreenViewModel)
       }
 
       container.register(controllerStack)
       container.register(loggerProvider)
-      container.register(startScreen)
+      container.register(startScreenViewModel)
       container.register(languageService)
       container.register(localizationService)
     } catch (e: Exception) {
