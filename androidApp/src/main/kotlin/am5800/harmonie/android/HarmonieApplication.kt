@@ -46,14 +46,13 @@ class HarmonieApplication : Application() {
       val sentenceProvider = SqlSentenceProvider()
       val wordSelector = SqlWordSelector(wordsRepetitionService, keyValueDb, lt, debugOptions)
       val sentenceSelector = SqlSentenceSelector(wordsRepetitionService, loggerProvider, debugOptions, wordSelector)
-      val languageService = SqlPreferredLanguagesService(keyValueDb, lt)
+      val languageService = SqlPreferredLanguagesService(keyValueDb, lt, debugOptions)
       val dbConsumers = listOf(sentenceProvider, sentenceSelector, wordsRepetitionService, wordSelector, languageService)
       AndroidContentDb(this, keyValueDb, loggerProvider, dbConsumers, lt)
 
       val flowManager = FlowManager(lt, loggerProvider)
       val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceProvider, wordsRepetitionService, sentenceSelector)
       val flowItemProviderRegistrar = FlowItemProviderRegistrar(parallelSentenceFlowManager)
-
 
       // ViewModels
       val localizationService = AndroidLocalizationService.create(resources, keyValueDb, lt)
@@ -70,16 +69,17 @@ class HarmonieApplication : Application() {
       ParallelSentenceController(lt, defaultFlowController, parallelSentenceViewModel)
       val startScreen = StartScreenController(startScreenViewModel, lt, controllerStack)
 
-      if (languageService.configurationRequired || debugOptions.forceShowWelcomeScreen) {
+      if (languageService.configurationRequired) {
         val welcomeScreenViewModel = WelcomeScreenViewModel(lt, localizationService, languageService, startScreenViewModel)
         val welcomeScreen = WelcomeScreenController(welcomeScreenViewModel)
         container.register(welcomeScreen)
-      } else {
-        container.register(startScreen)
       }
 
       container.register(controllerStack)
       container.register(loggerProvider)
+      container.register(startScreen)
+      container.register(languageService)
+      container.register(localizationService)
     } catch (e: Exception) {
       logger.exception(e)
       throw e

@@ -2,7 +2,10 @@ package am5800.harmonie.android
 
 import am5800.common.componentContainer.getComponent
 import am5800.common.utils.Lifetime
-import am5800.harmonie.android.viewBinding.BindableController
+import am5800.harmonie.android.controllers.StartScreenController
+import am5800.harmonie.android.controllers.WelcomeScreenController
+import am5800.harmonie.app.model.dbAccess.PreferredLanguagesService
+import am5800.harmonie.app.vm.WelcomeScreenViewModel
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
@@ -29,8 +32,14 @@ class MainActivity : AppCompatActivity() {
     if (savedInstanceState != null) {
       stack.restore(supportFragmentManager)
     } else {
-      val rootController = modelContainer.getComponent<BindableController>()
-      stack.start(supportFragmentManager, rootController, rootController.javaClass.name)
+      val preferredLanguages = modelContainer.getComponent<PreferredLanguagesService>()
+      if (preferredLanguages.configurationRequired) {
+        val welcomeScreen = modelContainer.getComponent<WelcomeScreenController>()
+        stack.start(supportFragmentManager, welcomeScreen, welcomeScreen.javaClass.name)
+      } else {
+        val startScreen = modelContainer.getComponent<StartScreenController>()
+        stack.start(supportFragmentManager, startScreen, startScreen.javaClass.name)
+      }
     }
   }
 

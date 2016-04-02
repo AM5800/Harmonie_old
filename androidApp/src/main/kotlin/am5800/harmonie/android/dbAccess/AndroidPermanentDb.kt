@@ -1,6 +1,7 @@
 package am5800.harmonie.android.dbAccess
 
 import am5800.common.utils.Lifetime
+import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.dbAccess.sql.Cursor
 import am5800.harmonie.app.model.dbAccess.sql.PermanentDb
 import android.content.Context
@@ -12,7 +13,6 @@ class AndroidPermanentDb(context: Context, lifetime: Lifetime) : PermanentDb {
   override fun execute(query: String) {
     instance.writableDatabase.execSQL(query)
   }
-
 
   private val instance = DbInstance(context)
 
