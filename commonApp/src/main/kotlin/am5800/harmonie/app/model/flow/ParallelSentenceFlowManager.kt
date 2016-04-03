@@ -26,12 +26,12 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
                                   private val repetitionService: WordsRepetitionService,
                                   private val sentenceSelector: SentenceSelector) : FlowItemProvider {
   override val supportedCategories: Set<FlowItemCategory>
-    get() = preferredLanguagesService.learnLanguages.value!!.map { WordsQuizCategory(it) }.toSet()
+    get() = preferredLanguagesService.learnLanguages.value!!.map { ParallelSentenceCategory(it) }.toSet()
 
   val question = Property<ParallelSentenceQuestion>(lifetime, null)
 
   override fun tryPresentNextItem(category: FlowItemCategory): Boolean {
-    if (category !is WordsQuizCategory) throw UnsupportedOperationException("Category is not supported")
+    if (category !is ParallelSentenceCategory) throw UnsupportedOperationException("Category is not supported")
     val findResult = sentenceSelector.findBestSentence(category.questionLanguage, preferredLanguagesService.knownLanguages.value!!) ?: return false
     question.value = prepareQuestion(findResult)
     return true
