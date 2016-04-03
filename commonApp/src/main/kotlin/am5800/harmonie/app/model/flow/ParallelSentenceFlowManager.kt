@@ -7,6 +7,7 @@ import am5800.common.utils.Property
 import am5800.common.utils.TextRange
 import am5800.harmonie.app.model.SentenceSelector
 import am5800.harmonie.app.model.SentenceSelectorResult
+import am5800.harmonie.app.model.dbAccess.PreferredLanguagesService
 import am5800.harmonie.app.model.dbAccess.SentenceProvider
 import am5800.harmonie.app.model.dbAccess.WordsRepetitionService
 import am5800.harmonie.app.model.repetition.LearnScore
@@ -20,14 +21,18 @@ class ParallelSentenceQuestion(val question: Sentence,
                                val highlightedWords: Set<Word>)
 
 class ParallelSentenceFlowManager(lifetime: Lifetime,
+                                  private val preferredLanguagesService: PreferredLanguagesService,
                                   private val sentenceProvider: SentenceProvider,
                                   private val repetitionService: WordsRepetitionService,
                                   private val sentenceSelector: SentenceSelector) : FlowItemProvider {
+  override val supportedCategories: Set<FlowItemCategory>
+    get() = preferredLanguagesService.learnLanguages.value!!.map { WordsQuizCategory(it) }.toSet()
 
   val question = Property<ParallelSentenceQuestion>(lifetime, null)
 
-  override fun tryPresentNextItem(flowSettings: FlowSettings): Boolean {
-    val findResult = sentenceSelector.findBestSentence(flowSettings.questionLanguage, flowSettings.answerLanguage) ?: return false
+  override fun tryPresentNextItem(category: FlowItemCategory): Boolean {
+    if (category !is WordsQuizCategory) throw UnsupportedOperationException("Category is not supported")
+    val findResult = sentenceSelector.findBestSentence(category.questionLanguage, preferredLanguagesService.knownLanguages.value!!) ?: return false
     question.value = prepareQuestion(findResult)
     return true
   }

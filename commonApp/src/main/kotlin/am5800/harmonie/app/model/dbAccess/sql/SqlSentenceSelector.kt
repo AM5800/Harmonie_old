@@ -1,6 +1,7 @@
 package am5800.harmonie.app.model.dbAccess.sql
 
 import am5800.common.Language
+import am5800.common.LanguageParser
 import am5800.common.db.ContentDbConstants
 import am5800.common.utils.functions.shuffle
 import am5800.harmonie.app.model.DebugOptions
@@ -32,57 +33,63 @@ class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
     database = db
   }
 
-  override fun findBestSentence(languageFrom: Language, languageTo: Language): SentenceSelectorResult? {
+  override fun findBestSentence(languageFrom: Language, languagesTo: Collection<Language>): SentenceSelectorResult? {
     val scheduled = repetitionService.getScheduledWords(languageFrom, DateTime.now()).filterIsInstance<SqlWord>()
 
     logger.info("Looking for best sentence. ${scheduled.size} words scheduled")
 
-    if (!scheduled.isEmpty()) return findBestSentence(languageFrom, languageTo, scheduled)
+    if (!scheduled.isEmpty()) return findBestSentence(languageFrom, languagesTo, scheduled)
 
     val nextWord = wordSelector.findBestWord(languageFrom) as? SqlWord
     logger.info("Next by frequency word is: ${nextWord?.lemma}")
 
-    if (nextWord == null) return getRandomSentence(languageFrom, languageTo)
+    if (nextWord == null) return getRandomSentence(languageFrom, languagesTo)
 
-    return findBestSentence(languageFrom, languageTo, listOf(nextWord))
+    return findBestSentence(languageFrom, languagesTo, listOf(nextWord))
   }
 
-  private fun getRandomSentence(languageFrom: Language, languageTo: Language): SentenceSelectorResult? {
+  private fun formatLanguageCondition(name: String, languages: Collection<Language>): String {
+    if (languages.isEmpty()) throw Exception("No languages specified")
+    val str = languages.map { "$name = '${it.code}'" }.joinToString(" OR ")
+    return "($str)"
+  }
+
+  private fun getRandomSentence(languageFrom: Language, languagesTo: Collection<Language>): SentenceSelectorResult? {
     val translations = ContentDbConstants.sentenceTranslationsTableName
     val sentences = ContentDbConstants.sentencesTableName
     val langFrom = languageFrom.code
-    val langTo = languageTo.code
+    val langTo = formatLanguageCondition("s2.language", languagesTo)
     val query = """
-        SELECT s1.id, s1.text, s2.id, s2.text
+        SELECT s1.id, s1.text, s2.id, s2.text, s2.language
           FROM $translations
           INNER JOIN $sentences AS s1
             ON s1.id = $translations.key
           INNER JOIN $sentences AS s2
             ON s2.id = $translations.value
-          WHERE s1.language='$langFrom' AND s2.language='$langTo'
+          WHERE s1.language='$langFrom' AND $langTo
           ORDER BY RANDOM()
           LIMIT 1
     """
 
-    return database!!.query4<Long, String, Long, String>(query)
-        .map { SentenceSelectorResult(SqlSentence(it.value1, languageFrom, it.value2), SqlSentence(it.value3, languageTo, it.value4), emptySet()) }
+    return database!!.query5<Long, String, Long, String, String>(query)
+        .map { SentenceSelectorResult(SqlSentence(it.value1, languageFrom, it.value2), SqlSentence(it.value3, LanguageParser.parse(it.value5), it.value4), emptySet()) }
         .singleOrNull()
   }
 
-  private fun findBestSentence(languageFrom: Language, languageTo: Language, containingWords: List<SqlWord>): SentenceSelectorResult? {
+  private fun findBestSentence(languageFrom: Language, languagesTo: Collection<Language>, containingWords: List<SqlWord>): SentenceSelectorResult? {
     if (containingWords.isEmpty()) throw Exception("Nothing to search for")
     val db = database!!
     val translations = ContentDbConstants.sentenceTranslationsTableName
     val sentences = ContentDbConstants.sentencesTableName
     val langFrom = languageFrom.code
-    val langTo = languageTo.code
+    val langTo = formatLanguageCondition("s2.language", languagesTo)
     val difficulties = ContentDbConstants.sentenceDifficultyTableName
     val wordOccurrences = ContentDbConstants.wordOccurrencesTableName
 
     val includeIds = containingWords.map { it.id }.joinToString(", ")
 
     val searchQuery = """
-        SELECT s1.id, s1.text, s2.id, s2.text, $difficulties.difficulty
+        SELECT s1.id, s1.text, s2.id, s2.text, $difficulties.difficulty, s2.language
           FROM $translations
           INNER JOIN $sentences AS s1
             ON s1.id = $translations.key
@@ -92,18 +99,18 @@ class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
             ON s1.id = $difficulties.sentenceId
           INNER JOIN $wordOccurrences
             ON s1.id = $wordOccurrences.sentenceId
-          WHERE s1.language='$langFrom' AND s2.language='$langTo' AND $wordOccurrences.wordId IN ($includeIds)
+          WHERE s1.language='$langFrom' AND $langTo AND $wordOccurrences.wordId IN ($includeIds)
           GROUP BY s1.id
           ORDER BY $difficulties.difficulty
           LIMIT 20
 		"""
 
-    val queryResult = db.query5<Long, String, Long, String, Long>(searchQuery)
+    val queryResult = db.query6<Long, String, Long, String, Long, String>(searchQuery)
 
     if (queryResult.size >= 1) {
       val minDifficulty = queryResult.first().value5
       return queryResult.takeWhile { it.value5 == minDifficulty }
-          .map { SentenceSelectorResult(SqlSentence(it.value1, languageFrom, it.value2), SqlSentence(it.value3, languageTo, it.value4), containingWords.toSet()) }
+          .map { SentenceSelectorResult(SqlSentence(it.value1, languageFrom, it.value2), SqlSentence(it.value3, LanguageParser.parse(it.value6), it.value4), containingWords.toSet()) }
           .shuffle(debugOptions.randomSeed)
           .first()
     } else throw Exception("No sentences found")

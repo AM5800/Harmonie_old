@@ -4,6 +4,7 @@ import am5800.common.Language
 import am5800.harmonie.app.model.localization.LocalizationTable
 
 class RussianLocalizationTable : LocalizationTable {
+  override val learnAll = "Учить все"
   override val language: Language = Language.Russian
   override val continueButton: String = "Продолжить"
   override val minutesLeft = RussianQuantityString("Осталась %i минута", "Осталось %i минуты", "Осталось %i минут")

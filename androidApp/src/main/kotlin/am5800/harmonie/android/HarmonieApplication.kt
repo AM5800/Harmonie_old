@@ -10,7 +10,7 @@ import am5800.harmonie.android.logging.AndroidLoggerProvider
 import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.dbAccess.WordsRepetitionServiceImpl
 import am5800.harmonie.app.model.dbAccess.sql.*
-import am5800.harmonie.app.model.flow.FlowItemProviderRegistrar
+import am5800.harmonie.app.model.flow.FlowItemDistributionService
 import am5800.harmonie.app.model.flow.FlowManager
 import am5800.harmonie.app.model.flow.ParallelSentenceFlowManager
 import am5800.harmonie.app.model.repetition.BucketRepetitionAlgorithm
@@ -50,15 +50,16 @@ class HarmonieApplication : Application() {
       val dbConsumers = listOf(sentenceProvider, sentenceSelector, wordsRepetitionService, wordSelector, languageService)
       AndroidContentDb(this, keyValueDb, loggerProvider, dbConsumers, lt)
 
-      val flowManager = FlowManager(lt, loggerProvider)
-      val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceProvider, wordsRepetitionService, sentenceSelector)
-      val flowItemProviderRegistrar = FlowItemProviderRegistrar(parallelSentenceFlowManager)
+      val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, languageService, sentenceProvider, wordsRepetitionService, sentenceSelector)
+      val flowItemProviders = listOf(parallelSentenceFlowManager)
+      val flowManager = FlowManager(lt, loggerProvider, flowItemProviders, debugOptions)
+      val distributionService = FlowItemDistributionService(flowItemProviders)
 
       // ViewModels
       val localizationService = AndroidLocalizationService.create(resources, keyValueDb, lt)
 
       val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService)
-      val startScreenViewModel = StartScreenViewModel(flowManager, flowItemProviderRegistrar, lt)
+      val startScreenViewModel = StartScreenViewModel(flowManager, lt, localizationService, distributionService)
       val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt, localizationService)
 
       // View components

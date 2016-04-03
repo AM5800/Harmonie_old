@@ -11,16 +11,11 @@ import android.widget.Button
 class StartScreenController(private val viewModel: StartScreenViewModel, lifetime: Lifetime, stack: ControllerStack) : BindableController {
 
   override fun bind(view: BindableView, bindingLifetime: Lifetime) {
-    view.getChild<Button>(R.id.startLearningDeEnBtn).bindOnClick(bindingLifetime, {
-      viewModel.startLearningDeEn()
-    })
+    val learnButton = view.getChild<Button>(R.id.learnAll)
+    learnButton.bindText(bindingLifetime, view, viewModel.learnAllText)
 
-    view.getChild<Button>(R.id.startLearningEnDeBtn).bindOnClick(bindingLifetime, {
-      viewModel.startLearningEnDe()
-    })
-
-    view.getChild<Button>(R.id.startLearningJpRuBtn).bindOnClick(bindingLifetime, {
-      viewModel.startLearningJpRu()
+    learnButton.bindOnClick(bindingLifetime, {
+      viewModel.learnAll()
     })
   }
 

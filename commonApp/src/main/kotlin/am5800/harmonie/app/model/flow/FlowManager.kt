@@ -4,21 +4,26 @@ import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
 import am5800.common.utils.SequentialLifetime
 import am5800.common.utils.Signal
+import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.logging.LoggerProvider
 import org.joda.time.Duration
+import org.joda.time.Seconds
 import java.util.*
 import kotlin.concurrent.schedule
 
 
-class FlowManager(private val lifetime: Lifetime, private val loggerProvider: LoggerProvider) {
-  private val providersQueue = LinkedList<FlowItemProvider>()
+class FlowManager(private val lifetime: Lifetime,
+                  private val loggerProvider: LoggerProvider,
+                  private val providers: Collection<FlowItemProvider>,
+                  debugOptions: DebugOptions) {
   private val lifetimes = SequentialLifetime(lifetime)
   private val logger = loggerProvider.getLogger(javaClass)
+  private val random = if (debugOptions.randomSeed != null) Random(debugOptions.randomSeed) else Random()
 
-  private var currentSettings: FlowSettings? = null
+  private var currentDistribution: CategoryDistribution? = null
   val isEmptySignal = Signal<Unit>(lifetime)
 
-  fun start(providers: List<FlowItemProvider>, settings: FlowSettings, duration: org.joda.time.Duration?) {
+  fun start(distribution: CategoryDistribution, duration: org.joda.time.Duration?) {
     logger.info("Flow started")
     if (duration == null) timeLeft.value = null
     else {
@@ -30,18 +35,15 @@ class FlowManager(private val lifetime: Lifetime, private val loggerProvider: Lo
 
       timer.schedule(0, 1000, {
         val value = timeLeft.value
-        if (value == org.joda.time.Duration.ZERO || value == null) {
+        if (value == Duration.ZERO || value == null) {
           timer.cancel()
           return@schedule
         }
-        timeLeft.value = value.minus(org.joda.time.Seconds.ONE.toStandardDuration())
+        timeLeft.value = value.minus(Seconds.ONE.toStandardDuration())
       })
     }
 
-    providersQueue.clear()
-    providersQueue.addAll(providers)
-
-    currentSettings = settings
+    currentDistribution = distribution
     next()
   }
 
@@ -51,21 +53,17 @@ class FlowManager(private val lifetime: Lifetime, private val loggerProvider: Lo
       return
     }
 
-    val settings = currentSettings!!
+    val category = currentDistribution!!.getCategory(random.nextDouble())
 
-    val provider = providersQueue.firstOrNull { it.tryPresentNextItem(settings) }
+    val provider = providers.firstOrNull { it.tryPresentNextItem(category) }
     if (provider == null) {
       finishFlow()
       return
     }
-
-    providersQueue.remove(provider)
-    providersQueue.addLast(provider)
   }
 
   private fun finishFlow() {
-    providersQueue.clear()
-    currentSettings = null
+    currentDistribution = null
     isEmptySignal.fire(Unit)
   }
 

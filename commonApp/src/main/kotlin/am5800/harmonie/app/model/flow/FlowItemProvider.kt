@@ -2,5 +2,6 @@ package am5800.harmonie.app.model.flow
 
 
 interface FlowItemProvider {
-  fun tryPresentNextItem(flowSettings: FlowSettings): Boolean
+  val supportedCategories: Set<FlowItemCategory>
+  fun tryPresentNextItem(category: FlowItemCategory): Boolean
 }

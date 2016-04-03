@@ -7,5 +7,5 @@ import am5800.common.Word
 class SentenceSelectorResult(val question: Sentence, val answer: Sentence, val highlightedWords: Set<Word>)
 
 interface SentenceSelector {
-  fun findBestSentence(languageFrom: Language, languageTo: Language): SentenceSelectorResult?
+  fun findBestSentence(languageFrom: Language, languagesTo: Collection<Language>): SentenceSelectorResult?
 }

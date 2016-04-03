@@ -52,6 +52,6 @@ class SqlPreferredLanguagesService(keyValueDatabase: KeyValueDatabase,
   }
 
   private fun stringToLanguages(string: String?): List<Language> {
-    return string!!.split(",").map { LanguageParser.tryParse(it) }.filterNotNull()
+    return string!!.split(",").map { LanguageParser.tryParse(it.trim()) }.filterNotNull()
   }
 }

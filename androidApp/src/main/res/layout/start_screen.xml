@@ -8,21 +8,6 @@
     <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/startLearningDeEnBtn"
-            android:layout_gravity="center_horizontal"
-            android:text="Learn de->en!"/>
-
-    <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/startLearningEnDeBtn"
-            android:layout_gravity="center_horizontal"
-            android:text="Learn en->de!"/>
-
-    <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/startLearningJpRuBtn"
-            android:layout_gravity="center_horizontal"
-            android:text="Learn jp->ru!"/>
+            android:id="@+id/learnAll"
+            android:layout_gravity="center_horizontal"/>
 </LinearLayout>

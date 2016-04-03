@@ -11,4 +11,5 @@ interface LocalizationTable {
   val welcomeToHarmonie: String
   val chooseKnownLanguage: String
   val chooseLearnLanguage: String
+  val learnAll: String
 }
