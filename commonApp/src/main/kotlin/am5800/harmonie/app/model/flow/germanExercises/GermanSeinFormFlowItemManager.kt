@@ -13,17 +13,14 @@ import am5800.harmonie.app.model.dbAccess.sql.query5
 import am5800.harmonie.app.model.flow.FlowItemCategory
 import am5800.harmonie.app.model.flow.FlowItemProvider
 
-
-class GermanSeinFormQuestion(val question: Sentence, val answer: Sentence, val occurrence: WordOccurrence, wrongVariants: List<String>)
-
 class GermanSeinFormFlowItemManager(
     private val preferredLanguagesService: PreferredLanguagesService,
     private val contentDb: ContentDb,
     lifetime: Lifetime,
-    private val debugOptions: DebugOptions) : FlowItemProvider {
+    private val debugOptions: DebugOptions) : FlowItemProvider, FillTheGapInParallelSentenceFlowItemManager {
   override val supportedCategories: Set<FlowItemCategory> = setOf(SeinFormQuizCategory(Language.German))
 
-  val question = Property<GermanSeinFormQuestion>(lifetime, null)
+  override val question = Property<FillTheGapInParallelSentenceQuestion>(lifetime, null)
   private val seinWordId = contentDb.query1<Long>("SELECT id FROM words WHERE language='${Language.German.code}' AND lemma='sein'").single()
   private val forms = getForms(seinWordId)
 
@@ -48,7 +45,7 @@ class GermanSeinFormFlowItemManager(
     return true
   }
 
-  private fun getQuestion(selectedForm: String, knownLanguages: List<Language>): GermanSeinFormQuestion? {
+  private fun getQuestion(selectedForm: String, knownLanguages: List<Language>): FillTheGapInParallelSentenceQuestion? {
     val langs = formatLanguageCondition("s2.language", knownLanguages)
     val query = """
       SELECT s1.text, s2.text, s2.language, wordOccurrences.startIndex, wordOccurrences.endIndex FROM sentenceMapping
@@ -71,6 +68,6 @@ class GermanSeinFormFlowItemManager(
     val answer = Sentence(LanguageParser.parse(queryResult.value3), queryResult.value2)
     val occurrence = WordOccurrence(Word(Language.German, "sein"), question, queryResult.value4.toInt(), queryResult.value5.toInt())
     val variants = forms.filterNot { it == selectedForm }.shuffle(debugOptions.randomSeed).take(3)
-    return GermanSeinFormQuestion(question, answer, occurrence, variants)
+    return FillTheGapInParallelSentenceQuestion(question, answer, occurrence, variants, selectedForm)
   }
 }

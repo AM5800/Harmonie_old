@@ -29,6 +29,14 @@ fun TextView.bindText(lifetime: Lifetime, uiThreadRunner: UIThreadRunner, proper
   })
 }
 
+fun View.bindEnabled(lifetime: Lifetime, uiThreadRunner: UIThreadRunner, property: Property<Boolean>) {
+  property.onChangeNotNull(lifetime, { arg ->
+    uiThreadRunner.runOnUiThread {
+      this.isEnabled = arg
+    }
+  })
+}
+
 fun CheckBox.bindCheckedTwoWay(lifetime: Lifetime, uiThreadRunner: UIThreadRunner, property: Property<Boolean>) {
   property.onChangeNotNull(lifetime, {
     uiThreadRunner.runOnUiThread {

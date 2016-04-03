@@ -8,6 +8,7 @@ interface ReadonlyProperty<T : Any> {
   fun onChange(lifetime: Lifetime, targetProperty: Property<T>)
   fun onChangeNotNull(lifetime: Lifetime, binder: (T) -> Unit)
   fun forEachValue(lifetime: Lifetime, binder: (T?, Lifetime) -> Unit)
+  fun onValue(lifetime: Lifetime, value: T?, callback: () -> Unit)
 }
 
 class PropertyChangedArg<T>(private val old: T?, val newValue: T?, val hasOld: Boolean) {
@@ -16,6 +17,12 @@ class PropertyChangedArg<T>(private val old: T?, val newValue: T?, val hasOld: B
 }
 
 class Property<T : Any>(val lifetime: Lifetime, initialValue: T?) : ReadonlyProperty<T> {
+  override fun onValue(lifetime: Lifetime, value: T?, callback: () -> Unit) {
+    onChange(lifetime, { args ->
+      if (args.newValue == value) callback()
+    })
+  }
+
   init {
     lifetime.addAction { binders.clear() }
   }

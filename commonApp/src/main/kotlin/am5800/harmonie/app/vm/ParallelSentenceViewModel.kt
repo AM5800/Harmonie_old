@@ -25,7 +25,7 @@ class ToggleableWordViewModel(val word: Word, text: String,
 class ParallelSentenceViewModel(lifetime: Lifetime,
                                 private val parallelSentenceFlowManager: ParallelSentenceFlowManager,
                                 private val flowManager: FlowManager,
-                                localizationService: LocalizationService) : ViewModel by ViewModelBase(lifetime) {
+                                localizationService: LocalizationService) : ViewModelBase(lifetime) {
   enum class State {
     ShowQuestion,
     ShowAnswer
@@ -33,14 +33,12 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
 
   val continueBtnText = localizationService.createProperty(lifetime, { it.continueButton })
 
-  private val _state = Property(lifetime, State.ShowQuestion)
-  val state: ReadonlyProperty<State>
-    get() = _state
+  private val state = Property(lifetime, State.ShowQuestion)
 
 
   fun next() {
-    if (_state.value == State.ShowQuestion) {
-      _state.value = State.ShowAnswer
+    if (state.value == State.ShowQuestion) {
+      state.value = State.ShowAnswer
     } else {
       val scores = LinkedHashMap<Word, LearnScore>()
       val vms = question.value?.filterIsInstance<ToggleableWordViewModel>() ?: emptyList()
@@ -57,7 +55,7 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
   val answer = Property(lifetime, "")
 
   init {
-    _state.forEachValue(lifetime, { state, lt ->
+    state.forEachValue(lifetime, { state, lt ->
       if (state == State.ShowQuestion) {
         answerGroupVisibility.value = false
       } else if (state == State.ShowAnswer) {
@@ -67,7 +65,7 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
 
     parallelSentenceFlowManager.question.forEachValue(lifetime, { data, lt ->
       data!!
-      _state.value = State.ShowQuestion
+      state.value = State.ShowQuestion
       question.value = createViewModelsForQuestion(data, lifetime)
       answer.value = data.answer.text
       activationRequired.fire(Unit)
