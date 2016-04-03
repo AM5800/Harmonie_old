@@ -55,7 +55,9 @@ class FlowManager(private val lifetime: Lifetime,
 
     val category = currentDistribution!!.getCategory(random.nextDouble())
 
-    val provider = providers.firstOrNull { it.tryPresentNextItem(category) }
+    val provider = providers
+        .filter { it.supportedCategories.contains(category) }
+        .firstOrNull { it.tryPresentNextItem(category) }
     if (provider == null) {
       finishFlow()
       return
