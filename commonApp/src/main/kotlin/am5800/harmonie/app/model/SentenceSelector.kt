@@ -9,5 +9,4 @@ class SentenceSelectorResult(val question: Sentence, val answer: Sentence, val h
 interface SentenceSelector {
   fun findBestSentenceByAttempts(languageFrom: Language, languagesTo: Collection<Language>): SentenceSelectorResult?
 
-  fun findSentenceWithLemma(languageFrom: Language, languagesTo: Collection<Language>, lemma: String): SentenceSelectorResult?
 }

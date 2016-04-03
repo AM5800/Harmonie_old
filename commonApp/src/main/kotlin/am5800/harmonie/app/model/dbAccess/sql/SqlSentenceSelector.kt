@@ -12,15 +12,17 @@ import am5800.harmonie.app.model.dbAccess.WordsRepetitionService
 import am5800.harmonie.app.model.logging.LoggerProvider
 import org.joda.time.DateTime
 
+fun formatLanguageCondition(name: String, languages: Collection<Language>): String {
+  if (languages.isEmpty()) throw Exception("No languages specified")
+  val str = languages.map { "$name = '${it.code}'" }.joinToString(" OR ")
+  return "($str)"
+}
 
 class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
                           loggerProvider: LoggerProvider,
                           private val contentDb: ContentDb,
                           private val debugOptions: DebugOptions,
                           private val wordSelector: WordSelector) : SentenceSelector {
-  override fun findSentenceWithLemma(languageFrom: Language, languagesTo: Collection<Language>, lemma: String): SentenceSelectorResult? {
-    throw UnsupportedOperationException()
-  }
 
   private val logger = loggerProvider.getLogger(javaClass)
 
@@ -37,12 +39,6 @@ class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
     if (nextWord == null) return getRandomSentence(languageFrom, languagesTo)
 
     return findBestSentence(languageFrom, languagesTo, listOf(nextWord))
-  }
-
-  private fun formatLanguageCondition(name: String, languages: Collection<Language>): String {
-    if (languages.isEmpty()) throw Exception("No languages specified")
-    val str = languages.map { "$name = '${it.code}'" }.joinToString(" OR ")
-    return "($str)"
   }
 
   private fun getRandomSentence(languageFrom: Language, languagesTo: Collection<Language>): SentenceSelectorResult? {

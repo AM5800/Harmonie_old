@@ -12,6 +12,7 @@ import am5800.harmonie.app.model.dbAccess.WordsRepetitionServiceImpl
 import am5800.harmonie.app.model.dbAccess.sql.*
 import am5800.harmonie.app.model.flow.FlowItemDistributionService
 import am5800.harmonie.app.model.flow.FlowManager
+import am5800.harmonie.app.model.flow.germanExercises.GermanSeinFormFlowItemManager
 import am5800.harmonie.app.model.flow.parallelSentence.ParallelSentenceFlowManager
 import am5800.harmonie.app.model.repetition.BucketRepetitionAlgorithm
 import am5800.harmonie.app.vm.DefaultFlowControllerOwnerViewModel
@@ -34,7 +35,7 @@ class HarmonieApplication : Application() {
     try {
       val lt = Lifetime()
       val container = ComponentContainer(lt, null)
-      val debugOptions = DebugOptions(false, true, null)
+      val debugOptions = DebugOptions(false, false, null)
       modelContainer = container
 
       val permanentDb = AndroidPermanentDb(this, lt)
@@ -51,7 +52,8 @@ class HarmonieApplication : Application() {
 
 
       val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, languageService, sentenceProvider, wordsRepetitionService, sentenceSelector)
-      val flowItemProviders = listOf(parallelSentenceFlowManager)
+      val seinFlowManager = GermanSeinFormFlowItemManager(languageService, contentDb, lt, debugOptions)
+      val flowItemProviders = listOf(parallelSentenceFlowManager, seinFlowManager)
       val flowManager = FlowManager(lt, loggerProvider, flowItemProviders, debugOptions)
       val distributionService = FlowItemDistributionService(flowItemProviders)
 
