@@ -5,7 +5,7 @@ import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
 import am5800.common.utils.ReadonlyProperty
 import am5800.harmonie.app.model.flow.FlowManager
-import am5800.harmonie.app.model.flow.ParallelSentenceFlowManager
+import am5800.harmonie.app.model.flow.parallelSentence.ParallelSentenceFlowManager
 import am5800.harmonie.app.model.localization.LocalizationService
 import am5800.harmonie.app.model.repetition.LearnScore
 import java.util.*

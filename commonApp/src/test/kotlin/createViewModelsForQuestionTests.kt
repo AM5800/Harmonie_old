@@ -3,7 +3,7 @@ import am5800.common.Sentence
 import am5800.common.Word
 import am5800.common.utils.Lifetime
 import am5800.common.utils.TextRange
-import am5800.harmonie.app.model.flow.ParallelSentenceQuestion
+import am5800.harmonie.app.model.flow.parallelSentence.ParallelSentenceQuestion
 import am5800.harmonie.app.vm.ToggleableWordViewModel
 import am5800.harmonie.app.vm.createViewModelsForQuestion
 import com.google.common.collect.LinkedHashMultimap

@@ -2,7 +2,6 @@ package am5800.harmonie.android.dbAccess
 
 import am5800.common.utils.Lifetime
 import am5800.harmonie.app.model.dbAccess.sql.ContentDb
-import am5800.harmonie.app.model.dbAccess.sql.ContentDbConsumer
 import am5800.harmonie.app.model.dbAccess.sql.Cursor
 import am5800.harmonie.app.model.logging.Logger
 import am5800.harmonie.app.model.logging.LoggerProvider
@@ -11,12 +10,12 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.google.common.hash.Hashing
 import com.google.common.io.ByteStreams
+import java.io.File
 import java.io.FileOutputStream
 
 class AndroidContentDb(private val context: Context,
                        private val keyValueDb: KeyValueDatabaseImpl,
                        loggerProvider: LoggerProvider,
-                       dbConsumers: List<ContentDbConsumer>,
                        lifetime: Lifetime) : ContentDb {
 
   override fun execute(query: String) {
@@ -25,17 +24,14 @@ class AndroidContentDb(private val context: Context,
 
   private val logger = loggerProvider.getLogger(javaClass)
 
-  private val db = DbInstance(context, keyValueDb, logger, dbConsumers, this)
+  private val db = DbInstance(context, keyValueDb, logger)
 
   private class DbInstance(private val context: Context,
                            private val keyValueDb: KeyValueDatabaseImpl,
-                           private val logger: Logger,
-                           dbConsumers: List<ContentDbConsumer>,
-                           db: AndroidContentDb) : SQLiteOpenHelper(context, DbName, null, 1) {
+                           private val logger: Logger) : SQLiteOpenHelper(context, DbName, null, 1) {
 
     init {
       if (checkDbUpdateNeeded()) {
-        dbConsumers.forEach { it.dbMigrationPhase1(db) }
         logger.info("Performing db update")
         close()
         context.assets.open(DbName).use { inStream ->
@@ -44,13 +40,11 @@ class AndroidContentDb(private val context: Context,
           }
         }
         writableDatabase.close()
-        dbConsumers.forEach { it.dbMigrationPhase2(db) }
       }
-
-      dbConsumers.forEach { it.dbInitialized(db) }
     }
 
     private fun checkDbUpdateNeeded(): Boolean {
+      if (!File(DbLocation).exists()) return true
       val dbKey = "ContentDbChecksum"
       val previousChecksum = keyValueDb.getValue(dbKey, "0")
 

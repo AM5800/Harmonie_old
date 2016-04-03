@@ -2,6 +2,7 @@ package am5800.harmonie.app.model.dbAccess.sql
 
 import am5800.common.Language
 import am5800.common.LanguageParser
+import am5800.common.db.ContentDbConstants
 import am5800.common.utils.Lifetime
 import am5800.common.utils.convert
 import am5800.harmonie.app.model.DebugOptions
@@ -10,38 +11,30 @@ import am5800.harmonie.app.model.dbAccess.PreferredLanguagesService
 
 class SqlPreferredLanguagesService(keyValueDatabase: KeyValueDatabase,
                                    lifetime: Lifetime,
-                                   private val debugOptions: DebugOptions) : PreferredLanguagesService, ContentDbConsumer {
+                                   contentDb: ContentDb,
+                                   private val debugOptions: DebugOptions) : PreferredLanguagesService {
   override val knownLanguages = keyValueDatabase.createProperty(lifetime, "knownLanguages", "").convert({ stringToLanguages(it) }, { languagesToString(it) })
   override val learnLanguages = keyValueDatabase.createProperty(lifetime, "learnLanguages", "").convert({ stringToLanguages(it) }, { languagesToString(it) })
+
+  private val supportedDirections = mutableListOf<Pair<Language, Language>>()
 
   init {
     if (debugOptions.dropPreferredLanguagesOnStart) {
       knownLanguages.value = emptyList()
       learnLanguages.value = emptyList()
     }
-  }
 
-  private var contentDb: ContentDb? = null
-
-  override fun dbInitialized(db: ContentDb) {
-    contentDb = db
+    val directions = ContentDbConstants.supportedLearningDirections
+    val queryResult = contentDb.query2<String, String>("SELECT languageFrom, languageTo FROM $directions")
+    supportedDirections.addAll(queryResult.map { Pair(LanguageParser.parse(it.first), LanguageParser.parse(it.second)) })
   }
 
   override fun getAvailableLanguages(): Collection<Language> {
-    val query = "SELECT DISTINCT(language) FROM sentences"
-    return contentDb!!.query1<String>(query).map { LanguageParser.parse(it) }
+    return supportedDirections.map { it.first }
   }
 
   override fun getAvailableTranslations(language: Language): Collection<Language> {
-    val query = """
-    SELECT DISTINCT(s2.language) FROM sentenceMapping
-      INNER JOIN sentences AS s1
-        ON s1.id = sentenceMapping.key
-      INNER JOIN sentences AS s2
-        ON s2.id = sentenceMapping.value
-      WHERE s1.language = '${language.code}'
-    """
-    return contentDb!!.query1<String>(query).map { LanguageParser.parse(it) }
+    return supportedDirections.filter { it.first == language }.map { it.second }
   }
 
   override val configurationRequired: Boolean

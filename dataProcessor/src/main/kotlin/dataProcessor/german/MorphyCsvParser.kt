@@ -4,6 +4,10 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
 
+fun normalizeGermanWord(word: String) : String {
+  return word.trim().toLowerCase().replace("ä", "ae").replace("ö", "oe").replace("ü", "ue").replace("ß", "ss")
+}
+
 class MorphyCsvParser(path: File) : GermanLemmatizer {
   override fun looksLikeSeparablePrefix(word: String): Boolean {
     val knownPrefixes = setOf("zu", "an")
@@ -45,6 +49,6 @@ class MorphyCsvParser(path: File) : GermanLemmatizer {
   }
 
   override fun normalize(lemma: String): String {
-    return lemma.trim().toLowerCase().replace("ä", "ae").replace("ö", "oe").replace("ü", "ue").replace("ß", "ss")
+    return normalizeGermanWord(lemma)
   }
 }

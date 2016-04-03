@@ -12,7 +12,7 @@ import am5800.harmonie.app.model.dbAccess.WordsRepetitionServiceImpl
 import am5800.harmonie.app.model.dbAccess.sql.*
 import am5800.harmonie.app.model.flow.FlowItemDistributionService
 import am5800.harmonie.app.model.flow.FlowManager
-import am5800.harmonie.app.model.flow.ParallelSentenceFlowManager
+import am5800.harmonie.app.model.flow.parallelSentence.ParallelSentenceFlowManager
 import am5800.harmonie.app.model.repetition.BucketRepetitionAlgorithm
 import am5800.harmonie.app.vm.DefaultFlowControllerOwnerViewModel
 import am5800.harmonie.app.vm.ParallelSentenceViewModel
@@ -34,21 +34,21 @@ class HarmonieApplication : Application() {
     try {
       val lt = Lifetime()
       val container = ComponentContainer(lt, null)
-      val debugOptions = DebugOptions(false, false, null)
+      val debugOptions = DebugOptions(false, true, null)
       modelContainer = container
 
       val permanentDb = AndroidPermanentDb(this, lt)
       val keyValueDb = KeyValueDatabaseImpl(permanentDb)
+      val contentDb = AndroidContentDb(this, keyValueDb, loggerProvider, lt)
 
       val repetitionService = SqlRepetitionService(BucketRepetitionAlgorithm(), permanentDb, debugOptions)
-      val wordsRepetitionService = WordsRepetitionServiceImpl(repetitionService, lt)
+      val wordsRepetitionService = WordsRepetitionServiceImpl(repetitionService, lt, contentDb)
 
-      val sentenceProvider = SqlSentenceProvider()
-      val wordSelector = SqlWordSelector(wordsRepetitionService, keyValueDb, lt, debugOptions)
-      val sentenceSelector = SqlSentenceSelector(wordsRepetitionService, loggerProvider, debugOptions, wordSelector)
-      val languageService = SqlPreferredLanguagesService(keyValueDb, lt, debugOptions)
-      val dbConsumers = listOf(sentenceProvider, sentenceSelector, wordsRepetitionService, wordSelector, languageService)
-      AndroidContentDb(this, keyValueDb, loggerProvider, dbConsumers, lt)
+      val sentenceProvider = SqlSentenceProvider(contentDb)
+      val wordSelector = SqlWordSelector(wordsRepetitionService, keyValueDb, contentDb, lt, debugOptions)
+      val sentenceSelector = SqlSentenceSelector(wordsRepetitionService, loggerProvider, contentDb, debugOptions, wordSelector)
+      val languageService = SqlPreferredLanguagesService(keyValueDb, lt, contentDb, debugOptions)
+
 
       val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, languageService, sentenceProvider, wordsRepetitionService, sentenceSelector)
       val flowItemProviders = listOf(parallelSentenceFlowManager)

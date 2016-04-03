@@ -12,8 +12,9 @@ import am5800.harmonie.app.model.dbAccess.WordsRepetitionService
 
 class SqlWordSelector(private val wordsRepetitionService: WordsRepetitionService,
                       private val keyValueDatabase: KeyValueDatabase,
+                      private val contentDb: ContentDb,
                       lifetime: Lifetime,
-                      private val debugOptions: DebugOptions) : WordSelector, ContentDbConsumer {
+                      private val debugOptions: DebugOptions) : WordSelector{
   var pendingSelectionResult: Pair<Language, String>? = null
 
   init {
@@ -35,20 +36,6 @@ class SqlWordSelector(private val wordsRepetitionService: WordsRepetitionService
     }
   }
 
-  override fun dbMigrationPhase1(oldDb: ContentDb) {
-
-  }
-
-  override fun dbMigrationPhase2(newDb: ContentDb) {
-
-  }
-
-  private var database: ContentDb? = null
-
-  override fun dbInitialized(db: ContentDb) {
-    database = db
-  }
-
   override fun findBestWord(language: Language): Word? {
     val orderedWords = getOrderedWords(language)
 
@@ -67,8 +54,8 @@ class SqlWordSelector(private val wordsRepetitionService: WordsRepetitionService
   private fun getKey(language: Language) = "latestSelected-${language.code}"
 
   private fun getOrderedWords(language: Language): List<SqlWord> {
-    val counts = ContentDbConstants.wordCountsTableName
-    val words = ContentDbConstants.wordsTableName
+    val counts = ContentDbConstants.wordCounts
+    val words = ContentDbConstants.words
     val lang = language.code
     val query = """
         SELECT $words.id, $words.lemma
@@ -78,6 +65,6 @@ class SqlWordSelector(private val wordsRepetitionService: WordsRepetitionService
           WHERE $words.language='$lang'
           ORDER BY $counts.count DESC
       """
-    return database!!.query2<Long, String>(query).map { SqlWord(it.first, language, it.second) }
+    return contentDb.query2<Long, String>(query).map { SqlWord(it.first, language, it.second) }
   }
 }

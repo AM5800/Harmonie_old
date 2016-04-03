@@ -7,18 +7,33 @@ import am5800.common.WordOccurrence
 import corpus.CorpusRepository
 import corpus.parsing.CorpusParsersSet
 import corpus.parsing.NegraParser
+import dataProcessor.german.GermanLemmatizer
 import dataProcessor.german.GermanPostProcessor
 import dataProcessor.german.MorphyCsvParser
+import dataProcessor.german.normalizeGermanWord
 import java.io.File
 
 fun main(args: Array<String>) {
   val repository = CorpusRepository(File("data/corpuses"))
 
-
   val data = prepareData(repository)
-
   val filteredData = filterData(data)
-  DbWriter().write(File("androidApp/src/main/assets/content.db"), filteredData)
+  val processedData = processSpecialOccurrences(filteredData)
+  DbWriter().write(File("androidApp/src/main/assets/content.db"), processedData)
+}
+
+fun processSpecialOccurrences(data: Data): Data {
+  val seinForms = setOf("sein", "bin", "ist", "bist", "seid", "sind", "war", "gewesen")
+
+  val result = mutableListOf<FormOccurrence>()
+  for (occurrence in data.wordOccurrences.filter { it.sentence.language == Language.German }) {
+    val form = normalizeGermanWord(occurrence.sentence.text.substring(occurrence.startIndex, occurrence.endIndex))
+    if (!seinForms.contains(form)) continue
+
+    result.add(FormOccurrence(form, occurrence))
+  }
+
+  return Data(data.sentenceTranslations, data.wordOccurrences, data.difficulties, data.realWorldWordsCount, result)
 }
 
 fun prepareData(repository: CorpusRepository): Data {
@@ -45,14 +60,14 @@ fun computeFrequencies(data: Data, repository: CorpusRepository, postProcessors:
   // TODO fix hardcode
   parsers.parse(repository.getCorpuses().filter { it.formatId.equals("NEGRA4", true) }, handler)
 
-  return Data(data.sentenceTranslations, data.wordOccurrences, data.difficulties, handler.wordCounts)
+  return Data(data.sentenceTranslations, data.wordOccurrences, data.difficulties, handler.wordCounts, emptyList())
 }
 
 fun mergeData(left: Data, right: Data): Data {
   val occurrences = left.wordOccurrences.plus(right.wordOccurrences).distinct()
   val translations = left.sentenceTranslations.plus(right.sentenceTranslations)
 
-  return Data(translations, occurrences, emptyMap(), emptyMap())
+  return Data(translations, occurrences, emptyMap(), emptyMap(), emptyList())
 }
 
 fun filterData(data: Data): Data {
@@ -81,7 +96,7 @@ fun filterData(data: Data): Data {
     }
   }
 
-  return Data(translations, wordOccurrences, difficulties, wordCounts)
+  return Data(translations, wordOccurrences, difficulties, wordCounts, emptyList())
 }
 
 fun extractLanguages(data: Data): List<Language> {

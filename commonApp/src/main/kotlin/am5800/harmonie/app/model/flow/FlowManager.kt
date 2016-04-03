@@ -5,6 +5,7 @@ import am5800.common.utils.Property
 import am5800.common.utils.SequentialLifetime
 import am5800.common.utils.Signal
 import am5800.harmonie.app.model.DebugOptions
+import am5800.harmonie.app.model.getRandom
 import am5800.harmonie.app.model.logging.LoggerProvider
 import org.joda.time.Duration
 import org.joda.time.Seconds
@@ -18,7 +19,7 @@ class FlowManager(private val lifetime: Lifetime,
                   debugOptions: DebugOptions) {
   private val lifetimes = SequentialLifetime(lifetime)
   private val logger = loggerProvider.getLogger(javaClass)
-  private val random = if (debugOptions.randomSeed != null) Random(debugOptions.randomSeed) else Random()
+  private val random = debugOptions.getRandom()
 
   private var currentDistribution: CategoryDistribution? = null
   val isEmptySignal = Signal<Unit>(lifetime)

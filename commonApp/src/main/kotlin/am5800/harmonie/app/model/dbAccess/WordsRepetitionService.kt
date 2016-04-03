@@ -6,7 +6,6 @@ import am5800.common.db.ContentDbConstants
 import am5800.common.utils.Lifetime
 import am5800.common.utils.Signal
 import am5800.harmonie.app.model.dbAccess.sql.ContentDb
-import am5800.harmonie.app.model.dbAccess.sql.ContentDbConsumer
 import am5800.harmonie.app.model.dbAccess.sql.SqlWord
 import am5800.harmonie.app.model.dbAccess.sql.query2
 import am5800.harmonie.app.model.repetition.LearnScore
@@ -25,7 +24,7 @@ interface WordsRepetitionService {
   fun getAverageBinaryScore(language: Language): Double
 }
 
-class WordsRepetitionServiceImpl(private val repetitionService: RepetitionService, lifetime: Lifetime) : WordsRepetitionService, ContentDbConsumer {
+class WordsRepetitionServiceImpl(private val repetitionService: RepetitionService, lifetime: Lifetime, private val contentDb: ContentDb) : WordsRepetitionService {
   private val cache = mutableMapOf<Pair<String, Language>, SqlWord>()
 
   override fun getBinaryWordScore(word: Word): LearnScore? {
@@ -44,19 +43,6 @@ class WordsRepetitionServiceImpl(private val repetitionService: RepetitionServic
   }
 
   override val attemptResultReceived = Signal<WordAttemptResult>(lifetime)
-
-  override fun dbMigrationPhase1(oldDb: ContentDb) {
-
-  }
-
-  override fun dbMigrationPhase2(newDb: ContentDb) {
-  }
-
-  private var database: ContentDb? = null
-
-  override fun dbInitialized(db: ContentDb) {
-    database = db
-  }
 
   private val attemptCategory = "ParallelSentenceWords"
   private fun getCategory(language: Language) = attemptCategory + language.code
@@ -91,11 +77,11 @@ class WordsRepetitionServiceImpl(private val repetitionService: RepetitionServic
 
     if (lemmasToSearch.isEmpty()) return result
 
-    val words = ContentDbConstants.wordsTableName
+    val words = ContentDbConstants.words
     val joinedLemmas = lemmasToSearch.map { "'$it'" }.joinToString(", ")
     val langCode = language.code
     val query = "SELECT id, lemma FROM $words WHERE language='$langCode' AND lemma IN ($joinedLemmas)"
-    val queryResult = database!!.query2<Long, String>(query).map { SqlWord(it.first, language, it.second) }
+    val queryResult = contentDb!!.query2<Long, String>(query).map { SqlWord(it.first, language, it.second) }
     for (word in queryResult) {
       val key = Pair(word.lemma, language)
       cache[key] = word

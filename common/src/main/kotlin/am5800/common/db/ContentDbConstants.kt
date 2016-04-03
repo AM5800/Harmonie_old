@@ -3,11 +3,13 @@ package am5800.common.db
 
 class ContentDbConstants {
   companion object {
-    val sentencesTableName = "sentences"
-    val sentenceTranslationsTableName = "sentenceMapping"
-    val wordsTableName = "words"
-    val wordOccurrencesTableName = "wordOccurrences"
-    val sentenceDifficultyTableName = "sentenceDifficulty"
-    val wordCountsTableName = "wordFrequencies"
+    val sentences = "sentences"
+    val sentenceTranslations = "sentenceMapping"
+    val words = "words"
+    val wordOccurrences = "wordOccurrences"
+    val sentenceDifficulty = "sentenceDifficulty"
+    val wordCounts = "wordFrequencies"
+    val specialFormOccurrences = "specialFormOccurrences"
+    val supportedLearningDirections = "learningDirections"
   }
 }

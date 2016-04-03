@@ -15,25 +15,16 @@ import org.joda.time.DateTime
 
 class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
                           loggerProvider: LoggerProvider,
+                          private val contentDb: ContentDb,
                           private val debugOptions: DebugOptions,
-                          private val wordSelector: WordSelector) : SentenceSelector, ContentDbConsumer {
+                          private val wordSelector: WordSelector) : SentenceSelector {
+  override fun findSentenceWithLemma(languageFrom: Language, languagesTo: Collection<Language>, lemma: String): SentenceSelectorResult? {
+    throw UnsupportedOperationException()
+  }
+
   private val logger = loggerProvider.getLogger(javaClass)
 
-  override fun dbMigrationPhase1(oldDb: ContentDb) {
-
-  }
-
-  override fun dbMigrationPhase2(newDb: ContentDb) {
-
-  }
-
-  private var database: ContentDb? = null
-
-  override fun dbInitialized(db: ContentDb) {
-    database = db
-  }
-
-  override fun findBestSentence(languageFrom: Language, languagesTo: Collection<Language>): SentenceSelectorResult? {
+  override fun findBestSentenceByAttempts(languageFrom: Language, languagesTo: Collection<Language>): SentenceSelectorResult? {
     val scheduled = repetitionService.getScheduledWords(languageFrom, DateTime.now()).filterIsInstance<SqlWord>()
 
     logger.info("Looking for best sentence. ${scheduled.size} words scheduled")
@@ -55,8 +46,8 @@ class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
   }
 
   private fun getRandomSentence(languageFrom: Language, languagesTo: Collection<Language>): SentenceSelectorResult? {
-    val translations = ContentDbConstants.sentenceTranslationsTableName
-    val sentences = ContentDbConstants.sentencesTableName
+    val translations = ContentDbConstants.sentenceTranslations
+    val sentences = ContentDbConstants.sentences
     val langFrom = languageFrom.code
     val langTo = formatLanguageCondition("s2.language", languagesTo)
     val query = """
@@ -71,20 +62,19 @@ class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
           LIMIT 1
     """
 
-    return database!!.query5<Long, String, Long, String, String>(query)
+    return contentDb.query5<Long, String, Long, String, String>(query)
         .map { SentenceSelectorResult(SqlSentence(it.value1, languageFrom, it.value2), SqlSentence(it.value3, LanguageParser.parse(it.value5), it.value4), emptySet()) }
         .singleOrNull()
   }
 
   private fun findBestSentence(languageFrom: Language, languagesTo: Collection<Language>, containingWords: List<SqlWord>): SentenceSelectorResult? {
     if (containingWords.isEmpty()) throw Exception("Nothing to search for")
-    val db = database!!
-    val translations = ContentDbConstants.sentenceTranslationsTableName
-    val sentences = ContentDbConstants.sentencesTableName
+    val translations = ContentDbConstants.sentenceTranslations
+    val sentences = ContentDbConstants.sentences
     val langFrom = languageFrom.code
     val langTo = formatLanguageCondition("s2.language", languagesTo)
-    val difficulties = ContentDbConstants.sentenceDifficultyTableName
-    val wordOccurrences = ContentDbConstants.wordOccurrencesTableName
+    val difficulties = ContentDbConstants.sentenceDifficulty
+    val wordOccurrences = ContentDbConstants.wordOccurrences
 
     val includeIds = containingWords.map { it.id }.joinToString(", ")
 
@@ -105,7 +95,7 @@ class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
           LIMIT 20
 		"""
 
-    val queryResult = db.query6<Long, String, Long, String, Long, String>(searchQuery)
+    val queryResult = contentDb.query6<Long, String, Long, String, Long, String>(searchQuery)
 
     if (queryResult.size >= 1) {
       val minDifficulty = queryResult.first().value5

@@ -16,23 +16,51 @@ class DbWriter {
     database.runTransaction({ db ->
       createDbSchema(db)
       val sentenceMapping = writeSentences(data.sentenceTranslations, db)
-      writeWords(data.wordOccurrences, sentenceMapping, data.realWorldWordsCount, db)
+      val occurrenceMapping = writeWords(data.wordOccurrences, sentenceMapping, data.realWorldWordsCount, db)
       writeDifficulties(data.difficulties, sentenceMapping, db)
+      writeLanguageSupport(data.sentenceTranslations, data.wordOccurrences, db)
+      writeSpecialForms(data.specialFormOccurrences, occurrenceMapping, db)
     }, SqlJetTransactionMode.WRITE)
   }
 
+  private fun writeSpecialForms(specialFormOccurrences: List<FormOccurrence>,
+                                occurrenceMapping: Map<WordOccurrence, Long>, db: SqlJetDb) {
+    val table = db.getTable(ContentDbConstants.specialFormOccurrences)
+
+    for (formOccurrence in specialFormOccurrences) {
+      val occurrence = formOccurrence.occurrence
+      val wordOccurrenceId = occurrenceMapping[occurrence]!!
+      table.insert(formOccurrence.form, wordOccurrenceId)
+    }
+  }
+
+  private fun writeLanguageSupport(sentenceTranslations: Map<Sentence, Sentence>, wordOccurrences: List<WordOccurrence>, db: SqlJetDb) {
+    val supportedDirections = sentenceTranslations
+        .map { Pair(it.key.language, it.value.language) }
+        .toMap()
+        .filter { pair -> wordOccurrences.any { it.sentence.language == pair.value } }
+    val table = db.getTable(ContentDbConstants.supportedLearningDirections)
+
+    for ((languageFrom, languageTo) in supportedDirections) {
+      table.insert(languageFrom.code, languageTo.code)
+    }
+  }
+
   private fun writeDifficulties(difficulties: Map<Sentence, Int>, sentenceMapping: Map<Sentence, Long>, db: SqlJetDb) {
-    val difficultiesTable = db.getTable(ContentDbConstants.sentenceDifficultyTableName)
+    val difficultiesTable = db.getTable(ContentDbConstants.sentenceDifficulty)
     for ((sentence, difficulty) in difficulties) {
       val sentenceId = sentenceMapping[sentence]
       difficultiesTable.insert(sentenceId, difficulty)
     }
   }
 
-  private fun writeWords(wordsOccurrences: List<WordOccurrence>, sentenceMapping: Map<Sentence, Long>, wordCounts: Map<Word, Int>, db: SqlJetDb) {
-    val wordsTable = db.getTable(ContentDbConstants.wordsTableName)
-    val occurrencesTable = db.getTable(ContentDbConstants.wordOccurrencesTableName)
-    val countsTable = db.getTable(ContentDbConstants.wordCountsTableName)
+  private fun writeWords(wordsOccurrences: List<WordOccurrence>,
+                         sentenceMapping: Map<Sentence, Long>,
+                         wordCounts: Map<Word, Int>, db: SqlJetDb): Map<WordOccurrence, Long> {
+    val mapping = mutableMapOf<WordOccurrence, Long>()
+    val wordsTable = db.getTable(ContentDbConstants.words)
+    val occurrencesTable = db.getTable(ContentDbConstants.wordOccurrences)
+    val countsTable = db.getTable(ContentDbConstants.wordCounts)
 
     for (occurrencePair in wordsOccurrences.distinct().groupBy { it.word }) {
       val word = occurrencePair.key
@@ -45,17 +73,19 @@ class DbWriter {
 
       for (occurrence in occurrencePair.value) {
         val sentenceId = sentenceMapping[occurrence.sentence]
-        occurrencesTable.insert(wordId, sentenceId, occurrence.startIndex, occurrence.endIndex)
+        val occurrenceId = occurrencesTable.insert(wordId, sentenceId, occurrence.startIndex, occurrence.endIndex)
+        mapping[occurrence] = occurrenceId
       }
     }
+    return mapping
   }
 
   private fun writeSentences(translations: Map<Sentence, Sentence>, db: SqlJetDb): Map<Sentence, Long> {
     val sentenceIdToRealId = mutableMapOf<Sentence, Long>()
 
-    val sentencesTable = db.getTable(ContentDbConstants.sentencesTableName)
+    val sentencesTable = db.getTable(ContentDbConstants.sentences)
 
-    val sentenceTranslations = db.getTable(ContentDbConstants.sentenceTranslationsTableName)
+    val sentenceTranslations = db.getTable(ContentDbConstants.sentenceTranslations)
     for (pair in translations) {
       val from = getOrInsert(pair.key, sentenceIdToRealId, sentencesTable)
       val to = getOrInsert(pair.value, sentenceIdToRealId, sentencesTable)
@@ -75,12 +105,14 @@ class DbWriter {
   }
 
   private fun createDbSchema(db: SqlJetDb) {
-    db.createTable("CREATE TABLE ${ContentDbConstants.sentencesTableName} (id INTEGER PRIMARY KEY, language TEXT, text TEXT)")
-    db.createTable("CREATE TABLE ${ContentDbConstants.sentenceTranslationsTableName} (key INTEGER PRIMARY KEY, value INTEGER)")
-    db.createTable("CREATE TABLE ${ContentDbConstants.wordsTableName} (id INTEGER PRIMARY KEY, language TEXT, lemma TEXT)")
-    db.createTable("CREATE TABLE ${ContentDbConstants.wordOccurrencesTableName} (wordId INTEGER, sentenceId INTEGER, startIndex INTEGER, endIndex INTEGER)")
-    db.createTable("CREATE TABLE ${ContentDbConstants.sentenceDifficultyTableName} (sentenceId INTEGER PRIMARY KEY, difficulty INTEGER)")
-    db.createTable("CREATE TABLE ${ContentDbConstants.wordCountsTableName} (wordId INTEGER PRIMARY KEY, count INTEGER)")
-    db.createIndex("CREATE INDEX germanWordOccurrencesIndex ON ${ContentDbConstants.wordOccurrencesTableName} (wordId, sentenceId)")
+    db.createTable("CREATE TABLE ${ContentDbConstants.sentences} (id INTEGER PRIMARY KEY, language TEXT, text TEXT)")
+    db.createTable("CREATE TABLE ${ContentDbConstants.sentenceTranslations} (key INTEGER PRIMARY KEY, value INTEGER)")
+    db.createTable("CREATE TABLE ${ContentDbConstants.words} (id INTEGER PRIMARY KEY, language TEXT, lemma TEXT)")
+    db.createTable("CREATE TABLE ${ContentDbConstants.wordOccurrences} (id INTEGER PRIMARY KEY, wordId INTEGER, sentenceId INTEGER, startIndex INTEGER, endIndex INTEGER)")
+    db.createTable("CREATE TABLE ${ContentDbConstants.sentenceDifficulty} (sentenceId INTEGER PRIMARY KEY, difficulty INTEGER)")
+    db.createTable("CREATE TABLE ${ContentDbConstants.wordCounts} (wordId INTEGER PRIMARY KEY, count INTEGER)")
+    db.createTable("CREATE TABLE ${ContentDbConstants.specialFormOccurrences} (form TEXT, occurrenceId INTEGER)")
+    db.createTable("CREATE TABLE ${ContentDbConstants.supportedLearningDirections} (languageFrom TEXT, languageTo TEXT)")
+    db.createIndex("CREATE INDEX germanWordOccurrencesIndex ON ${ContentDbConstants.wordOccurrences} (wordId, sentenceId)")
   }
 }

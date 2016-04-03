@@ -1,4 +1,4 @@
-package am5800.harmonie.app.model.flow
+package am5800.harmonie.app.model.flow.parallelSentence
 
 import am5800.common.Sentence
 import am5800.common.Word
@@ -10,6 +10,9 @@ import am5800.harmonie.app.model.SentenceSelectorResult
 import am5800.harmonie.app.model.dbAccess.PreferredLanguagesService
 import am5800.harmonie.app.model.dbAccess.SentenceProvider
 import am5800.harmonie.app.model.dbAccess.WordsRepetitionService
+import am5800.harmonie.app.model.flow.FlowItemCategory
+import am5800.harmonie.app.model.flow.FlowItemProvider
+import am5800.harmonie.app.model.flow.parallelSentence.ParallelSentenceCategory
 import am5800.harmonie.app.model.repetition.LearnScore
 import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.Multimap
@@ -32,7 +35,7 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
 
   override fun tryPresentNextItem(category: FlowItemCategory): Boolean {
     if (category !is ParallelSentenceCategory) throw UnsupportedOperationException("Category is not supported")
-    val findResult = sentenceSelector.findBestSentence(category.questionLanguage, preferredLanguagesService.knownLanguages.value!!) ?: return false
+    val findResult = sentenceSelector.findBestSentenceByAttempts(category.questionLanguage, preferredLanguagesService.knownLanguages.value!!) ?: return false
     question.value = prepareQuestion(findResult)
     return true
   }
