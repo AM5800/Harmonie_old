@@ -81,7 +81,7 @@ class WordsRepetitionServiceImpl(private val repetitionService: RepetitionServic
     val joinedLemmas = lemmasToSearch.map { "'$it'" }.joinToString(", ")
     val langCode = language.code
     val query = "SELECT id, lemma FROM $words WHERE language='$langCode' AND lemma IN ($joinedLemmas)"
-    val queryResult = contentDb!!.query2<Long, String>(query).map { SqlWord(it.first, language, it.second) }
+    val queryResult = contentDb.query2<Long, String>(query).map { SqlWord(it.first, language, it.second) }
     for (word in queryResult) {
       val key = Pair(word.lemma, language)
       cache[key] = word

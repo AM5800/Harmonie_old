@@ -7,7 +7,6 @@ import am5800.common.WordOccurrence
 import corpus.CorpusRepository
 import corpus.parsing.CorpusParsersSet
 import corpus.parsing.NegraParser
-import dataProcessor.german.GermanLemmatizer
 import dataProcessor.german.GermanPostProcessor
 import dataProcessor.german.MorphyCsvParser
 import dataProcessor.german.normalizeGermanWord

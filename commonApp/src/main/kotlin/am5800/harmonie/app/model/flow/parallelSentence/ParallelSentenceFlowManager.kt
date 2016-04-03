@@ -12,7 +12,6 @@ import am5800.harmonie.app.model.dbAccess.SentenceProvider
 import am5800.harmonie.app.model.dbAccess.WordsRepetitionService
 import am5800.harmonie.app.model.flow.FlowItemCategory
 import am5800.harmonie.app.model.flow.FlowItemProvider
-import am5800.harmonie.app.model.flow.parallelSentence.ParallelSentenceCategory
 import am5800.harmonie.app.model.repetition.LearnScore
 import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.Multimap

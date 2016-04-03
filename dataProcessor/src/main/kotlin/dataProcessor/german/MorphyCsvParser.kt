@@ -4,7 +4,7 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
 
-fun normalizeGermanWord(word: String) : String {
+fun normalizeGermanWord(word: String): String {
   return word.trim().toLowerCase().replace("ä", "ae").replace("ö", "oe").replace("ü", "ue").replace("ß", "ss")
 }
 

@@ -14,7 +14,7 @@ class SqlWordSelector(private val wordsRepetitionService: WordsRepetitionService
                       private val keyValueDatabase: KeyValueDatabase,
                       private val contentDb: ContentDb,
                       lifetime: Lifetime,
-                      private val debugOptions: DebugOptions) : WordSelector{
+                      private val debugOptions: DebugOptions) : WordSelector {
   var pendingSelectionResult: Pair<Language, String>? = null
 
   init {
