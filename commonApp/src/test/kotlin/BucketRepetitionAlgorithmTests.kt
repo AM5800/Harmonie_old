@@ -1,10 +1,7 @@
 import am5800.harmonie.app.model.repetition.Attempt
 import am5800.harmonie.app.model.repetition.BucketRepetitionAlgorithm
 import am5800.harmonie.app.model.repetition.LearnScore
-import org.joda.time.DateTime
-import org.joda.time.Days
-import org.joda.time.Minutes
-import org.joda.time.ReadablePeriod
+import org.joda.time.*
 import org.junit.Assert
 import org.junit.Test
 
@@ -115,11 +112,11 @@ class BucketRepetitionAlgorithmTests {
   fun testConsecutiveRepetitionsDoNotChangeFirstVerdict() {
     val attempts = buildAttempts {
       wrong()
+      ok(Seconds.ONE)
+      ok(Seconds.ONE)
+      ok(Seconds.ONE)
       ok(Minutes.ONE)
-      ok(Minutes.ONE)
-      ok(Minutes.ONE)
-      ok(Minutes.ONE)
-      ok(Minutes.ONE)
+      ok(Seconds.ONE)
     }
 
     val dueDate = alg.getNextDueDate(attempts)
