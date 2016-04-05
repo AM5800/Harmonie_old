@@ -79,7 +79,7 @@ class GermanExerciseFlowItemManager(
 
     val question = Sentence(Language.German, queryResult.value1)
     val answer = Sentence(LanguageParser.parse(queryResult.value3), queryResult.value2)
-    val variants = forms.filterNot { it == selectedForm }.shuffle(debugOptions.randomSeed).take(3).map { it.form }
+    val variants = forms.filter { it != selectedForm && it.topicId == selectedForm.topicId }.shuffle(debugOptions.randomSeed).take(3).map { it.form }
     return FillTheGapInParallelSentenceQuestion(question, answer, queryResult.value4.toInt(), queryResult.value5.toInt(), variants, selectedForm.form)
   }
 }
