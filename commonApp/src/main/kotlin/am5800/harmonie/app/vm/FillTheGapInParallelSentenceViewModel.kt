@@ -4,9 +4,9 @@ import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
 import am5800.common.utils.Signal
 import am5800.common.utils.functions.shuffle
+import am5800.harmonie.app.model.flow.FillTheGapInParallelSentenceFlowItemManager
+import am5800.harmonie.app.model.flow.FillTheGapInParallelSentenceQuestion
 import am5800.harmonie.app.model.flow.FlowManager
-import am5800.harmonie.app.model.flow.germanExercises.FillTheGapInParallelSentenceFlowItemManager
-import am5800.harmonie.app.model.flow.germanExercises.FillTheGapInParallelSentenceQuestion
 
 class VariantButtonViewModel(val title: String, enabled: Boolean, lifetime: Lifetime) {
   val enabled = Property(lifetime, enabled)
@@ -75,9 +75,9 @@ class FillTheGapInParallelSentenceViewModel(
 
   private fun prepareQuestion(question: FillTheGapInParallelSentenceQuestion): String {
     val text = question.sentence.text
-    val firstPart = text.substring(0, question.occurrence.startIndex)
-    val secondPart = text.substring(question.occurrence.endIndex)
-    return firstPart + " _?_ " + secondPart
+    val firstPart = text.substring(0, question.occurrenceStart)
+    val secondPart = text.substring(question.occurrenceEnd)
+    return firstPart + " <?> " + secondPart
   }
 
   fun next() {

@@ -22,12 +22,17 @@ fun main(args: Array<String>) {
 }
 
 fun processSpecialOccurrences(data: Data): Data {
-  val seinForms = setOf("sein", "bin", "ist", "bist", "seid", "sind", "war", "gewesen")
+  val seinForms = listOf("sein", "bin", "ist", "bist", "seid", "sind", "war", "gewesen")
+  val articleForms = listOf("ein", "eine", "einer", "eines", "einen", "einem", "das", "der", "die", "den", "dem")
+
+  val acceptedForms = mutableSetOf<String>()
+  acceptedForms.addAll(articleForms)
+  acceptedForms.addAll(seinForms)
 
   val result = mutableListOf<FormOccurrence>()
   for (occurrence in data.wordOccurrences.filter { it.sentence.language == Language.German }) {
     val form = normalizeGermanWord(occurrence.sentence.text.substring(occurrence.startIndex, occurrence.endIndex))
-    if (!seinForms.contains(form)) continue
+    if (!acceptedForms.contains(form)) continue
 
     result.add(FormOccurrence(form, occurrence))
   }

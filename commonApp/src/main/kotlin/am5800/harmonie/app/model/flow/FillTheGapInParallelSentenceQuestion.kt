@@ -1,10 +1,10 @@
-package am5800.harmonie.app.model.flow.germanExercises
+package am5800.harmonie.app.model.flow
 
 import am5800.common.Sentence
-import am5800.common.WordOccurrence
 
 class FillTheGapInParallelSentenceQuestion(val sentence: Sentence,
                                            val translation: Sentence,
-                                           val occurrence: WordOccurrence,
+                                           val occurrenceStart: Int,
+                                           val occurrenceEnd: Int,
                                            val wrongVariants: List<String>,
                                            val correctAnswer: String)

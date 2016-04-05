@@ -1,4 +1,4 @@
-package am5800.harmonie.app.model.flow.germanExercises
+package am5800.harmonie.app.model.flow
 
 import am5800.common.utils.Property
 

@@ -25,5 +25,5 @@ dependencies {
   compile "org.tmatesoft.sqljet:sqljet:1.1.10"
 }
 sourceSets {
-  main.java.srcDirs += 'src/main/kotlin'
+  main.java.srcDirs += 'src/dataProcessor.main/kotlin'
 }
