@@ -55,8 +55,14 @@ class WelcomeScreenController(private val vm: WelcomeScreenViewModel,
   override val id: Int = R.layout.welcome_screen
 
   init {
-    vm.activationRequired.subscribe(lifetime, {
-      controllerStack.pushReplaceable(this)
+    vm.activationRequested.subscribe(lifetime, {
+      controllerStack.push(this, this.javaClass.name, { vm.canCloseNow() })
+    })
+
+    vm.closeRequested.subscribe(lifetime, {
+      if (controllerStack.top() == this) {
+        controllerStack.back()
+      }
     })
   }
 }

@@ -3,7 +3,6 @@ package am5800.harmonie.app.vm
 import am5800.common.Word
 import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
-import am5800.common.utils.ReadonlyProperty
 import am5800.harmonie.app.model.flow.FlowManager
 import am5800.harmonie.app.model.flow.parallelSentence.ParallelSentenceFlowManager
 import am5800.harmonie.app.model.localization.LocalizationService
@@ -68,7 +67,7 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
       state.value = State.ShowQuestion
       question.value = createViewModelsForQuestion(data, lifetime)
       answer.value = data.answer.text
-      activationRequired.fire(Unit)
+      activationRequested.fire(Unit)
     })
   }
 }

@@ -48,7 +48,7 @@ class FillTheGapInParallelSentenceController(private val viewModel: FillTheGapIn
   }
 
   init {
-    viewModel.activationRequired.subscribe(lifetime, {
+    viewModel.activationRequested.subscribe(lifetime, {
       flowContentController.setContent(this)
     })
   }

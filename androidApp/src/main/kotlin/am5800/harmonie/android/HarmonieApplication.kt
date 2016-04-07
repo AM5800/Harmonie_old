@@ -12,7 +12,7 @@ import am5800.harmonie.app.model.dbAccess.WordsRepetitionServiceImpl
 import am5800.harmonie.app.model.dbAccess.sql.*
 import am5800.harmonie.app.model.flow.FlowItemDistributionService
 import am5800.harmonie.app.model.flow.FlowManager
-import am5800.harmonie.app.model.flow.germanExercises.GermanSeinFormFlowItemManager
+import am5800.harmonie.app.model.flow.germanExercises.GermanExerciseFlowItemManager
 import am5800.harmonie.app.model.flow.parallelSentence.ParallelSentenceFlowManager
 import am5800.harmonie.app.model.repetition.BucketRepetitionAlgorithm
 import am5800.harmonie.app.vm.*
@@ -49,16 +49,18 @@ class HarmonieApplication : Application() {
 
 
       val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, languageService, sentenceProvider, wordsRepetitionService, sentenceSelector)
-      val seinFlowManager = GermanSeinFormFlowItemManager(languageService, contentDb, lt, debugOptions)
+      val seinFlowManager = GermanExerciseFlowItemManager(languageService, contentDb, lt, debugOptions)
       val flowItemProviders = listOf(parallelSentenceFlowManager, seinFlowManager)
       val flowManager = FlowManager(lt, loggerProvider, flowItemProviders, debugOptions)
       val distributionService = FlowItemDistributionService(flowItemProviders)
 
-      // ViewModels
       val localizationService = AndroidLocalizationService.create(resources, keyValueDb, lt)
 
+      // ViewModels
+
+      val welcomeScreenViewModel = WelcomeScreenViewModel(lt, localizationService, languageService)
       val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService)
-      val startScreenViewModel = StartScreenViewModel(flowManager, lt, localizationService, distributionService)
+      val startScreenViewModel = StartScreenViewModel(flowManager, lt, localizationService, distributionService, welcomeScreenViewModel)
       val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt, localizationService)
       val fillTheGapViewModel = FillTheGapInParallelSentenceViewModel(lt, listOf(seinFlowManager), flowManager)
 
@@ -70,11 +72,10 @@ class HarmonieApplication : Application() {
       ParallelSentenceController(lt, defaultFlowController, parallelSentenceViewModel)
       StartScreenController(startScreenViewModel, lt, controllerStack)
       FillTheGapInParallelSentenceController(fillTheGapViewModel, defaultFlowController, lt)
-
+      WelcomeScreenController(welcomeScreenViewModel, lt, controllerStack)
 
       if (languageService.configurationRequired) {
-        val welcomeScreenViewModel = WelcomeScreenViewModel(lt, localizationService, languageService, startScreenViewModel)
-        WelcomeScreenController(welcomeScreenViewModel, lt, controllerStack)
+
         container.register(welcomeScreenViewModel)
       }
 

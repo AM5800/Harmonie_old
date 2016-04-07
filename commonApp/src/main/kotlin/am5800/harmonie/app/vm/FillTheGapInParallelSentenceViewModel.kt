@@ -51,7 +51,7 @@ class FillTheGapInParallelSentenceViewModel(
         buildVariants(question, lt)
         state.onValue(lt, State.ShowAnswer, { sentence.value = question.sentence.text })
 
-        activationRequired.fire(Unit)
+        activationRequested.fire(Unit)
       })
     }
   }

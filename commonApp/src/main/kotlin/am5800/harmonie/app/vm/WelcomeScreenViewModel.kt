@@ -8,8 +8,7 @@ import am5800.harmonie.app.model.localization.LocalizationService
 
 class WelcomeScreenViewModel(private val lifetime: Lifetime,
                              localizationService: LocalizationService,
-                             private val preferredLanguagesService: PreferredLanguagesService,
-                             private val startScreenViewModel: StartScreenViewModel) : ViewModelBase(lifetime) {
+                             private val preferredLanguagesService: PreferredLanguagesService) : ViewModelBase(lifetime) {
 
   val knownLanguages = ObservableCollection<CheckableLanguageViewModel>(lifetime)
   val learnLanguages = ObservableCollection<CheckableLanguageViewModel>(lifetime)
@@ -24,7 +23,11 @@ class WelcomeScreenViewModel(private val lifetime: Lifetime,
   fun next() {
     preferredLanguagesService.knownLanguages.value = knownLanguages.filter { it.checked.value!! }.map { it.language }
     preferredLanguagesService.learnLanguages.value = learnLanguages.filter { it.checked.value!! }.map { it.language }
-    startScreenViewModel.activationRequired.fire(Unit)
+    closeRequested.fire(Unit)
+  }
+
+  fun canCloseNow(): Boolean {
+    return !preferredLanguagesService.configurationRequired
   }
 
   init {
@@ -53,6 +56,12 @@ class WelcomeScreenViewModel(private val lifetime: Lifetime,
       val vm = CheckableLanguageViewModel(lt, lang, false)
       vm.checked.onChange(lt, { collection.changed.fire(Unit) })
       vm
+    }
+  }
+
+  fun activateIfNeeded() {
+    if (preferredLanguagesService.configurationRequired) {
+      activationRequested.fire(Unit)
     }
   }
 }

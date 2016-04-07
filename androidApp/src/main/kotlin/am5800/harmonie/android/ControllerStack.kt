@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentManager
 import java.util.*
 
 class ControllerStack() {
-  private class StackItem(val key: String?, val controller: BindableController, val replaceable: Boolean)
+  private class StackItem(val key: String?, val controller: BindableController, val canClose: () -> Boolean)
 
   private val controllerStack = LinkedList<StackItem>()
 
@@ -21,11 +21,10 @@ class ControllerStack() {
   }
 
   fun push(controller: BindableController, key: String?) {
-    push(StackItem(key, controller, false))
+    push(StackItem(key, controller, { true }))
   }
 
   private fun push(item: StackItem) {
-    if (controllerStack.lastOrNull()?.replaceable == true) controllerStack.removeLast()
     if (item.key == null || controllerStack.lastOrNull()?.key != item.key) controllerStack.addLast(item)
 
     val fm = fragmentManager ?: return
@@ -34,8 +33,8 @@ class ControllerStack() {
     ft.commit()
   }
 
-  fun pushReplaceable(controller: BindableController) {
-    push(StackItem(null, controller, true))
+  fun push(controller: BindableController, key: String?, canClose: () -> Boolean) {
+    push(StackItem(key, controller, canClose))
   }
 
   fun initialize(fm: FragmentManager) {
@@ -44,6 +43,10 @@ class ControllerStack() {
 
   fun back(): Boolean {
     if (controllerStack.size <= 1) return false
+    val last = controllerStack.last()
+    val canClose = last.canClose()
+    if (!canClose) return true
+
     controllerStack.removeLast()
     val fm = fragmentManager!!
     val ft = fm.beginTransaction()
@@ -51,6 +54,7 @@ class ControllerStack() {
     ft.commit()
     return true
   }
+
 
   private var fragmentManager: FragmentManager? = null
 }

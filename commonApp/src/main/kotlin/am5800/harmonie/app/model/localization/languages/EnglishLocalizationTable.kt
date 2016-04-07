@@ -6,6 +6,7 @@ import am5800.harmonie.app.model.localization.QuantityString
 
 
 class EnglishLocalizationTable : LocalizationTable {
+  override val chooseLanguages = "Choose languages"
   override val learnAll = "Learn all"
   override val welcomeToHarmonie = "Welcome to Harmonie!"
   override val chooseKnownLanguage = "Choose languages you know well:"

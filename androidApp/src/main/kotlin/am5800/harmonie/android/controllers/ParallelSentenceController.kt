@@ -68,7 +68,7 @@ class ParallelSentenceController(lifetime: Lifetime,
   }
 
   init {
-    vm.activationRequired.subscribe(lifetime, { flowContentController.setContent(this) })
+    vm.activationRequested.subscribe(lifetime, { flowContentController.setContent(this) })
   }
 }
 
