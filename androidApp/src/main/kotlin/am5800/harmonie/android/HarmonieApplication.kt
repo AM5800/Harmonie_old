@@ -68,7 +68,7 @@ class HarmonieApplication : Application() {
       val controllerStack = ControllerStack()
       val defaultFlowController = DefaultFlowControllerOwner(controllerStack, lt, defaultFlowControllerOwnerViewModel)
 
-      EmptyFlowContentController(defaultFlowController, flowManager, lt)
+      EmptyFlowContentController(defaultFlowController, flowManager, lt, localizationService)
       ParallelSentenceController(lt, defaultFlowController, parallelSentenceViewModel)
       StartScreenController(startScreenViewModel, lt, controllerStack)
       FillTheGapInParallelSentenceController(fillTheGapViewModel, defaultFlowController, lt)

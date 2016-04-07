@@ -13,4 +13,5 @@ interface LocalizationTable {
   val chooseLearnLanguage: String
   val learnAll: String
   val chooseLanguages: String
+  val lessonIsOver: String
 }

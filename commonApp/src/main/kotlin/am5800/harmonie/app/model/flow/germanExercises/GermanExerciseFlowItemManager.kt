@@ -23,7 +23,12 @@ class GermanExerciseFlowItemManager(
     private val contentDb: ContentDb,
     lifetime: Lifetime,
     private val debugOptions: DebugOptions) : FlowItemProvider, FillTheGapInParallelSentenceFlowItemManager {
-  override val supportedCategories: Set<FlowItemCategory> = setOf(GermanExerciseCategory(Language.German))
+  override val supportedCategories: Set<FlowItemCategory> = computeSupportedCategories()
+
+  private fun computeSupportedCategories(): Set<FlowItemCategory> {
+    if (preferredLanguagesService.learnLanguages.value?.contains(Language.German) == true) return setOf(GermanExerciseCategory())
+    return emptySet()
+  }
 
   override val question = Property<FillTheGapInParallelSentenceQuestion>(lifetime, null)
   private val forms = getForms()
