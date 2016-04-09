@@ -55,12 +55,12 @@ class HarmonieApplication : Application() {
       val distributionService = FlowItemDistributionService(flowItemProviders)
 
       val localizationService = AndroidLocalizationService.create(resources, keyValueDb, lt)
+      val feedbackService = AndroidFeedbackService(permanentDb)
 
       // ViewModels
-
       val welcomeScreenViewModel = WelcomeScreenViewModel(lt, localizationService, languageService)
       val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService)
-      val startScreenViewModel = StartScreenViewModel(flowManager, lt, localizationService, distributionService, welcomeScreenViewModel)
+      val startScreenViewModel = StartScreenViewModel(flowManager, lt, localizationService, distributionService, welcomeScreenViewModel, feedbackService)
       val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt, localizationService)
       val fillTheGapViewModel = FillTheGapInParallelSentenceViewModel(lt, listOf(seinFlowManager), flowManager)
 
@@ -84,6 +84,7 @@ class HarmonieApplication : Application() {
       container.register(startScreenViewModel)
       container.register(languageService)
       container.register(localizationService)
+      container.register(feedbackService)
     } catch (e: Exception) {
       logger.exception(e)
       throw e

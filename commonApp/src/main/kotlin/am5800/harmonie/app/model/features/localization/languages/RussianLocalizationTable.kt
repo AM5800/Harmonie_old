@@ -4,6 +4,7 @@ import am5800.common.Language
 import am5800.harmonie.app.model.features.localization.LocalizationTable
 
 class RussianLocalizationTable : LocalizationTable {
+  override val sendStatistics = "Отправить статистику"
   override val lessonIsOver = "Урок окончен"
   override val chooseLanguages = "Выбрать языки"
   override val learnAll = "Учить все"

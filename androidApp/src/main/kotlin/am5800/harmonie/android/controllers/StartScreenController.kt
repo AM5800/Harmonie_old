@@ -12,12 +12,13 @@ class StartScreenController(private val viewModel: StartScreenViewModel, lifetim
 
   override fun bind(view: BindableView, bindingLifetime: Lifetime) {
     val learnBtn = view.getChild<Button>(R.id.learnAllBtn)
-    learnBtn.bindText(bindingLifetime, view, viewModel.learnAllText)
-    learnBtn.bindOnClick(bindingLifetime, { viewModel.learnAll() })
+    learnBtn.bind(bindingLifetime, view, viewModel.learnAllText, { viewModel.learnAll() })
 
     val chooseLanguagesBtn = view.getChild<Button>(R.id.chooseLanguagesBtn)
-    chooseLanguagesBtn.bindText(bindingLifetime, view, viewModel.chooseLanguagesText)
-    chooseLanguagesBtn.bindOnClick(bindingLifetime, { viewModel.chooseLanguages() })
+    chooseLanguagesBtn.bind(bindingLifetime, view, viewModel.chooseLanguagesText, { viewModel.chooseLanguages() })
+
+    val feedbackBtn = view.getChild<Button>(R.id.sendFeedback)
+    feedbackBtn.bind(bindingLifetime, view, viewModel.sendFeedbackText, { viewModel.sendFeedback() })
   }
 
   override val id: Int = R.layout.start_screen

@@ -6,6 +6,7 @@ import am5800.harmonie.app.model.features.localization.QuantityString
 
 
 class EnglishLocalizationTable : LocalizationTable {
+  override val sendStatistics = "Send usage statistics"
   override val lessonIsOver = "Lesson is over"
   override val chooseLanguages = "Choose languages"
   override val learnAll = "Learn all"

@@ -29,6 +29,11 @@ fun TextView.bindText(lifetime: Lifetime, uiThreadRunner: UIThreadRunner, proper
   })
 }
 
+fun Button.bind(lifetime: Lifetime, uiThreadRunner: UIThreadRunner, text: ReadonlyProperty<String>, onClick: () -> Unit) {
+  this.bindText(lifetime, uiThreadRunner, text)
+  this.bindOnClick(lifetime, onClick)
+}
+
 fun View.bindEnabled(lifetime: Lifetime, uiThreadRunner: UIThreadRunner, property: Property<Boolean>) {
   property.onChangeNotNull(lifetime, { arg ->
     uiThreadRunner.runOnUiThread {
