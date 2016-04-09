@@ -1,6 +1,6 @@
 package am5800.harmonie.android.dbAccess
 
-import am5800.harmonie.app.model.dbAccess.sql.Cursor
+import am5800.harmonie.app.model.services.Cursor
 
 
 class AndroidCursor(private val cursor: android.database.Cursor) : Cursor {

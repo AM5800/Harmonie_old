@@ -8,13 +8,13 @@ import am5800.harmonie.android.dbAccess.AndroidPermanentDb
 import am5800.harmonie.android.dbAccess.KeyValueDatabaseImpl
 import am5800.harmonie.android.logging.AndroidLoggerProvider
 import am5800.harmonie.app.model.DebugOptions
-import am5800.harmonie.app.model.dbAccess.WordsRepetitionServiceImpl
-import am5800.harmonie.app.model.dbAccess.sql.*
-import am5800.harmonie.app.model.flow.FlowItemDistributionService
-import am5800.harmonie.app.model.flow.FlowManager
-import am5800.harmonie.app.model.flow.germanExercises.GermanExerciseFlowItemManager
-import am5800.harmonie.app.model.flow.parallelSentence.ParallelSentenceFlowManager
-import am5800.harmonie.app.model.repetition.BucketRepetitionAlgorithm
+import am5800.harmonie.app.model.features.fillTheGap.german.GermanExerciseFlowItemManager
+import am5800.harmonie.app.model.features.flow.FlowItemDistributionService
+import am5800.harmonie.app.model.features.flow.FlowManager
+import am5800.harmonie.app.model.features.parallelSentence.ParallelSentenceFlowManager
+import am5800.harmonie.app.model.features.repetition.BucketRepetitionAlgorithm
+import am5800.harmonie.app.model.features.repetition.WordsRepetitionServiceImpl
+import am5800.harmonie.app.model.services.impl.*
 import am5800.harmonie.app.vm.*
 import android.app.Application
 

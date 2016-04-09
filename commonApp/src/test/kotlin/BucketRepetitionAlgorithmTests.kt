@@ -1,6 +1,6 @@
-import am5800.harmonie.app.model.repetition.Attempt
-import am5800.harmonie.app.model.repetition.BucketRepetitionAlgorithm
-import am5800.harmonie.app.model.repetition.LearnScore
+import am5800.harmonie.app.model.features.repetition.Attempt
+import am5800.harmonie.app.model.features.repetition.BucketRepetitionAlgorithm
+import am5800.harmonie.app.model.features.repetition.LearnScore
 import org.joda.time.*
 import org.junit.Assert
 import org.junit.Test

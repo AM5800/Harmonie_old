@@ -1,7 +1,7 @@
 import am5800.common.Language
 import am5800.common.Word
-import am5800.harmonie.app.model.WordSelectorAlgorithm
-import am5800.harmonie.app.model.repetition.LearnScore
+import am5800.harmonie.app.model.features.repetition.LearnScore
+import am5800.harmonie.app.model.services.WordSelectorAlgorithm
 import org.junit.Assert
 import org.junit.Test
 

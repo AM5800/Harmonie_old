@@ -5,7 +5,7 @@ import am5800.harmonie.android.R
 import am5800.harmonie.android.Visibility
 import am5800.harmonie.android.viewBinding.BindableController
 import am5800.harmonie.android.viewBinding.BindableView
-import am5800.harmonie.app.model.repetition.LearnScore
+import am5800.harmonie.app.model.features.repetition.LearnScore
 import am5800.harmonie.app.vm.ParallelSentenceViewModel
 import am5800.harmonie.app.vm.ToggleableWordViewModel
 import am5800.harmonie.app.vm.WordViewModel

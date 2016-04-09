@@ -1,5 +1,5 @@
-import am5800.harmonie.app.model.flow.CategoryDistribution
-import am5800.harmonie.app.model.flow.FlowItemCategory
+import am5800.harmonie.app.model.features.flow.CategoryDistribution
+import am5800.harmonie.app.model.features.flow.FlowItemCategory
 import org.junit.Assert
 import org.junit.Test
 import java.util.*

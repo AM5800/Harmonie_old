@@ -1,9 +1,9 @@
 package am5800.harmonie.app.vm
 
 import am5800.common.utils.Lifetime
-import am5800.harmonie.app.model.flow.FlowItemDistributionService
-import am5800.harmonie.app.model.flow.FlowManager
-import am5800.harmonie.app.model.localization.LocalizationService
+import am5800.harmonie.app.model.features.flow.FlowItemDistributionService
+import am5800.harmonie.app.model.features.flow.FlowManager
+import am5800.harmonie.app.model.features.localization.LocalizationService
 import org.joda.time.Minutes
 
 class StartScreenViewModel(private val flowManager: FlowManager,

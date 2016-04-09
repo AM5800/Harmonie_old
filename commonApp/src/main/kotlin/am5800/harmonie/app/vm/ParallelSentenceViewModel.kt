@@ -3,10 +3,10 @@ package am5800.harmonie.app.vm
 import am5800.common.Word
 import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
-import am5800.harmonie.app.model.flow.FlowManager
-import am5800.harmonie.app.model.flow.parallelSentence.ParallelSentenceFlowManager
-import am5800.harmonie.app.model.localization.LocalizationService
-import am5800.harmonie.app.model.repetition.LearnScore
+import am5800.harmonie.app.model.features.flow.FlowManager
+import am5800.harmonie.app.model.features.localization.LocalizationService
+import am5800.harmonie.app.model.features.parallelSentence.ParallelSentenceFlowManager
+import am5800.harmonie.app.model.features.repetition.LearnScore
 import java.util.*
 
 open class WordViewModel(val text: String, val needSpaceBefore: Boolean)
