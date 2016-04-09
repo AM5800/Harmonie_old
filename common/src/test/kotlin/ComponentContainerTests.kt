@@ -1,5 +1,6 @@
 import am5800.common.componentContainer.ComponentContainer
 import am5800.common.componentContainer.getComponent
+import am5800.common.componentContainer.getComponents
 import am5800.common.utils.Lifetime
 import am5800.common.utils.TerminatedLifetimeException
 import org.junit.Assert
@@ -67,6 +68,19 @@ class ComponentContainerTests {
       parent.register(C(1))
       Assert.assertEquals(0, child.getComponent<C>().value)
       Assert.assertEquals(1, parent.getComponent<C>().value)
+    }
+  }
+
+  @Test
+  fun testGetChildrenRecursive() {
+    Lifetime().use {
+      val parent = ComponentContainer(it, null)
+      val child = ComponentContainer(it, parent)
+
+      child.register(B())
+      parent.register(B())
+      val components = child.getComponents<A>()
+      Assert.assertEquals(2, components.size)
     }
   }
 }

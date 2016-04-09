@@ -34,3 +34,15 @@ inline fun <reified T> ComponentContainer.getComponent(): T {
 
   throw Exception("Component not found: " + T::class.qualifiedName)
 }
+
+inline fun <reified T> ComponentContainer.getComponents(): Collection<T> {
+  var container: ComponentContainer? = this
+  val result = mutableListOf<T>()
+  while (container != null) {
+    val thisContainer = container.components.filterIsInstance<T>()
+    result.addAll(thisContainer)
+    container = container.parent
+  }
+
+  return result
+}
