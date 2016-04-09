@@ -6,6 +6,7 @@ import am5800.harmonie.android.R
 import am5800.harmonie.android.Visibility
 import am5800.harmonie.android.viewBinding.BindableController
 import am5800.harmonie.android.viewBinding.BindableView
+import am5800.harmonie.android.viewBinding.FragmentController
 import am5800.harmonie.app.vm.ObservableCollection
 import am5800.harmonie.app.vm.WelcomeScreenViewModel
 import am5800.harmonie.app.vm.mapObservable
@@ -15,7 +16,9 @@ import android.widget.TextView
 
 class WelcomeScreenController(private val vm: WelcomeScreenViewModel,
                               private val lifetime: Lifetime,
-                              private val controllerStack: ControllerStack) : BindableController {
+                              private val controllerStack: ControllerStack) : FragmentController {
+  override val menuItems = null
+
   override fun bind(view: BindableView, bindingLifetime: Lifetime) {
     // always visible group
     view.getChild<TextView>(R.id.welcomeView).bindText(bindingLifetime, view, vm.welcome)

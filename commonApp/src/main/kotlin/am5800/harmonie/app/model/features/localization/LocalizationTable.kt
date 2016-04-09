@@ -15,4 +15,7 @@ interface LocalizationTable {
   val chooseLanguages: String
   val lessonIsOver: String
   val sendStatistics: String
+  val reportUnclearSentencePair: String
+  val reportWrongTranslation: String
+  val reportOther: String
 }

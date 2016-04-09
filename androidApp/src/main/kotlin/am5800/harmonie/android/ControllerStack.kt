@@ -1,26 +1,26 @@
 package am5800.harmonie.android
 
-import am5800.harmonie.android.viewBinding.BindableController
 import am5800.harmonie.android.viewBinding.BindableFragment
+import am5800.harmonie.android.viewBinding.FragmentController
 import android.support.v4.app.FragmentManager
 import java.util.*
 
 class ControllerStack() {
-  private class StackItem(val key: String?, val controller: BindableController, val canClose: () -> Boolean)
+  private class StackItem(val key: String?, val controller: FragmentController, val canClose: () -> Boolean)
 
   private val controllerStack = LinkedList<StackItem>()
 
-  fun top(): BindableController {
+  fun top(): FragmentController {
     return controllerStack.last().controller
   }
 
-  fun restoreController(layoutId: Int): BindableController {
+  fun restoreController(layoutId: Int): FragmentController {
     val result = controllerStack.last()
     if (result.controller.id != layoutId) throw Exception("Trying to restore not the last controller")
     return controllerStack.last().controller
   }
 
-  fun push(controller: BindableController, key: String?) {
+  fun push(controller: FragmentController, key: String?) {
     push(StackItem(key, controller, { true }))
   }
 
@@ -33,7 +33,7 @@ class ControllerStack() {
     ft.commit()
   }
 
-  fun push(controller: BindableController, key: String?, canClose: () -> Boolean) {
+  fun push(controller: FragmentController, key: String?, canClose: () -> Boolean) {
     push(StackItem(key, controller, canClose))
   }
 

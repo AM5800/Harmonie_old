@@ -18,7 +18,7 @@ class AndroidContentDb(private val context: Context,
                        loggerProvider: LoggerProvider,
                        lifetime: Lifetime) : ContentDb {
 
-  override fun execute(query: String) {
+  override fun execute(query: String, vararg args: Any) {
     throw UnsupportedOperationException()
   }
 

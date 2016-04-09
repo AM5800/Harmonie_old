@@ -8,6 +8,7 @@ import am5800.harmonie.android.dbAccess.AndroidPermanentDb
 import am5800.harmonie.android.dbAccess.KeyValueDatabaseImpl
 import am5800.harmonie.android.logging.AndroidLoggerProvider
 import am5800.harmonie.app.model.DebugOptions
+import am5800.harmonie.app.model.features.feedback.impl.ErrorReportingServiceImpl
 import am5800.harmonie.app.model.features.fillTheGap.german.GermanExerciseFlowItemManager
 import am5800.harmonie.app.model.features.flow.FlowItemDistributionService
 import am5800.harmonie.app.model.features.flow.FlowManager
@@ -56,13 +57,14 @@ class HarmonieApplication : Application() {
 
       val localizationService = AndroidLocalizationService.create(resources, keyValueDb, lt)
       val feedbackService = AndroidFeedbackService(permanentDb)
+      val reportingService = ErrorReportingServiceImpl(permanentDb)
 
       // ViewModels
       val welcomeScreenViewModel = WelcomeScreenViewModel(lt, localizationService, languageService)
-      val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService)
+      val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService, reportingService)
       val startScreenViewModel = StartScreenViewModel(flowManager, lt, localizationService, distributionService, welcomeScreenViewModel, feedbackService)
       val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt, localizationService)
-      val fillTheGapViewModel = FillTheGapInParallelSentenceViewModel(lt, listOf(seinFlowManager), flowManager)
+      val fillTheGapViewModel = FillTheGapInParallelSentenceViewModel(lt, listOf(seinFlowManager), flowManager, reportingService, localizationService)
 
       // View components
       val controllerStack = ControllerStack()

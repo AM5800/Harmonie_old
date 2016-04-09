@@ -1,10 +1,13 @@
 package am5800.harmonie.android.controllers
 
 import am5800.common.utils.Lifetime
+import am5800.common.utils.Property
 import am5800.harmonie.android.R
 import am5800.harmonie.android.Visibility
-import am5800.harmonie.android.viewBinding.BindableController
 import am5800.harmonie.android.viewBinding.BindableView
+import am5800.harmonie.android.viewBinding.ControllerWithMenu
+import am5800.harmonie.android.viewBinding.MenuItem
+import am5800.harmonie.android.viewBinding.SimpleMenuItem
 import am5800.harmonie.app.model.features.repetition.LearnScore
 import am5800.harmonie.app.vm.ParallelSentenceViewModel
 import am5800.harmonie.app.vm.ToggleableWordViewModel
@@ -18,7 +21,8 @@ import org.apmem.tools.layouts.FlowLayout
 
 class ParallelSentenceController(lifetime: Lifetime,
                                  flowContentController: FlowController,
-                                 private val vm: ParallelSentenceViewModel) : BindableController {
+                                 private val vm: ParallelSentenceViewModel) : ControllerWithMenu {
+  override val menuItems = Property(lifetime, vm.reportCommands.map { SimpleMenuItem(it) }.filterIsInstance<MenuItem>())
 
   override val id: Int = R.layout.parallel_sentence
   override fun bind(view: BindableView, bindingLifetime: Lifetime) {

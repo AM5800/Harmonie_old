@@ -10,8 +10,8 @@ import java.io.File
 
 
 class AndroidPermanentDb(context: Context, lifetime: Lifetime) : PermanentDb {
-  override fun execute(query: String) {
-    instance.writableDatabase.execSQL(query)
+  override fun execute(query: String, vararg args: Any) {
+    instance.writableDatabase.execSQL(query, args)
   }
 
   private val instance = DbInstance(context)

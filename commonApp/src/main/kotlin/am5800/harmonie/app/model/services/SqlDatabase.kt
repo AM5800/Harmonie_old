@@ -9,7 +9,7 @@ interface Cursor : Closeable {
 
 interface SqlDatabase {
   fun query(query: String): Cursor
-  fun execute(query: String)
+  fun execute(query: String, vararg args: Any)
 }
 
 inline fun <reified T> valueFromCursor(index: Int, cursor: Cursor): T {

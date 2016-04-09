@@ -4,9 +4,11 @@ import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
 import am5800.common.utils.Signal
 import am5800.common.utils.functions.shuffle
+import am5800.harmonie.app.model.features.feedback.ErrorReportingService
 import am5800.harmonie.app.model.features.fillTheGap.FillTheGapInParallelSentenceFlowItemManager
 import am5800.harmonie.app.model.features.fillTheGap.FillTheGapInParallelSentenceQuestion
 import am5800.harmonie.app.model.features.flow.FlowManager
+import am5800.harmonie.app.model.features.localization.LocalizationService
 
 class VariantButtonViewModel(val title: String, enabled: Boolean, lifetime: Lifetime) {
   val enabled = Property(lifetime, enabled)
@@ -16,10 +18,18 @@ class VariantButtonViewModel(val title: String, enabled: Boolean, lifetime: Life
 class FillTheGapInParallelSentenceViewModel(
     lifetime: Lifetime,
     managers: Collection<FillTheGapInParallelSentenceFlowItemManager>,
-    private val flowManager: FlowManager) : ViewModelBase(lifetime) {
+    private val flowManager: FlowManager,
+    reportingService: ErrorReportingService,
+    localizationService: LocalizationService) : ViewModelBase(lifetime) {
 
   private enum class State {
     ShowQuestion, ShowAnswer
+  }
+
+  val reportCommands = IssueReportingMenuHelper.createMenuItems(reportingService, localizationService, lifetime, { describeState() })
+
+  private fun describeState(): String {
+    return sentence.value!! + "/" + translation.value
   }
 
   val sentence = Property(lifetime, "")

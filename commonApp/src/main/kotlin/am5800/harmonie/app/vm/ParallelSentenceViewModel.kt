@@ -3,6 +3,7 @@ package am5800.harmonie.app.vm
 import am5800.common.Word
 import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
+import am5800.harmonie.app.model.features.feedback.ErrorReportingService
 import am5800.harmonie.app.model.features.flow.FlowManager
 import am5800.harmonie.app.model.features.localization.LocalizationService
 import am5800.harmonie.app.model.features.parallelSentence.ParallelSentenceFlowManager
@@ -24,10 +25,18 @@ class ToggleableWordViewModel(val word: Word, text: String,
 class ParallelSentenceViewModel(lifetime: Lifetime,
                                 private val parallelSentenceFlowManager: ParallelSentenceFlowManager,
                                 private val flowManager: FlowManager,
-                                localizationService: LocalizationService) : ViewModelBase(lifetime) {
+                                localizationService: LocalizationService,
+                                reportingService: ErrorReportingService) : ViewModelBase(lifetime) {
   enum class State {
     ShowQuestion,
     ShowAnswer
+  }
+
+  val reportCommands = IssueReportingMenuHelper.createMenuItems(reportingService, localizationService, lifetime, { describeState() })
+
+  private fun describeState(): String {
+    val pair = parallelSentenceFlowManager.question.value!!
+    return pair.question.text + "/" + pair.answer.text
   }
 
   val continueBtnText = localizationService.createProperty(lifetime, { it.continueButton })
