@@ -1,5 +1,4 @@
 buildscript {
-  ext.kotlin_version = '1.0.0'
   repositories {
     mavenCentral()
     maven { url "http://maven.tmatesoft.com/content/repositories/releases" }
@@ -25,5 +24,5 @@ dependencies {
   compile "org.tmatesoft.sqljet:sqljet:1.1.10"
 }
 sourceSets {
-  main.java.srcDirs += 'src/dataProcessor.main/kotlin'
+  main.kotlin.srcDirs += 'src/dataProcessor.main/kotlin'
 }
