@@ -44,12 +44,15 @@ class FillTheGapFlowItemManagerImpl(
   override fun tryPresentNextItem(category: FlowItemCategory): Boolean {
     if (category !is FillTheGapCategory) throw UnsupportedOperationException("Category is not supported")
 
-    val selectedForm: FormData = forms
+    val byLanguage = forms
         .filter { it.knownLanguage == category.knownLanguage && it.learnLanguage == category.learnLanguage }
+
+    val byTopic = byLanguage
         .groupBy { it.topicId }.toList()
-        .random(debugOptions.randomSeed)
+        .random(debugOptions.random)
         .second
-        .random(debugOptions.randomSeed)
+
+    val selectedForm: FormData = byTopic.random(debugOptions.random)
 
     val q = getQuestion(selectedForm) ?: return false
     question.value = q
@@ -77,7 +80,7 @@ class FillTheGapFlowItemManagerImpl(
 
     val question = Sentence(Language.German, queryResult.value1)
     val answer = Sentence(LanguageParser.parse(queryResult.value3), queryResult.value2)
-    val variants = forms.filter { it != selectedForm && it.topicId == selectedForm.topicId }.shuffle(debugOptions.randomSeed).take(3).map { it.form }
+    val variants = forms.filter { it.form != selectedForm.form && it.topicId == selectedForm.topicId }.shuffle(debugOptions.random).take(3).map { it.form }
     return FillTheGapQuestion(question, answer, queryResult.value4.toInt(), queryResult.value5.toInt(), variants, selectedForm.form)
   }
 }

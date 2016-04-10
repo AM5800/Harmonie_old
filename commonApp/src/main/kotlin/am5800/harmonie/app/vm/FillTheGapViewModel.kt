@@ -29,7 +29,7 @@ class FillTheGapViewModel(
   val reportCommands = IssueReportingMenuHelper.createMenuItems(reportingService, localizationService, lifetime, { describeState() })
 
   private fun describeState(): String {
-    return sentence.value!! + "/" + translation.value
+    return sentence.value!! + "/" + translation.value!! + "/" + variants.value!!.joinToString(";") { it.title }
   }
 
   val sentence = Property(lifetime, "")

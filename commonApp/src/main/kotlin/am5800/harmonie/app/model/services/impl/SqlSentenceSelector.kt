@@ -89,7 +89,7 @@ class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
       val minDifficulty = queryResult.first().value5
       return queryResult.takeWhile { it.value5 == minDifficulty }
           .map { SentenceSelectorResult(SqlSentence(it.value1, languageFrom, it.value2), SqlSentence(it.value3, LanguageParser.Companion.parse(it.value6), it.value4), containingWords.toSet()) }
-          .shuffle(debugOptions.randomSeed)
+          .shuffle(debugOptions.random)
           .first()
     } else throw Exception("No sentences found")
   }
