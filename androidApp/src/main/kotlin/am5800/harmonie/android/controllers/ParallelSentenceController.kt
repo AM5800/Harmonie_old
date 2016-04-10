@@ -4,15 +4,14 @@ import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
 import am5800.harmonie.android.R
 import am5800.harmonie.android.Visibility
-import am5800.harmonie.android.viewBinding.BindableView
-import am5800.harmonie.android.viewBinding.ControllerWithMenu
-import am5800.harmonie.android.viewBinding.MenuItem
-import am5800.harmonie.android.viewBinding.SimpleMenuItem
+import am5800.harmonie.android.viewBinding.*
 import am5800.harmonie.app.model.features.repetition.LearnScore
 import am5800.harmonie.app.vm.ParallelSentenceViewModel
 import am5800.harmonie.app.vm.ToggleableWordViewModel
 import am5800.harmonie.app.vm.WordViewModel
+import android.app.Activity
 import android.graphics.Color
+import android.support.v7.app.AlertDialog
 import android.text.Html
 import android.util.TypedValue
 import android.widget.Button
@@ -21,7 +20,16 @@ import org.apmem.tools.layouts.FlowLayout
 
 class ParallelSentenceController(lifetime: Lifetime,
                                  flowContentController: FlowController,
-                                 private val vm: ParallelSentenceViewModel) : ControllerWithMenu {
+                                 private val vm: ParallelSentenceViewModel) : ControllerWithMenu, ActivityConsumer {
+  private var activity: Activity? = null
+
+  override fun setActivity(activity: Activity, lifetime: Lifetime) {
+    lifetime.execute {
+      this.activity = activity
+      lifetime.addAction { this.activity = null }
+    }
+  }
+
   override val menuItems = Property(lifetime, vm.reportCommands.map { SimpleMenuItem(it) }.filterIsInstance<MenuItem>())
 
   override val id: Int = R.layout.parallel_sentence
@@ -73,6 +81,13 @@ class ParallelSentenceController(lifetime: Lifetime,
 
   init {
     vm.activationRequested.subscribe(lifetime, { flowContentController.setContent(this) })
+    vm.help.onChangeNotNull(lifetime, {
+      val alertDialog = AlertDialog.Builder(activity!!).create();
+      alertDialog.setTitle("Help");
+      alertDialog.setMessage(it);
+      alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", { dialogInterface, i -> dialogInterface.dismiss() })
+      alertDialog.show();
+    })
   }
 }
 

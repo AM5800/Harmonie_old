@@ -33,7 +33,7 @@ class HarmonieApplication : Application() {
     try {
       val lt = Lifetime()
       val container = ComponentContainer(lt, null)
-      val debugOptions = DebugOptions(false, false, 41)
+      val debugOptions = DebugOptions(false, false, null)
       modelContainer = container
 
       val permanentDb = AndroidPermanentDb(this, lt)
@@ -61,7 +61,7 @@ class HarmonieApplication : Application() {
 
       // ViewModels
       val welcomeScreenViewModel = WelcomeScreenViewModel(lt, localizationService, languageService)
-      val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService, reportingService)
+      val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService, keyValueDb, reportingService)
       val startScreenViewModel = StartScreenViewModel(flowManager, lt, localizationService, distributionService, welcomeScreenViewModel, feedbackService)
       val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt, localizationService)
       val fillTheGapViewModel = FillTheGapViewModel(lt, listOf(seinFlowManager), flowManager, reportingService, localizationService)
@@ -71,7 +71,7 @@ class HarmonieApplication : Application() {
       val defaultFlowController = DefaultFlowControllerOwner(controllerStack, lt, defaultFlowControllerOwnerViewModel)
 
       EmptyFlowContentController(defaultFlowController, flowManager, lt, localizationService)
-      ParallelSentenceController(lt, defaultFlowController, parallelSentenceViewModel)
+      val parallelSentenceController = ParallelSentenceController(lt, defaultFlowController, parallelSentenceViewModel)
       StartScreenController(startScreenViewModel, lt, controllerStack)
       FillTheGapController(fillTheGapViewModel, defaultFlowController, lt)
       WelcomeScreenController(welcomeScreenViewModel, lt, controllerStack)
@@ -87,6 +87,7 @@ class HarmonieApplication : Application() {
       container.register(languageService)
       container.register(localizationService)
       container.register(feedbackService)
+      container.register(parallelSentenceController)
     } catch (e: Exception) {
       logger.exception(e)
       throw e

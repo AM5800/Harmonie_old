@@ -18,4 +18,5 @@ interface LocalizationTable {
   val reportUnclearSentencePair: String
   val reportWrongTranslation: String
   val reportOther: String
+  val parallelSentencesQuizHelp: String
 }

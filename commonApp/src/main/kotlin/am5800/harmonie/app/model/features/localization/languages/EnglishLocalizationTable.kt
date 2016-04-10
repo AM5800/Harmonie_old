@@ -6,6 +6,7 @@ import am5800.harmonie.app.model.features.localization.QuantityString
 
 
 class EnglishLocalizationTable : LocalizationTable {
+  override val parallelSentencesQuizHelp = "Read sentences and check that you understand them right. Mark words you translated wrong/do not know"
   override val reportUnclearSentencePair = "Report: unclear meaning"
   override val reportWrongTranslation = "Report: translation error"
   override val reportOther = "Report: other"

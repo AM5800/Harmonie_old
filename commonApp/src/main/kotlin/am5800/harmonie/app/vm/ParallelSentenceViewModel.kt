@@ -8,6 +8,7 @@ import am5800.harmonie.app.model.features.flow.FlowManager
 import am5800.harmonie.app.model.features.localization.LocalizationService
 import am5800.harmonie.app.model.features.parallelSentence.ParallelSentenceFlowManager
 import am5800.harmonie.app.model.features.repetition.LearnScore
+import am5800.harmonie.app.model.services.KeyValueDatabase
 import java.util.*
 
 open class WordViewModel(val text: String, val needSpaceBefore: Boolean)
@@ -26,11 +27,14 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
                                 private val parallelSentenceFlowManager: ParallelSentenceFlowManager,
                                 private val flowManager: FlowManager,
                                 localizationService: LocalizationService,
+                                keyValueDatabase: KeyValueDatabase,
                                 reportingService: ErrorReportingService) : ViewModelBase(lifetime) {
   enum class State {
     ShowQuestion,
     ShowAnswer
   }
+
+  val help = Property<String>(lifetime, null)
 
   val reportCommands = IssueReportingMenuHelper.createMenuItems(reportingService, localizationService, lifetime, { describeState() })
 
@@ -77,6 +81,12 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
       question.value = createViewModelsForQuestion(data, lifetime)
       answer.value = data.answer.text
       activationRequested.fire(Unit)
+      if (keyValueDatabase.getValue("ParallelSentenceQuizHelpShowed", "no") == "no") {
+        help.value = localizationService.getCurrentTable().parallelSentencesQuizHelp
+        keyValueDatabase.setValue("ParallelSentenceQuizHelpShowed", "yes")
+      } else {
+        help.value = null
+      }
     })
   }
 }
