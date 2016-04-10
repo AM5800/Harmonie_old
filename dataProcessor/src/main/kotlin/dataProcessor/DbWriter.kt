@@ -115,5 +115,6 @@ class DbWriter {
     db.createTable("CREATE TABLE ${ContentDbConstants.fillTheGapOccurrences} (form TEXT, topic TEXT, occurrenceId INTEGER)")
     db.createTable("CREATE TABLE ${ContentDbConstants.supportedLearningDirections} (languageFrom TEXT, languageTo TEXT)")
     db.createIndex("CREATE INDEX germanWordOccurrencesIndex ON ${ContentDbConstants.wordOccurrences} (wordId, sentenceId)")
+    db.createIndex("CREATE INDEX fillTheGapFormIndex ON ${ContentDbConstants.fillTheGapOccurrences} (form)")
   }
 }
