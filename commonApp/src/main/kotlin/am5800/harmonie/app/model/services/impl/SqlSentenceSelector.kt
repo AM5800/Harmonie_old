@@ -10,12 +10,6 @@ import am5800.harmonie.app.model.services.*
 import am5800.harmonie.app.model.services.logging.LoggerProvider
 import org.joda.time.DateTime
 
-fun formatLanguageCondition(name: String, languages: Collection<Language>): String {
-  if (languages.isEmpty()) throw Exception("No languages specified")
-  val str = languages.map { "$name = '${it.code}'" }.joinToString(" OR ")
-  return "($str)"
-}
-
 class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
                           loggerProvider: LoggerProvider,
                           private val contentDb: ContentDb,
@@ -24,26 +18,26 @@ class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
 
   private val logger = loggerProvider.getLogger(javaClass)
 
-  override fun findBestSentenceByAttempts(languageFrom: Language, languagesTo: Collection<Language>): SentenceSelectorResult? {
+  override fun findBestSentenceByAttempts(languageFrom: Language, languageTo: Language): SentenceSelectorResult? {
     val scheduled = repetitionService.getScheduledWords(languageFrom, DateTime.now()).filterIsInstance<SqlWord>()
 
     logger.info("Looking for best sentence. ${scheduled.size} words scheduled")
 
-    if (!scheduled.isEmpty()) return findBestSentence(languageFrom, languagesTo, scheduled)
+    if (!scheduled.isEmpty()) return findBestSentence(languageFrom, languageTo, scheduled)
 
     val nextWord = wordSelector.findBestWord(languageFrom) as? SqlWord
     logger.info("Next by frequency word is: ${nextWord?.lemma}")
 
-    if (nextWord == null) return getRandomSentence(languageFrom, languagesTo)
+    if (nextWord == null) return getRandomSentence(languageFrom, languageTo)
 
-    return findBestSentence(languageFrom, languagesTo, listOf(nextWord))
+    return findBestSentence(languageFrom, languageTo, listOf(nextWord))
   }
 
-  private fun getRandomSentence(languageFrom: Language, languagesTo: Collection<Language>): SentenceSelectorResult? {
+  private fun getRandomSentence(languageFrom: Language, languageTo: Language): SentenceSelectorResult? {
     val translations = ContentDbConstants.sentenceTranslations
     val sentences = ContentDbConstants.sentences
     val langFrom = languageFrom.code
-    val langTo = formatLanguageCondition("s2.language", languagesTo)
+    val langTo = languageTo.code
     val query = """
         SELECT s1.id, s1.text, s2.id, s2.text, s2.language
           FROM $translations
@@ -51,7 +45,7 @@ class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
             ON s1.id = $translations.key
           INNER JOIN $sentences AS s2
             ON s2.id = $translations.value
-          WHERE s1.language='$langFrom' AND $langTo
+          WHERE s1.language='$langFrom' AND s2.language='$langTo'
           ORDER BY RANDOM()
           LIMIT 1
     """
@@ -61,12 +55,12 @@ class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
         .singleOrNull()
   }
 
-  private fun findBestSentence(languageFrom: Language, languagesTo: Collection<Language>, containingWords: List<SqlWord>): SentenceSelectorResult? {
+  private fun findBestSentence(languageFrom: Language, languageTo: Language, containingWords: List<SqlWord>): SentenceSelectorResult? {
     if (containingWords.isEmpty()) throw Exception("Nothing to search for")
     val translations = ContentDbConstants.sentenceTranslations
     val sentences = ContentDbConstants.sentences
     val langFrom = languageFrom.code
-    val langTo = formatLanguageCondition("s2.language", languagesTo)
+    val langTo = languageTo.code
     val difficulties = ContentDbConstants.sentenceDifficulty
     val wordOccurrences = ContentDbConstants.wordOccurrences
 
@@ -83,7 +77,7 @@ class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
             ON s1.id = $difficulties.sentenceId
           INNER JOIN $wordOccurrences
             ON s1.id = $wordOccurrences.sentenceId
-          WHERE s1.language='$langFrom' AND $langTo AND $wordOccurrences.wordId IN ($includeIds)
+          WHERE s1.language='$langFrom' AND s2.language='$langTo' AND $wordOccurrences.wordId IN ($includeIds)
           GROUP BY s1.id
           ORDER BY $difficulties.difficulty
           LIMIT 20

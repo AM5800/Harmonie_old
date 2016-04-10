@@ -9,7 +9,7 @@ import am5800.harmonie.android.dbAccess.KeyValueDatabaseImpl
 import am5800.harmonie.android.logging.AndroidLoggerProvider
 import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.features.feedback.impl.ErrorReportingServiceImpl
-import am5800.harmonie.app.model.features.fillTheGap.german.GermanExerciseFlowItemManager
+import am5800.harmonie.app.model.features.fillTheGap.FillTheGapFlowItemManagerImpl
 import am5800.harmonie.app.model.features.flow.FlowItemDistributionService
 import am5800.harmonie.app.model.features.flow.FlowManager
 import am5800.harmonie.app.model.features.parallelSentence.ParallelSentenceFlowManager
@@ -33,7 +33,7 @@ class HarmonieApplication : Application() {
     try {
       val lt = Lifetime()
       val container = ComponentContainer(lt, null)
-      val debugOptions = DebugOptions(false, false, null)
+      val debugOptions = DebugOptions(false, false, 41)
       modelContainer = container
 
       val permanentDb = AndroidPermanentDb(this, lt)
@@ -46,14 +46,14 @@ class HarmonieApplication : Application() {
       val sentenceProvider = SqlSentenceProvider(contentDb)
       val wordSelector = SqlWordSelector(wordsRepetitionService, keyValueDb, contentDb, lt, debugOptions)
       val sentenceSelector = SqlSentenceSelector(wordsRepetitionService, loggerProvider, contentDb, debugOptions, wordSelector)
-      val languageService = SqlPreferredLanguagesService(keyValueDb, lt, contentDb, debugOptions)
 
-
-      val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, languageService, sentenceProvider, wordsRepetitionService, sentenceSelector)
-      val seinFlowManager = GermanExerciseFlowItemManager(languageService, contentDb, lt, debugOptions)
+      val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceProvider, wordsRepetitionService, sentenceSelector)
+      val seinFlowManager = FillTheGapFlowItemManagerImpl(contentDb, lt, debugOptions)
       val flowItemProviders = listOf(parallelSentenceFlowManager, seinFlowManager)
+      val languageService = PreferredLanguagesServiceImpl(keyValueDb, lt, flowItemProviders, debugOptions)
+
       val flowManager = FlowManager(lt, loggerProvider, flowItemProviders, debugOptions)
-      val distributionService = FlowItemDistributionService(flowItemProviders)
+      val distributionService = FlowItemDistributionService(flowItemProviders, languageService)
 
       val localizationService = AndroidLocalizationService.create(resources, keyValueDb, lt)
       val feedbackService = AndroidFeedbackService(permanentDb)
@@ -64,7 +64,7 @@ class HarmonieApplication : Application() {
       val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService, reportingService)
       val startScreenViewModel = StartScreenViewModel(flowManager, lt, localizationService, distributionService, welcomeScreenViewModel, feedbackService)
       val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt, localizationService)
-      val fillTheGapViewModel = FillTheGapInParallelSentenceViewModel(lt, listOf(seinFlowManager), flowManager, reportingService, localizationService)
+      val fillTheGapViewModel = FillTheGapViewModel(lt, listOf(seinFlowManager), flowManager, reportingService, localizationService)
 
       // View components
       val controllerStack = ControllerStack()
@@ -73,7 +73,7 @@ class HarmonieApplication : Application() {
       EmptyFlowContentController(defaultFlowController, flowManager, lt, localizationService)
       ParallelSentenceController(lt, defaultFlowController, parallelSentenceViewModel)
       StartScreenController(startScreenViewModel, lt, controllerStack)
-      FillTheGapInParallelSentenceController(fillTheGapViewModel, defaultFlowController, lt)
+      FillTheGapController(fillTheGapViewModel, defaultFlowController, lt)
       WelcomeScreenController(welcomeScreenViewModel, lt, controllerStack)
 
       if (languageService.configurationRequired) {

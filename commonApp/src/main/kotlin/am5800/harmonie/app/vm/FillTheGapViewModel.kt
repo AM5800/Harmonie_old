@@ -5,8 +5,8 @@ import am5800.common.utils.Property
 import am5800.common.utils.Signal
 import am5800.common.utils.functions.shuffle
 import am5800.harmonie.app.model.features.feedback.ErrorReportingService
-import am5800.harmonie.app.model.features.fillTheGap.FillTheGapInParallelSentenceFlowItemManager
-import am5800.harmonie.app.model.features.fillTheGap.FillTheGapInParallelSentenceQuestion
+import am5800.harmonie.app.model.features.fillTheGap.FillTheGapFlowItemManager
+import am5800.harmonie.app.model.features.fillTheGap.FillTheGapQuestion
 import am5800.harmonie.app.model.features.flow.FlowManager
 import am5800.harmonie.app.model.features.localization.LocalizationService
 
@@ -15,9 +15,9 @@ class VariantButtonViewModel(val title: String, enabled: Boolean, lifetime: Life
   val signal = Signal<Unit>(lifetime)
 }
 
-class FillTheGapInParallelSentenceViewModel(
+class FillTheGapViewModel(
     lifetime: Lifetime,
-    managers: Collection<FillTheGapInParallelSentenceFlowItemManager>,
+    managers: Collection<FillTheGapFlowItemManager>,
     private val flowManager: FlowManager,
     reportingService: ErrorReportingService,
     localizationService: LocalizationService) : ViewModelBase(lifetime) {
@@ -66,7 +66,7 @@ class FillTheGapInParallelSentenceViewModel(
     }
   }
 
-  private fun buildVariants(question: FillTheGapInParallelSentenceQuestion, lifetime: Lifetime) {
+  private fun buildVariants(question: FillTheGapQuestion, lifetime: Lifetime) {
     val wrongs = question.wrongVariants.map {
       val vm = VariantButtonViewModel(it, true, lifetime)
       vm.signal.subscribe(lifetime, {
@@ -83,7 +83,7 @@ class FillTheGapInParallelSentenceViewModel(
     variants.value = wrongs.plus(correct).shuffle(null)
   }
 
-  private fun prepareQuestion(question: FillTheGapInParallelSentenceQuestion): String {
+  private fun prepareQuestion(question: FillTheGapQuestion): String {
     val text = question.sentence.text
     val firstPart = text.substring(0, question.occurrenceStart)
     val secondPart = text.substring(question.occurrenceEnd)

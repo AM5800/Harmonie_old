@@ -8,5 +8,5 @@ class Data(val sentenceTranslations: Map<Sentence, Sentence>,
            val wordOccurrences: List<WordOccurrence>,
            val difficulties: Map<Sentence, Int>,
            val realWorldWordsCount: Map<Word, Int>,
-           val specialFormOccurrences: List<FormOccurrence>)
+           val fillTheGapOccurrences: List<FormOccurrence>)
 

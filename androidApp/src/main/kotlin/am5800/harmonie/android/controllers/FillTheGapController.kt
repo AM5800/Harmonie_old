@@ -8,19 +8,15 @@ import am5800.harmonie.android.viewBinding.BindableView
 import am5800.harmonie.android.viewBinding.ControllerWithMenu
 import am5800.harmonie.android.viewBinding.MenuItem
 import am5800.harmonie.android.viewBinding.SimpleMenuItem
-import am5800.harmonie.app.vm.FillTheGapInParallelSentenceViewModel
+import am5800.harmonie.app.vm.FillTheGapViewModel
 import android.widget.Button
 import android.widget.TextView
 
 
-class FillTheGapInParallelSentenceController(private val viewModel: FillTheGapInParallelSentenceViewModel,
-                                             flowContentController: FlowController,
-                                             lifetime: Lifetime) : ControllerWithMenu {
+class FillTheGapController(private val viewModel: FillTheGapViewModel,
+                           flowContentController: FlowController,
+                           lifetime: Lifetime) : ControllerWithMenu {
   override val menuItems = Property(lifetime, viewModel.reportCommands.map { SimpleMenuItem(it) }.filterIsInstance<MenuItem>())
-
-  private fun describeState(): String {
-    throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
-  }
 
   override val id = R.layout.fill_the_gap
   override fun bind(view: BindableView, bindingLifetime: Lifetime) {

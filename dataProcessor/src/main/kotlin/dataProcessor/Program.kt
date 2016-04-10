@@ -17,24 +17,32 @@ fun main(args: Array<String>) {
 
   val data = prepareData(repository)
   val filteredData = filterData(data)
-  val processedData = processSpecialOccurrences(filteredData)
+  val processedData = processFillTheGap(filteredData)
   DbWriter().write(File("androidApp/src/main/assets/content.db"), processedData)
 }
 
-fun processSpecialOccurrences(data: Data): Data {
+fun processFillTheGap(data: Data): Data {
   val seinForms = listOf("sein", "bin", "ist", "bist", "seid", "sind", "war", "gewesen")
-  val articleForms = listOf("ein", "eine", "einer", "eines", "einen", "einem", "das", "der", "die", "den", "dem")
+  val articleFormsDe = listOf("ein", "eine", "einer", "eines", "einen", "einem", "das", "der", "die", "den", "dem")
+  val articleFormsEn = listOf("a", "an", "the")
 
-  val acceptedForms = mutableSetOf<String>()
-  acceptedForms.addAll(articleForms)
-  acceptedForms.addAll(seinForms)
+  val acceptedFormsDe = mutableMapOf<String, String>()
+  val acceptedFormsEn = mutableMapOf<String, String>()
+  acceptedFormsDe.putAll(seinForms.map { Pair(it, "de:sein") })
+  acceptedFormsDe.putAll(articleFormsDe.map { Pair(it, "de:article") })
+  acceptedFormsEn.putAll(articleFormsEn.map { Pair(it, "en:article") })
 
   val result = mutableListOf<FormOccurrence>()
-  for (occurrence in data.wordOccurrences.filter { it.sentence.language == Language.German }) {
-    val form = normalizeGermanWord(occurrence.sentence.text.substring(occurrence.startIndex, occurrence.endIndex))
-    if (!acceptedForms.contains(form)) continue
-
-    result.add(FormOccurrence(form, occurrence))
+  for (occurrence in data.wordOccurrences) {
+    if (occurrence.sentence.language == Language.German) {
+      val form = normalizeGermanWord(occurrence.getForm())
+      val topic = acceptedFormsDe[form] ?: continue
+      result.add(FormOccurrence(form, topic, occurrence))
+    } else if (occurrence.sentence.language == Language.English) {
+      val form = occurrence.getForm().toLowerCase().trim()
+      val topic = acceptedFormsEn[form] ?: continue
+      result.add(FormOccurrence(form, topic, occurrence))
+    }
   }
 
   return Data(data.sentenceTranslations, data.wordOccurrences, data.difficulties, data.realWorldWordsCount, result)

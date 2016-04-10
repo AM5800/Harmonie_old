@@ -9,7 +9,6 @@ import am5800.harmonie.app.model.features.flow.FlowItemCategory
 import am5800.harmonie.app.model.features.flow.FlowItemProvider
 import am5800.harmonie.app.model.features.repetition.LearnScore
 import am5800.harmonie.app.model.features.repetition.WordsRepetitionService
-import am5800.harmonie.app.model.services.PreferredLanguagesService
 import am5800.harmonie.app.model.services.SentenceProvider
 import am5800.harmonie.app.model.services.SentenceSelector
 import am5800.harmonie.app.model.services.SentenceSelectorResult
@@ -23,18 +22,16 @@ class ParallelSentenceQuestion(val question: Sentence,
                                val highlightedWords: Set<Word>)
 
 class ParallelSentenceFlowManager(lifetime: Lifetime,
-                                  private val preferredLanguagesService: PreferredLanguagesService,
                                   private val sentenceProvider: SentenceProvider,
                                   private val repetitionService: WordsRepetitionService,
                                   private val sentenceSelector: SentenceSelector) : FlowItemProvider {
-  override val supportedCategories: Set<FlowItemCategory>
-    get() = preferredLanguagesService.learnLanguages.value!!.map { ParallelSentenceCategory(it) }.toSet()
+  override val supportedCategories = sentenceProvider.getAvailableLanguagePairs().map { ParallelSentenceCategory(it.learnLanguage, it.knownLanguage) }.toSet()
 
   val question = Property<ParallelSentenceQuestion>(lifetime, null)
 
   override fun tryPresentNextItem(category: FlowItemCategory): Boolean {
     if (category !is ParallelSentenceCategory) throw UnsupportedOperationException("Category is not supported")
-    val findResult = sentenceSelector.findBestSentenceByAttempts(category.questionLanguage, preferredLanguagesService.knownLanguages.value!!) ?: return false
+    val findResult = sentenceSelector.findBestSentenceByAttempts(category.learnLanguage, category.knownLanguage) ?: return false
     question.value = prepareQuestion(findResult)
     return true
   }

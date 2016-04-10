@@ -31,13 +31,13 @@ class WelcomeScreenViewModel(private val lifetime: Lifetime,
   }
 
   init {
-    preferredLanguagesService.getAvailableLanguages().forEach { lang -> setupCheckableVm(lang, knownLanguages) }
+    preferredLanguagesService.getAvailableKnownLanguages().forEach { lang -> setupCheckableVm(lang, knownLanguages) }
 
     val checkedKnownLanguages = knownLanguages.filterObservable { it.checked.value!! }
 
     checkedKnownLanguages.changed.subscribe(lifetime, {
       learnLanguages.clear()
-      val translationLanguages = checkedKnownLanguages.map { it.language }.flatMap { preferredLanguagesService.getAvailableTranslations(it) }.distinct()
+      val translationLanguages = checkedKnownLanguages.map { it.language }.flatMap { preferredLanguagesService.getAvailableLearnLanguages(it) }.distinct()
       translationLanguages.forEach { lang -> setupCheckableVm(lang, learnLanguages) }
     })
 

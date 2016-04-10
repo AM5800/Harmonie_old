@@ -9,7 +9,7 @@ class ContentDbConstants {
     val wordOccurrences = "wordOccurrences"
     val sentenceDifficulty = "sentenceDifficulty"
     val wordCounts = "wordFrequencies"
-    val specialFormOccurrences = "specialFormOccurrences"
+    val fillTheGapOccurrences = "fillTheGapOccurrences"
     val supportedLearningDirections = "learningDirections"
   }
 }

@@ -1,15 +1,22 @@
 package am5800.harmonie.app.model.services.impl
 
+import am5800.common.LanguageParser
 import am5800.common.Sentence
 import am5800.common.Word
 import am5800.common.WordOccurrence
 import am5800.common.db.ContentDbConstants
+import am5800.harmonie.app.model.LanguagePair
 import am5800.harmonie.app.model.services.ContentDb
 import am5800.harmonie.app.model.services.SentenceProvider
 import am5800.harmonie.app.model.services.query2
 import am5800.harmonie.app.model.services.query4
 
 class SqlSentenceProvider(private val contentDb: ContentDb) : SentenceProvider {
+  override fun getAvailableLanguagePairs(): Collection<LanguagePair> {
+    return contentDb.query2<String, String>("SELECT * FROM learningDirections")
+        .map { LanguagePair(LanguageParser.parse(it.first), LanguageParser.parse(it.second)) }
+  }
+
   override fun getOccurrences(sentence: Sentence): List<WordOccurrence> {
     if (sentence !is SqlSentence) throw Exception("Only SqlSentences supported")
 

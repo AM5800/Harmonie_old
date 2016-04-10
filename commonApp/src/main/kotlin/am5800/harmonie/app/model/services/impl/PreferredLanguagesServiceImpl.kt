@@ -2,23 +2,23 @@ package am5800.harmonie.app.model.services.impl
 
 import am5800.common.Language
 import am5800.common.LanguageParser
-import am5800.common.db.ContentDbConstants
 import am5800.common.utils.Lifetime
 import am5800.common.utils.convert
 import am5800.harmonie.app.model.DebugOptions
-import am5800.harmonie.app.model.services.ContentDb
+import am5800.harmonie.app.model.LanguagePair
+import am5800.harmonie.app.model.features.flow.FlowItemProvider
+import am5800.harmonie.app.model.features.flow.LanguageCategory
 import am5800.harmonie.app.model.services.KeyValueDatabase
 import am5800.harmonie.app.model.services.PreferredLanguagesService
-import am5800.harmonie.app.model.services.query2
 
-class SqlPreferredLanguagesService(keyValueDatabase: KeyValueDatabase,
-                                   lifetime: Lifetime,
-                                   contentDb: ContentDb,
-                                   private val debugOptions: DebugOptions) : PreferredLanguagesService {
+class PreferredLanguagesServiceImpl(keyValueDatabase: KeyValueDatabase,
+                                    lifetime: Lifetime,
+                                    itemProviders: List<FlowItemProvider>,
+                                    private val debugOptions: DebugOptions) : PreferredLanguagesService {
   override val knownLanguages = keyValueDatabase.createProperty(lifetime, "knownLanguages", "").convert({ stringToLanguages(it) }, { languagesToString(it) })
   override val learnLanguages = keyValueDatabase.createProperty(lifetime, "learnLanguages", "").convert({ stringToLanguages(it) }, { languagesToString(it) })
 
-  private val supportedDirections = mutableListOf<Pair<Language, Language>>()
+  private val supportedDirections = mutableListOf<LanguagePair>()
 
   init {
     if (debugOptions.dropPreferredLanguagesOnStart) {
@@ -26,17 +26,21 @@ class SqlPreferredLanguagesService(keyValueDatabase: KeyValueDatabase,
       learnLanguages.value = emptyList()
     }
 
-    val directions = ContentDbConstants.supportedLearningDirections
-    val queryResult = contentDb.query2<String, String>("SELECT languageFrom, languageTo FROM $directions")
-    supportedDirections.addAll(queryResult.map { Pair(LanguageParser.parse(it.first), LanguageParser.parse(it.second)) })
+    val directions = itemProviders
+        .flatMap { it.supportedCategories }
+        .filterIsInstance<LanguageCategory>()
+        .map { LanguagePair(it.knownLanguage, it.learnLanguage) }
+        .distinct()
+
+    supportedDirections.addAll(directions)
   }
 
-  override fun getAvailableLanguages(): Collection<Language> {
-    return supportedDirections.map { it.first }
+  override fun getAvailableKnownLanguages(): Collection<Language> {
+    return supportedDirections.map { it.knownLanguage }
   }
 
-  override fun getAvailableTranslations(language: Language): Collection<Language> {
-    return supportedDirections.filter { it.first == language }.map { it.second }
+  override fun getAvailableLearnLanguages(language: Language): Collection<Language> {
+    return supportedDirections.filter { it.knownLanguage == language }.map { it.learnLanguage }
   }
 
   override val configurationRequired: Boolean
