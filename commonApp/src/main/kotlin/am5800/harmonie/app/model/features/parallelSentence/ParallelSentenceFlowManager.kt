@@ -25,7 +25,15 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
                                   private val sentenceProvider: SentenceProvider,
                                   private val repetitionService: WordsRepetitionService,
                                   private val sentenceSelector: SentenceSelector) : FlowItemProvider {
-  override val supportedCategories = sentenceProvider.getAvailableLanguagePairs().map { ParallelSentenceCategory(it.learnLanguage, it.knownLanguage) }.toSet()
+  private val availableLanguagePairs = sentenceProvider.getAvailableLanguagePairs()
+
+  override fun getAvailableDataSetSize(category: FlowItemCategory): Int {
+    if (category !is ParallelSentenceCategory) return 0
+    val pair = availableLanguagePairs.single { it.entity.learnLanguage == category.learnLanguage && it.entity.knownLanguage == category.knownLanguage }
+    return pair.count
+  }
+
+  override val supportedCategories = availableLanguagePairs.map { ParallelSentenceCategory(it.entity.learnLanguage, it.entity.knownLanguage) }.toSet()
 
   val question = Property<ParallelSentenceQuestion>(lifetime, null)
 

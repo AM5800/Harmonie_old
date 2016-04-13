@@ -11,7 +11,7 @@ class StartScreenViewModel(private val flowManager: FlowManager,
                            lifetime: Lifetime,
                            localizationService: LocalizationService,
                            private val distributionService: FlowItemDistributionService,
-                           private val welcomeScreenViewModel: WelcomeScreenViewModel,
+                           private val selectLanguageViewModel: SelectLanguageViewModel,
                            private val feedbackService: FeedbackService) : ViewModelBase(lifetime) {
   private val defaultDuration = Minutes.minutes(10).toStandardDuration()
 
@@ -20,7 +20,7 @@ class StartScreenViewModel(private val flowManager: FlowManager,
   val sendFeedbackText = localizationService.createProperty(lifetime, { it.sendStatistics })
 
   fun onActivated() {
-    welcomeScreenViewModel.activateIfNeeded()
+    selectLanguageViewModel.activateIfNeeded()
   }
 
   fun learnAll() {
@@ -32,6 +32,6 @@ class StartScreenViewModel(private val flowManager: FlowManager,
   }
 
   fun chooseLanguages() {
-    welcomeScreenViewModel.activationRequested.fire(Unit)
+    selectLanguageViewModel.activationRequested.fire(Unit)
   }
 }

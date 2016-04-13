@@ -76,7 +76,7 @@ class ParallelSentenceController(lifetime: Lifetime,
     if (childVm.needSpaceBefore) layoutParams.leftMargin = 16
     wordView.layoutParams = layoutParams
 
-    wordView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20.0f)
+    wordView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 25.0f)
   }
 
   init {

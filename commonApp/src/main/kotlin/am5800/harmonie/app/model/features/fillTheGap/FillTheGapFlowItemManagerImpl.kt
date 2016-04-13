@@ -17,6 +17,10 @@ class FillTheGapFlowItemManagerImpl(
     private val contentDb: ContentDb,
     lifetime: Lifetime,
     private val debugOptions: DebugOptions) : FlowItemProvider, FillTheGapFlowItemManager {
+  override fun getAvailableDataSetSize(category: FlowItemCategory): Int {
+    return 0
+  }
+
   private val forms = getForms()
   override val supportedCategories: Set<FlowItemCategory> = forms.map { FillTheGapCategory(it.learnLanguage, it.knownLanguage) }.toSet()
 

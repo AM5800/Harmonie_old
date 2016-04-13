@@ -2,15 +2,12 @@ package am5800.harmonie.app.model.services.impl
 
 import am5800.common.*
 import am5800.common.db.ContentDbConstants
-import am5800.harmonie.app.model.services.ContentDb
-import am5800.harmonie.app.model.services.SentenceProvider
-import am5800.harmonie.app.model.services.query2
-import am5800.harmonie.app.model.services.query4
+import am5800.harmonie.app.model.services.*
 
 class SqlSentenceProvider(private val contentDb: ContentDb) : SentenceProvider {
-  override fun getAvailableLanguagePairs(): Collection<LanguagePair> {
-    return contentDb.query2<String, String>("SELECT knownLanguage, learnLanguage FROM sentenceLanguages")
-        .map { LanguagePair(LanguageParser.parse(it.first), LanguageParser.parse(it.second)) }
+  override fun getAvailableLanguagePairs(): Collection<WithCounter<LanguagePair>> {
+    return contentDb.query3<String, String, Long>("SELECT knownLanguage, learnLanguage, count FROM sentenceLanguages")
+        .map { WithCounter(LanguagePair(LanguageParser.parse(it.value1), LanguageParser.parse(it.value2)), it.value3.toInt()) }
   }
 
   override fun getOccurrences(sentence: Sentence): List<WordOccurrence> {

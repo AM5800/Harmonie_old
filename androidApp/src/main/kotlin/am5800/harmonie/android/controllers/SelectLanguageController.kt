@@ -4,27 +4,24 @@ import am5800.common.utils.Lifetime
 import am5800.harmonie.android.ControllerStack
 import am5800.harmonie.android.R
 import am5800.harmonie.android.Visibility
-import am5800.harmonie.android.viewBinding.BindableController
 import am5800.harmonie.android.viewBinding.BindableView
 import am5800.harmonie.android.viewBinding.FragmentController
-import am5800.harmonie.app.vm.ObservableCollection
-import am5800.harmonie.app.vm.WelcomeScreenViewModel
-import am5800.harmonie.app.vm.mapObservable
+import am5800.harmonie.app.vm.CheckableLanguageViewModel
+import am5800.harmonie.app.vm.SelectLanguageViewModel
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 
-class WelcomeScreenController(private val vm: WelcomeScreenViewModel,
-                              private val lifetime: Lifetime,
-                              private val controllerStack: ControllerStack) : FragmentController {
+class SelectLanguageController(private val vm: SelectLanguageViewModel,
+                               private val lifetime: Lifetime,
+                               private val controllerStack: ControllerStack) : FragmentController {
   override val menuItems = null
 
   override fun bind(view: BindableView, bindingLifetime: Lifetime) {
     // always visible group
     view.getChild<TextView>(R.id.welcomeView).bindText(bindingLifetime, view, vm.welcome)
     view.getChild<TextView>(R.id.chooseKnownView).bindText(bindingLifetime, view, vm.chooseKnown)
-    val knownControllers: ObservableCollection<BindableController> = vm.knownLanguages.mapObservable { CheckableLanguageController(R.layout.checkable_language, it) }
-    bindLinearLayoutToObservableCollection(bindingLifetime, view.getChild<LinearLayout>(R.id.knownLanguagesList), view, knownControllers)
+    bindControllers(view.getChild<LinearLayout>(R.id.knownLanguagesList), view, bindingLifetime, vm.knownLanguages)
 
     // learn group
     val chooseLearnText = view.getChild<TextView>(R.id.chooseLearnView)
@@ -33,8 +30,7 @@ class WelcomeScreenController(private val vm: WelcomeScreenViewModel,
     chooseLearnText.bindVisibility(bindingLifetime, view, vm.learnGroupVisible, Visibility.Collapsed)
     learnList.bindVisibility(bindingLifetime, view, vm.learnGroupVisible, Visibility.Collapsed)
 
-    val learnControllers: ObservableCollection<BindableController> = vm.learnLanguages.mapObservable { CheckableLanguageController(R.layout.checkable_language, it) }
-    bindLinearLayoutToObservableCollection(bindingLifetime, learnList, view, learnControllers)
+    bindControllers(learnList, view, bindingLifetime, vm.learnLanguages)
 
     // continue
     val continueBtn = view.getChild<Button>(R.id.continueBtn)
@@ -43,16 +39,11 @@ class WelcomeScreenController(private val vm: WelcomeScreenViewModel,
     continueBtn.bindOnClick(bindingLifetime, { vm.next() })
   }
 
-  private fun <T : BindableController> bindLinearLayoutToObservableCollection(lifetime: Lifetime, layout: LinearLayout, parentView: BindableView, collection: ObservableCollection<T>) {
-    val handler: (Unit) -> Unit = {
-      layout.removeAllViews()
-      for (item in collection) {
-        layout.addView(parentView.createChildViewAndBind(item, lifetime))
-      }
+  private fun bindControllers(layout: LinearLayout, view: BindableView, bindingLifetime: Lifetime, languages: Collection<CheckableLanguageViewModel>) {
+    for (language in languages) {
+      val controller = CheckableLanguageController(R.layout.checkable_language, language)
+      layout.addView(view.createChildViewAndBind(controller, bindingLifetime))
     }
-
-    collection.changed.subscribe(lifetime, handler)
-    handler(Unit)
   }
 
   override val id: Int = R.layout.welcome_screen

@@ -14,6 +14,7 @@ interface ReadonlyProperty<T : Any> {
 class PropertyChangedArg<T>(private val old: T?, val newValue: T?, val hasOld: Boolean) {
   val oldValue: T?
     get() = if (hasOld) old else throw Exception("Old value is not available")
+  val isAcknowledge: Boolean = hasOld == false
 }
 
 class Property<T : Any>(val lifetime: Lifetime, initialValue: T?) : ReadonlyProperty<T> {

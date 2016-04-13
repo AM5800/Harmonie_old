@@ -60,7 +60,7 @@ class HarmonieApplication : Application() {
       val reportingService = ErrorReportingServiceImpl(permanentDb)
 
       // ViewModels
-      val welcomeScreenViewModel = WelcomeScreenViewModel(lt, localizationService, languageService)
+      val welcomeScreenViewModel = SelectLanguageViewModel(lt, localizationService, languageService)
       val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService, keyValueDb, reportingService)
       val startScreenViewModel = StartScreenViewModel(flowManager, lt, localizationService, distributionService, welcomeScreenViewModel, feedbackService)
       val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt, localizationService)
@@ -74,7 +74,7 @@ class HarmonieApplication : Application() {
       val parallelSentenceController = ParallelSentenceController(lt, defaultFlowController, parallelSentenceViewModel)
       StartScreenController(startScreenViewModel, lt, controllerStack)
       FillTheGapController(fillTheGapViewModel, defaultFlowController, lt)
-      WelcomeScreenController(welcomeScreenViewModel, lt, controllerStack)
+      SelectLanguageController(welcomeScreenViewModel, lt, controllerStack)
 
       if (languageService.configurationRequired) {
 

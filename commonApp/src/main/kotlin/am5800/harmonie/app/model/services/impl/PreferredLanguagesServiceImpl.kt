@@ -1,8 +1,6 @@
 package am5800.harmonie.app.model.services.impl
 
-import am5800.common.Language
-import am5800.common.LanguagePair
-import am5800.common.LanguageParser
+import am5800.common.*
 import am5800.common.utils.Lifetime
 import am5800.common.utils.convert
 import am5800.harmonie.app.model.DebugOptions
@@ -18,7 +16,7 @@ class PreferredLanguagesServiceImpl(keyValueDatabase: KeyValueDatabase,
   override val knownLanguages = keyValueDatabase.createProperty(lifetime, "knownLanguages", "").convert({ stringToLanguages(it) }, { languagesToString(it) })
   override val learnLanguages = keyValueDatabase.createProperty(lifetime, "learnLanguages", "").convert({ stringToLanguages(it) }, { languagesToString(it) })
 
-  private val supportedDirections = mutableListOf<LanguagePair>()
+  private val supportedDirections = mutableListOf<WithCounter<LanguagePair>>()
 
   init {
     if (debugOptions.dropPreferredLanguagesOnStart) {
@@ -27,20 +25,27 @@ class PreferredLanguagesServiceImpl(keyValueDatabase: KeyValueDatabase,
     }
 
     val directions = itemProviders
-        .flatMap { it.supportedCategories }
-        .filterIsInstance<LanguageCategory>()
-        .map { LanguagePair(it.knownLanguage, it.learnLanguage) }
-        .distinct()
+        .flatMap { provider ->
+          provider.supportedCategories.map { category ->
+            if (category !is LanguageCategory) return@map null
+            return@map WithCounter(category, provider.getAvailableDataSetSize(category))
+          }.filterNotNull()
+        }
+        .map { WithCounter(LanguagePair(it.entity.knownLanguage, it.entity.learnLanguage), it.count) }
+        .merge()
 
     supportedDirections.addAll(directions)
   }
 
   override fun getAvailableKnownLanguages(): Collection<Language> {
-    return supportedDirections.map { it.knownLanguage }.distinct()
+    return supportedDirections.map { it.entity.knownLanguage }.distinct()
   }
 
-  override fun getAvailableLearnLanguages(language: Language): Collection<Language> {
-    return supportedDirections.filter { it.knownLanguage == language }.map { it.learnLanguage }
+  override fun getAvailableLearnLanguages(language: Language): Collection<WithCounter<Language>> {
+    return supportedDirections
+        .filter { it.entity.knownLanguage == language }
+        .map { WithCounter(it.entity.learnLanguage, it.count) }
+        .merge()
   }
 
   override val configurationRequired: Boolean

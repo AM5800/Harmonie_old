@@ -2,10 +2,10 @@ package am5800.harmonie.app.model.features.localization.languages
 
 import am5800.common.Language
 import am5800.harmonie.app.model.features.localization.LocalizationTable
-import am5800.harmonie.app.model.features.localization.QuantityString
 
 
 class EnglishLocalizationTable : LocalizationTable {
+  override val nSentencesAvailable = EnglishQuantityString("%i sentence", "%i sentences")
   override val parallelSentencesQuizHelp = "Read sentences and check that you understand them right. Mark words you translated wrong/do not know"
   override val reportUnclearSentencePair = "Report: unclear meaning"
   override val reportWrongTranslation = "Report: translation error"
@@ -21,6 +21,6 @@ class EnglishLocalizationTable : LocalizationTable {
 
   override val continueButton: String = "Continue"
 
-  override val minutesLeft: QuantityString = EnglishQuantityString("%i minute left", "%i minutes left")
-  override val secondsLeft: QuantityString = EnglishQuantityString("%i second left", "%i seconds left")
+  override val minutesLeft = EnglishQuantityString("%i minute left", "%i minutes left")
+  override val secondsLeft = EnglishQuantityString("%i second left", "%i seconds left")
 }
