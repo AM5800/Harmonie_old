@@ -5,7 +5,7 @@ import am5800.harmonie.app.model.features.localization.LocalizationTable
 
 class RussianLocalizationTable : LocalizationTable {
   override val nSentencesAvailable = RussianQuantityString("%i предложение", "%i предложения", "%i предложений")
-  override val parallelSentencesQuizHelp = "Читайте предложения и сверяйтесь с переводом. Отмечайте слова, в которых в ошиблись или которые не знали"
+  override val parallelSentencesQuizHelp = "Читайте предложения и сверяйтесь с переводом. Отмечайте слова, в которых вы ошиблись или которые не знали"
   override val reportUnclearSentencePair = "Сообщить: неудачный пример"
   override val reportWrongTranslation = "Сообщить: неправильный перевод"
   override val reportOther = "Сообщить: другое"
