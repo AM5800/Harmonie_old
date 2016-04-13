@@ -39,5 +39,7 @@ class LanguageParser {
   }
 }
 
+data class LanguagePair(val knownLanguage: Language, val learnLanguage: Language)
+
 
 

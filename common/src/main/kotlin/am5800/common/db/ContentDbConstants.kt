@@ -10,6 +10,6 @@ class ContentDbConstants {
     val sentenceDifficulty = "sentenceDifficulty"
     val wordCounts = "wordFrequencies"
     val fillTheGapOccurrences = "fillTheGapOccurrences"
-    val supportedLearningDirections = "learningDirections"
+    val sentenceLanguages = "sentenceLanguages"
   }
 }

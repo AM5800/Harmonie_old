@@ -1,9 +1,8 @@
 package dataProcessor
 
-import am5800.common.Sentence
-import am5800.common.Word
-import am5800.common.WordOccurrence
+import am5800.common.*
 import am5800.common.db.ContentDbConstants
+import com.google.common.collect.LinkedHashMultimap
 import org.tmatesoft.sqljet.core.SqlJetTransactionMode
 import org.tmatesoft.sqljet.core.table.ISqlJetTable
 import org.tmatesoft.sqljet.core.table.SqlJetDb
@@ -36,14 +35,23 @@ class DbWriter {
   }
 
   private fun writeLanguageSupport(sentenceTranslations: Map<Sentence, Sentence>, wordOccurrences: List<WordOccurrence>, db: SqlJetDb) {
-    val supportedDirections = sentenceTranslations
-        .map { Pair(it.key.language, it.value.language) }
-        .toMap()
-        .filter { pair -> wordOccurrences.any { it.sentence.language == pair.value } }
-    val table = db.getTable(ContentDbConstants.supportedLearningDirections)
+    val occurrenceBySentence = LinkedHashMultimap.create<Sentence, WordOccurrence>()
+    for (occurrence in wordOccurrences) {
+      occurrenceBySentence.put(occurrence.sentence, occurrence)
+    }
 
-    for ((languageFrom, languageTo) in supportedDirections) {
-      table.insert(languageFrom.code, languageTo.code)
+    val directions = EntityCounter<LanguagePair>()
+
+    for ((left, right) in sentenceTranslations) {
+      val leftOccurrences = occurrenceBySentence[left] ?: emptyList<WordOccurrence>()
+
+      if (leftOccurrences.any()) directions.add(LanguagePair(right.language, left.language))
+    }
+
+    val table = db.getTable(ContentDbConstants.sentenceLanguages)
+
+    for ((pair, count) in directions.result) {
+      table.insert(pair.knownLanguage.code, pair.learnLanguage.code, count)
     }
   }
 
@@ -113,7 +121,7 @@ class DbWriter {
     db.createTable("CREATE TABLE ${ContentDbConstants.sentenceDifficulty} (sentenceId INTEGER PRIMARY KEY, difficulty INTEGER)")
     db.createTable("CREATE TABLE ${ContentDbConstants.wordCounts} (wordId INTEGER PRIMARY KEY, count INTEGER)")
     db.createTable("CREATE TABLE ${ContentDbConstants.fillTheGapOccurrences} (form TEXT, topic TEXT, occurrenceId INTEGER)")
-    db.createTable("CREATE TABLE ${ContentDbConstants.supportedLearningDirections} (languageFrom TEXT, languageTo TEXT)")
+    db.createTable("CREATE TABLE ${ContentDbConstants.sentenceLanguages} (knownLanguage TEXT, learnLanguage TEXT, count INTEGER)")
     db.createIndex("CREATE INDEX germanWordOccurrencesIndex ON ${ContentDbConstants.wordOccurrences} (wordId, sentenceId)")
     db.createIndex("CREATE INDEX fillTheGapFormIndex ON ${ContentDbConstants.fillTheGapOccurrences} (form)")
   }
