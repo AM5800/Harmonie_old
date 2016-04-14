@@ -1,7 +1,6 @@
 package am5800.harmonie.app.model.services.impl
 
 import am5800.common.*
-import am5800.common.db.ContentDbConstants
 import am5800.harmonie.app.model.services.*
 
 class SqlSentenceProvider(private val contentDb: ContentDb) : SentenceProvider {
@@ -13,31 +12,29 @@ class SqlSentenceProvider(private val contentDb: ContentDb) : SentenceProvider {
   override fun getOccurrences(sentence: Sentence): List<WordOccurrence> {
     if (sentence !is SqlSentence) throw Exception("Only SqlSentences supported")
 
-    val words = ContentDbConstants.words
-    val occurrences = ContentDbConstants.wordOccurrences
-
     val query = """
-        SELECT $words.id, $words.lemma, $occurrences.startIndex, $occurrences.endIndex
-        FROM $words
-          INNER JOIN $occurrences
-            ON $words.id = $occurrences.wordId
-        WHERE $occurrences.sentenceId = ${sentence.id}
+        SELECT words.id, words.lemma, wordOccurrences.startIndex, wordOccurrences.endIndex, words.language
+        FROM words
+          INNER JOIN wordOccurrences
+            ON words.id = wordOccurrences.wordId
+        WHERE wordOccurrences.sentenceId = ${sentence.id}
     """
 
-    val wordsData = contentDb.query4<Long, String, Int, Int>(query)
+    val wordsData = contentDb.query5<Long, String, Int, Int, String>(query)
 
-    return wordsData.map {
-      WordOccurrence(SqlWord(it.value1, sentence.language, it.value2), sentence, it.value3, it.value4)
+    val result = wordsData.map {
+      WordOccurrence(SqlWord(it.value1, LanguageParser.parse(it.value5), it.value2), sentence, it.value3, it.value4)
     }
+
+    if (result.isNotEmpty() && result.any { it.word.language != sentence.language }) throw Exception("Word language differ from sentence language")
+    return result
   }
 
   override fun getWordsInSentence(sentence: Sentence): List<Word> {
     if (sentence !is SqlSentence) throw Exception("Unsupported type: " + sentence.javaClass.name)
 
-    val words = ContentDbConstants.words
-    val occurrences = ContentDbConstants.wordOccurrences
     val sentenceId = sentence.id
-    val query = "SELECT id, lemma FROM $words WHERE id IN (SELECT wordId FROM $occurrences WHERE sentenceId = $sentenceId)"
+    val query = "SELECT id, lemma FROM words WHERE id IN (SELECT wordId FROM wordOccurrences WHERE sentenceId = $sentenceId)"
 
     val result = contentDb.query2<Long, String>(query)
 
