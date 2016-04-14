@@ -9,5 +9,5 @@ class SentenceSelectorResult(val question: Sentence, val answer: Sentence, val h
 }
 
 interface SentenceSelector {
-  fun findBestSentenceByAttempts(languageFrom: Language, languageTo: Language): SentenceSelectorResult?
+  fun findBestSentenceByAttempts(learnLanguage: Language, knownLanguage: Language): SentenceSelectorResult?
 }

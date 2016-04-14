@@ -1,9 +1,12 @@
 package am5800.harmonie.app.model.services.impl
 
 import am5800.common.*
+import am5800.common.db.ContentDbConstants
+import am5800.common.utils.functions.shuffle
+import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.services.*
 
-class SqlSentenceProvider(private val contentDb: ContentDb) : SentenceProvider {
+class SqlSentenceProvider(private val contentDb: ContentDb, private val debugOptions: DebugOptions) : SentenceProvider {
   override fun getAvailableLanguagePairs(): Collection<WithCounter<LanguagePair>> {
     return contentDb.query3<String, String, Long>("SELECT knownLanguage, learnLanguage, count FROM sentenceLanguages")
         .map { WithCounter(LanguagePair(LanguageParser.parse(it.value1), LanguageParser.parse(it.value2)), it.value3.toInt()) }
@@ -59,5 +62,44 @@ class SqlSentenceProvider(private val contentDb: ContentDb) : SentenceProvider {
     return contentDb.query4<Long, String, Long, String>(query)
         .map { SentencePair(SqlSentence(it.value3, knownLanguage, it.value4), SqlSentence(it.value1, learnLanguage, it.value2)) }
         .singleOrNull()
+  }
+
+  override fun findEasiestMatchingSentence(learnLanguage: Language, knownLanguage: Language, containingWords: List<SqlWord>): SentencePair? {
+    if (containingWords.isEmpty()) throw Exception("Nothing to search for")
+    val translations = ContentDbConstants.sentenceTranslations
+    val sentences = ContentDbConstants.sentences
+    val learnLang = learnLanguage.code
+    val knownLang = knownLanguage.code
+    val difficulties = ContentDbConstants.sentenceDifficulty
+    val wordOccurrences = ContentDbConstants.wordOccurrences
+
+    val includeIds = containingWords.map { it.id }.joinToString(", ")
+
+    val searchQuery = """
+        SELECT s1.id, s1.text, s2.id, s2.text, $difficulties.difficulty, s2.language
+          FROM $translations
+          INNER JOIN $sentences AS s1
+            ON s1.id = $translations.key
+          INNER JOIN $sentences AS s2
+            ON s2.id = $translations.value
+          INNER JOIN $difficulties
+            ON s1.id = $difficulties.sentenceId
+          INNER JOIN $wordOccurrences
+            ON s1.id = $wordOccurrences.sentenceId
+          WHERE s1.language='$learnLang' AND s2.language='$knownLang' AND $wordOccurrences.wordId IN ($includeIds)
+          GROUP BY s1.id
+          ORDER BY $difficulties.difficulty
+          LIMIT 20
+		"""
+
+    val queryResult = contentDb.query6<Long, String, Long, String, Long, String>(searchQuery)
+
+    if (queryResult.size >= 1) {
+      val minDifficulty = queryResult.first().value5
+      return queryResult.takeWhile { it.value5 == minDifficulty }
+          .map { SentencePair(SqlSentence(it.value3, knownLanguage, it.value4), SqlSentence(it.value1, learnLanguage, it.value2)) }
+          .shuffle(debugOptions.random)
+          .first()
+    } else return null
   }
 }

@@ -43,9 +43,9 @@ class HarmonieApplication : Application() {
       val repetitionService = SqlRepetitionService(BucketRepetitionAlgorithm(), permanentDb, debugOptions)
       val wordsRepetitionService = WordsRepetitionServiceImpl(repetitionService, lt, contentDb)
 
-      val sentenceProvider = SqlSentenceProvider(contentDb)
+      val sentenceProvider = SqlSentenceProvider(contentDb, debugOptions)
       val wordSelector = SqlWordSelector(wordsRepetitionService, keyValueDb, contentDb, lt, debugOptions)
-      val sentenceSelector = SqlSentenceSelector(wordsRepetitionService, loggerProvider, contentDb, debugOptions, wordSelector, sentenceProvider)
+      val sentenceSelector = SqlSentenceSelector(wordsRepetitionService, loggerProvider, wordSelector, sentenceProvider)
 
       val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceProvider, wordsRepetitionService, sentenceSelector)
       val seinFlowManager = FillTheGapFlowItemManagerImpl(contentDb, lt, debugOptions)

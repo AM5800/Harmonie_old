@@ -1,13 +1,18 @@
 package sql
 
 import am5800.common.Language
+import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.services.impl.SqlSentence
+import am5800.harmonie.app.model.services.impl.SqlSentenceProvider
+import am5800.harmonie.app.model.services.impl.SqlWord
 import org.junit.Assert
 import org.junit.Test
 import java.util.regex.Pattern
 
 
 class SentenceProviderTests : DbTestBase() {
+  val sentenceProvider = SqlSentenceProvider(database, DebugOptions(false, false, 42))
+
   @Test
   fun testLanguagePairs() {
     val languagePairs = sentenceProvider.getAvailableLanguagePairs()
@@ -49,15 +54,43 @@ class SentenceProviderTests : DbTestBase() {
   }
 
   @Test
-  fun getRandomSentence() {
+  fun testRandomLanguagesConsistent() {
     val learnLanguage = Language.English
     val knownLanguage = Language.Russian
-    val selectorResult = sentenceProvider.getRandomSentencePair(learnLanguage, knownLanguage)
-    Assert.assertNotNull(selectorResult)
-    selectorResult!!
-    Assert.assertEquals(learnLanguage, selectorResult.learnLanguageSentence.language)
-    Assert.assertEquals(knownLanguage, selectorResult.knownLanguageSentence.language)
+    val result = sentenceProvider.getRandomSentencePair(learnLanguage, knownLanguage)
+    Assert.assertNotNull(result)
+    result!!
+    Assert.assertEquals(learnLanguage, result.learnLanguageSentence.language)
+    Assert.assertEquals(knownLanguage, result.knownLanguageSentence.language)
     // Test that sentence contains only english chars
-    Assert.assertTrue(Pattern.matches("[a-zA-Z .]*", selectorResult.learnLanguageSentence.text))
+    Assert.assertTrue(Pattern.matches("[a-zA-Z .]*", result.learnLanguageSentence.text))
+  }
+
+  @Test
+  fun getSentenceWithNonExistentDirection() {
+    val fox = getFoxWord()
+    val result = sentenceProvider.findEasiestMatchingSentence(Language.Russian, Language.Japanese, listOf(fox))
+    Assert.assertNull(result)
+  }
+
+  private fun getFoxWord(): SqlWord {
+    val query = "SELECT id FROM words WHERE lemma LIKE 'fox' AND language='${Language.English.code}'"
+    val cursor = database.query(query)
+    cursor.moveToNext()
+    val id = cursor.getString(0).toLong()
+    return SqlWord(id, Language.English, "fox")
+  }
+
+  @Test
+  fun testLanguagesConsistent() {
+    val learnLanguage = Language.English
+    val knownLanguage = Language.Russian
+    val result = sentenceProvider.findEasiestMatchingSentence(learnLanguage, knownLanguage, listOf(getFoxWord()))
+    Assert.assertNotNull(result)
+    result!!
+    Assert.assertEquals(learnLanguage, result.learnLanguageSentence.language)
+    Assert.assertEquals(knownLanguage, result.knownLanguageSentence.language)
+    // Test that sentence contains only english chars
+    Assert.assertTrue(Pattern.matches("[a-zA-Z .]*", result.learnLanguageSentence.text))
   }
 }

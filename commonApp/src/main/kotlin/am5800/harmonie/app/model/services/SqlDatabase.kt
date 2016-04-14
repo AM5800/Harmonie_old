@@ -13,7 +13,7 @@ interface SqlDatabase {
 }
 
 inline fun <reified T> valueFromCursor(index: Int, cursor: Cursor): T {
-  var string = cursor.getString(index)
+  val string = cursor.getString(index)
   if ("" is T) {
     return string as T
   }
