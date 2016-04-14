@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<harmonie version="1.0">
+    <sp>
+        <s lang="en" text="This is a test sentence.">
+            <w lem="this" start="0" end="4"/>
+            <w lem="is" start="6" end="8"/>
+            <w lem="a" start="9" end="10"/>
+            <w lem="test" start="11" end="15"/>
+            <w lem="sentence" start="16" end="22"/>
+            <w lem="." start="22" end="23"/>
+        </s>
+        <s lang="ru" text="Перевод не важен"/>
+    </sp>
+
+    <sp>
+        <s lang="en" text="Quick red fox jumps over the lazy brown dog">
+            <w lem="quick" start="0" end="5"/>
+            <w lem="red" start="6" end="9"/>
+            <w lem="fox" start="10" end="13"/>
+            <w lem="jump" start="14" end="18"/>
+            <w lem="over" start="19" end="23"/>
+            <w lem="the" start="24" end="27"/>
+            <w lem="lazy" start="28" end="32"/>
+            <w lem="brown" start="33" end="38"/>
+            <w lem="dog" start="39" end="42"/>
+        </s>
+        <s lang="ru" text="Перевод не важен"/>
+    </sp>
+</harmonie>

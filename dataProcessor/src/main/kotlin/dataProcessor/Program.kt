@@ -4,6 +4,7 @@ import am5800.common.Language
 import am5800.common.Sentence
 import am5800.common.Word
 import am5800.common.WordOccurrence
+import corpus.CorpusInfo
 import corpus.CorpusRepository
 import corpus.parsing.CorpusParsersSet
 import corpus.parsing.NegraParser
@@ -16,10 +17,15 @@ import java.io.File
 fun main(args: Array<String>) {
   val repository = CorpusRepository(File("data/corpuses"))
 
-  val data = prepareData(repository)
+  run(repository, repository.getCorpuses().filter { it.formatId.equals("harmonie", true) }, File("androidApp/src/main/assets/content.db"))
+  run(repository, repository.getCorpuses().filter { it.formatId.equals("harmonie-test", true) }, File("data/test.db"))
+}
+
+private fun run(repository: CorpusRepository, corpuses: List<CorpusInfo>, file: File) {
+  val data = prepareData(repository, corpuses)
   val filteredData = filterData(data)
   val processedData = processFillTheGap(filteredData)
-  DbWriter().write(File("androidApp/src/main/assets/content.db"), processedData)
+  DbWriter().write(file, processedData)
 }
 
 fun processFillTheGap(data: Data): Data {
@@ -49,9 +55,7 @@ fun processFillTheGap(data: Data): Data {
   return Data(data.sentenceTranslations, data.wordOccurrences, data.difficulties, data.realWorldWordsCount, result)
 }
 
-fun prepareData(repository: CorpusRepository): Data {
-  val infos = repository.getCorpuses().filter { it.formatId.equals("harmonie", true) }
-
+fun prepareData(repository: CorpusRepository, infos: List<CorpusInfo>): Data {
   val postProcessors = listOf(GermanPostProcessor(MorphyCsvParser(File("data/morphy.csv"))), EnglishPostProcessor())
   val parser = HarmonieParallelSentencesParser(postProcessors)
 
