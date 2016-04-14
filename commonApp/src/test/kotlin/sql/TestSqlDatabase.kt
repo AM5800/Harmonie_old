@@ -22,8 +22,8 @@ class TestCursor(private val rs: ResultSet) : Cursor {
   }
 }
 
-class TestSqlDatabase(lifetime: Lifetime, dbPath: File) : ContentDb {
-  private val connection = DriverManager.getConnection("jdbc:sqlite:${dbPath.absolutePath}");
+class TestSqlDatabase(lifetime: Lifetime) : ContentDb {
+  private val connection = DriverManager.getConnection("jdbc:sqlite:${findDb().absolutePath}");
   private val stmt = connection.createStatement()
 
   init {
@@ -36,6 +36,14 @@ class TestSqlDatabase(lifetime: Lifetime, dbPath: File) : ContentDb {
 
   override fun execute(query: String, vararg args: Any) {
     throw UnsupportedOperationException()
+  }
+
+  private fun findDb(): File {
+    val locations = listOf(File("data\\test.db"), File("..\\data\\test.db"))
+    val selectedLocation = locations.firstOrNull { it.exists() }
+    if (selectedLocation != null) return selectedLocation
+
+    throw Exception("Database not found. Tried locations: " + locations.joinToString(", ") { it.absolutePath })
   }
 
 }

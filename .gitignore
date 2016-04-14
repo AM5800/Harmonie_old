@@ -42,3 +42,5 @@ proguard/
 #other
 *.db
 *db-journal
+
+!data/test.db
