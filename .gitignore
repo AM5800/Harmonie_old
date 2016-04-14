@@ -1,4 +1,7 @@
 data/*
+!data/morphy.csv
+!data/corpuses/test.cdef
+!data/corpuses/Test/harmonie.xml
 
 
 #apks
