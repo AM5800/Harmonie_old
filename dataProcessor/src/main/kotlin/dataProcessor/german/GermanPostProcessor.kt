@@ -2,9 +2,9 @@ package dataProcessor.german
 
 import am5800.common.Language
 import dataProcessor.ParseWordOccurrence
-import dataProcessor.SentencePostProcessor
+import dataProcessor.PostProcessorBase
 
-class GermanPostProcessor(private val lemmatizer: GermanLemmatizer) : SentencePostProcessor {
+class GermanPostProcessor(private val lemmatizer: GermanLemmatizer) : PostProcessorBase() {
   override val language: Language = Language.German
 
   override fun processInPlace(occurrences: MutableList<ParseWordOccurrence>, metadata: Map<String, String>) {
@@ -32,10 +32,6 @@ class GermanPostProcessor(private val lemmatizer: GermanLemmatizer) : SentencePo
     return !value.toBoolean()
   }
 
-  private fun isLemmatized(metadata: Map<String, String>): Boolean {
-    val value = metadata["lemmatized"] ?: return false
-    return value.toBoolean()
-  }
 
   private fun processSequence(linearSequence: List<ParseWordOccurrence>) {
     if (linearSequence.size < 2) return
@@ -56,15 +52,5 @@ class GermanPostProcessor(private val lemmatizer: GermanLemmatizer) : SentencePo
     return isPunctuation(occurrence.lemma)
   }
 
-  private fun shouldDelete(occurrence: ParseWordOccurrence): Boolean {
-    if (occurrence.lemma.any { c -> c.isDigit() }) return true
-    if (isPunctuation(occurrence.lemma)) return true
 
-    return false
-  }
-
-  private fun isPunctuation(s: String): Boolean {
-    val chars = "[,.'\"'`!?<>{}():]-".toCharArray().toSet()
-    return s.any() && s.all { c -> chars.contains(c) }
-  }
 }

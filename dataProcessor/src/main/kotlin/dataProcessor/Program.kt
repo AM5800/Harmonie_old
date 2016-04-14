@@ -7,6 +7,7 @@ import am5800.common.WordOccurrence
 import corpus.CorpusRepository
 import corpus.parsing.CorpusParsersSet
 import corpus.parsing.NegraParser
+import dataProcessor.english.EnglishPostProcessor
 import dataProcessor.german.GermanPostProcessor
 import dataProcessor.german.MorphyCsvParser
 import dataProcessor.german.normalizeGermanWord
@@ -51,7 +52,7 @@ fun processFillTheGap(data: Data): Data {
 fun prepareData(repository: CorpusRepository): Data {
   val infos = repository.getCorpuses().filter { it.formatId.equals("harmonie", true) }
 
-  val postProcessors = listOf(GermanPostProcessor(MorphyCsvParser(File("data/morphy.csv"))))
+  val postProcessors = listOf(GermanPostProcessor(MorphyCsvParser(File("data/morphy.csv"))), EnglishPostProcessor())
   val parser = HarmonieParallelSentencesParser(postProcessors)
 
   val initial: Data? = null
