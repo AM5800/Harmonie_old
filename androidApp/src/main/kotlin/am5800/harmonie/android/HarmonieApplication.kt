@@ -45,7 +45,7 @@ class HarmonieApplication : Application() {
 
       val sentenceProvider = SqlSentenceProvider(contentDb)
       val wordSelector = SqlWordSelector(wordsRepetitionService, keyValueDb, contentDb, lt, debugOptions)
-      val sentenceSelector = SqlSentenceSelector(wordsRepetitionService, loggerProvider, contentDb, debugOptions, wordSelector)
+      val sentenceSelector = SqlSentenceSelector(wordsRepetitionService, loggerProvider, contentDb, debugOptions, wordSelector, sentenceProvider)
 
       val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceProvider, wordsRepetitionService, sentenceSelector)
       val seinFlowManager = FillTheGapFlowItemManagerImpl(contentDb, lt, debugOptions)

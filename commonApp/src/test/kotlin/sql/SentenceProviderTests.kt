@@ -4,6 +4,7 @@ import am5800.common.Language
 import am5800.harmonie.app.model.services.impl.SqlSentence
 import org.junit.Assert
 import org.junit.Test
+import java.util.regex.Pattern
 
 
 class SentenceProviderTests : DbTestBase() {
@@ -39,5 +40,24 @@ class SentenceProviderTests : DbTestBase() {
     val occurrences = sentenceProvider.getOccurrences(sentence)
     val foxOccurrence = occurrences.single { it.word.lemma == "fox" }
     Assert.assertEquals(Language.English, foxOccurrence.word.language)
+  }
+
+  @Test
+  fun getRandomSentenceWithNonExistentDirection() {
+    val selectorResult = sentenceProvider.getRandomSentencePair(Language.Russian, Language.Japanese)
+    Assert.assertNull(selectorResult)
+  }
+
+  @Test
+  fun getRandomSentence() {
+    val learnLanguage = Language.English
+    val knownLanguage = Language.Russian
+    val selectorResult = sentenceProvider.getRandomSentencePair(learnLanguage, knownLanguage)
+    Assert.assertNotNull(selectorResult)
+    selectorResult!!
+    Assert.assertEquals(learnLanguage, selectorResult.learnLanguageSentence.language)
+    Assert.assertEquals(knownLanguage, selectorResult.knownLanguageSentence.language)
+    // Test that sentence contains only english chars
+    Assert.assertTrue(Pattern.matches("[a-zA-Z .]*", selectorResult.learnLanguageSentence.text))
   }
 }

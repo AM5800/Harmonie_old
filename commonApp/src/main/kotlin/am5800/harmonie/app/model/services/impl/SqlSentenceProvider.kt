@@ -40,4 +40,24 @@ class SqlSentenceProvider(private val contentDb: ContentDb) : SentenceProvider {
 
     return result.map { SqlWord(it.first, sentence.language, it.second) }
   }
+
+  override fun getRandomSentencePair(learnLanguage: Language, knownLanguage: Language): SentencePair? {
+    val learnLang = learnLanguage.code
+    val knownLang = knownLanguage.code
+    val query = """
+        SELECT s1.id, s1.text, s2.id, s2.text
+          FROM sentenceMapping
+          INNER JOIN sentences AS s1
+            ON s1.id = sentenceMapping.key
+          INNER JOIN sentences AS s2
+            ON s2.id = sentenceMapping.value
+          WHERE s1.language='$learnLang' AND s2.language='$knownLang'
+          ORDER BY RANDOM()
+          LIMIT 1
+    """
+
+    return contentDb.query4<Long, String, Long, String>(query)
+        .map { SentencePair(SqlSentence(it.value3, knownLanguage, it.value4), SqlSentence(it.value1, learnLanguage, it.value2)) }
+        .singleOrNull()
+  }
 }
