@@ -25,7 +25,7 @@ class SqlSentenceSelector(private val repetitionService: WordsRepetitionService,
 
     if (!scheduled.isEmpty()) return findBestSentence(languageFrom, languageTo, scheduled)
 
-    val nextWord = wordSelector.findBestWord(languageFrom) as? SqlWord
+    val nextWord = wordSelector.findNextWord(languageFrom) as? SqlWord
     logger.info("Next by frequency word is: ${nextWord?.lemma}")
 
     if (nextWord == null) return getRandomSentence(languageFrom, languageTo)

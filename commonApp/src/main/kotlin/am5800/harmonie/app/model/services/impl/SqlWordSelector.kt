@@ -34,7 +34,7 @@ class SqlWordSelector(private val wordsRepetitionService: WordsRepetitionService
     }
   }
 
-  override fun findBestWord(language: Language): Word? {
+  override fun findNextWord(language: Language): Word? {
     val orderedWords = getOrderedWords(language)
 
     val settingsKey = getKey(language)

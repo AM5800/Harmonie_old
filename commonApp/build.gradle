@@ -16,6 +16,7 @@ apply plugin: "java"
 
 dependencies {
   testCompile "junit:junit:4.12"
+  testCompile "org.xerial:sqlite-jdbc:3.8.11.2"
   compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
   compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
   compile group: 'com.google.guava', name: 'guava', version: '12.0'

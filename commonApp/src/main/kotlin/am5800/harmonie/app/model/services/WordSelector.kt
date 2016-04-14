@@ -4,5 +4,5 @@ import am5800.common.Language
 import am5800.common.Word
 
 interface WordSelector {
-  fun findBestWord(language: Language): Word?
+  fun findNextWord(language: Language): Word?
 }
