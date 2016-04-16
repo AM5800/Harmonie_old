@@ -22,10 +22,6 @@ class FillTheGapViewModel(
     reportingService: ErrorReportingService,
     localizationService: LocalizationService) : ViewModelBase(lifetime) {
 
-  private enum class State {
-    ShowQuestion, ShowAnswer
-  }
-
   val reportCommands = IssueReportingMenuHelper.createMenuItems(reportingService, localizationService, lifetime, { describeState() })
 
   private fun describeState(): String {
@@ -36,30 +32,14 @@ class FillTheGapViewModel(
   val translation = Property(lifetime, "")
   val variants = Property<List<VariantButtonViewModel>>(lifetime, emptyList())
   val variantsVisible = Property(lifetime, true)
-  val continueVisible = Property(lifetime, false)
-
-  private val state = Property(lifetime, State.ShowQuestion)
 
   init {
-    state.onChangeNotNull(lifetime, {
-      if (it == State.ShowQuestion) {
-        variantsVisible.value = true
-        continueVisible.value = false
-      } else {
-        variantsVisible.value = false
-        continueVisible.value = true
-      }
-    })
-
-
     for (manager in managers) {
       manager.question.forEachValue(lifetime, { question, lt ->
         question!!
-        state.value = State.ShowQuestion
         sentence.value = prepareQuestion(question)
         translation.value = question.translation.text
         buildVariants(question, lt)
-        state.onValue(lt, State.ShowAnswer, { sentence.value = question.sentence.text })
 
         activationRequested.fire(Unit)
       })
@@ -77,7 +57,7 @@ class FillTheGapViewModel(
 
     val correct = VariantButtonViewModel(question.correctAnswer, true, lifetime)
     correct.signal.subscribe(lifetime, {
-      state.value = State.ShowAnswer
+      flowManager.next()
     })
 
     variants.value = wrongs.plus(correct).shuffle(null)
@@ -88,9 +68,5 @@ class FillTheGapViewModel(
     val firstPart = text.substring(0, question.occurrenceStart)
     val secondPart = text.substring(question.occurrenceEnd)
     return firstPart + " <?> " + secondPart
-  }
-
-  fun next() {
-    flowManager.next()
   }
 }

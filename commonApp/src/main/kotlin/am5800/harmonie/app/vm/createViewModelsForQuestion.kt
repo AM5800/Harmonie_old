@@ -21,7 +21,7 @@ fun createViewModelsForQuestion(data: ParallelSentenceQuestion, lifetime: Lifeti
     val text = sentence.substring(range.start, range.end)
 
     val needSpaceBefore = if (range.start == 0) false else sentence[range.start - 1] == ' '
-    result.add(ToggleableWordViewModel(word, text, properties[word]!!, needSpaceBefore, data.highlightedWords.contains(word)))
+    result.add(ToggleableWordViewModel(word, text, properties[word]!!, needSpaceBefore))
 
     index = range.end
   }

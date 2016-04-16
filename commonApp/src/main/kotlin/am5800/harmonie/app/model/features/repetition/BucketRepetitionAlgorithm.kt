@@ -18,7 +18,7 @@ class BucketRepetitionAlgorithm() : RepetitionAlgorithm {
     if (attempts.isEmpty()) throw Exception("No attempts")
 
     val sortedAttempts = attempts.sortedBy { it.dateTime }
-    var newBucket = compute(sortedAttempts)
+    val newBucket = compute(sortedAttempts)
     return newBucket.second
   }
 

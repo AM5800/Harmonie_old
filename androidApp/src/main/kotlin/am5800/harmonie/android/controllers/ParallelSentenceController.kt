@@ -11,8 +11,6 @@ import am5800.harmonie.app.vm.ToggleableWordViewModel
 import am5800.harmonie.app.vm.WordViewModel
 import android.app.Activity
 import android.graphics.Color
-import android.support.v7.app.AlertDialog
-import android.text.Html
 import android.util.TypedValue
 import android.widget.Button
 import android.widget.TextView
@@ -60,10 +58,6 @@ class ParallelSentenceController(lifetime: Lifetime,
 
     if (childVm is ToggleableWordViewModel) {
       wordView.setOnClickListener({ childVm.toggle() })
-      if (childVm.highlight) {
-        val text = childVm.text
-        wordView.text = Html.fromHtml("<u>$text</u>")
-      }
 
       childVm.state.onChange(bindingLifetime, {
         if (it.newValue == LearnScore.Good) wordView.setTextColor(Color.BLACK)

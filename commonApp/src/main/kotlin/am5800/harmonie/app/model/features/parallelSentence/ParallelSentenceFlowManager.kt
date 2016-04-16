@@ -9,17 +9,16 @@ import am5800.harmonie.app.model.features.flow.FlowItemCategory
 import am5800.harmonie.app.model.features.flow.FlowItemProvider
 import am5800.harmonie.app.model.features.repetition.LearnScore
 import am5800.harmonie.app.model.features.repetition.WordsRepetitionService
+import am5800.harmonie.app.model.services.SentencePair
 import am5800.harmonie.app.model.services.SentenceProvider
 import am5800.harmonie.app.model.services.SentenceSelector
-import am5800.harmonie.app.model.services.SentenceSelectorResult
 import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.Multimap
 
 
 class ParallelSentenceQuestion(val question: Sentence,
                                val answer: Sentence,
-                               val occurrences: Multimap<Word, TextRange>,
-                               val highlightedWords: Set<Word>)
+                               val occurrences: Multimap<Word, TextRange>)
 
 class ParallelSentenceFlowManager(lifetime: Lifetime,
                                   private val sentenceProvider: SentenceProvider,
@@ -44,14 +43,14 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
     return true
   }
 
-  private fun prepareQuestion(findResult: SentenceSelectorResult): ParallelSentenceQuestion {
+  private fun prepareQuestion(findResult: SentencePair): ParallelSentenceQuestion {
     val occurrences = LinkedHashMultimap.create<Word, TextRange>()
-    for (occurrence in sentenceProvider.getOccurrences(findResult.question)) {
+    for (occurrence in sentenceProvider.getOccurrences(findResult.learnLanguageSentence)) {
       val range = TextRange(occurrence.startIndex, occurrence.endIndex)
       occurrences.put(occurrence.word, range)
     }
 
-    return ParallelSentenceQuestion(findResult.question, findResult.answer, occurrences, findResult.highlightedWords)
+    return ParallelSentenceQuestion(findResult.learnLanguageSentence, findResult.knownLanguageSentence, occurrences)
   }
 
   fun submitScore(scores: Map<Word, LearnScore>) {

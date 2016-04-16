@@ -47,10 +47,6 @@ class FillTheGapController(private val viewModel: FillTheGapViewModel,
 
     sentence.bindText(bindingLifetime, view, viewModel.sentence)
     translation.bindText(bindingLifetime, view, viewModel.translation)
-
-    val continueBtn = view.getChild<Button>(R.id.continueBtn)
-    continueBtn.bindVisibility(bindingLifetime, view, viewModel.continueVisible, Visibility.Collapsed)
-    continueBtn.bindOnClick(bindingLifetime, { viewModel.next() })
   }
 
   init {

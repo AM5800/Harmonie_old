@@ -15,8 +15,7 @@ open class WordViewModel(val text: String, val needSpaceBefore: Boolean)
 
 class ToggleableWordViewModel(val word: Word, text: String,
                               val state: Property<LearnScore>,
-                              needSpaceBefore: Boolean,
-                              val highlight: Boolean) : WordViewModel(text, needSpaceBefore) {
+                              needSpaceBefore: Boolean) : WordViewModel(text, needSpaceBefore) {
   fun toggle() {
     if (state.value == LearnScore.Good) state.value = LearnScore.Bad
     else state.value = LearnScore.Good
