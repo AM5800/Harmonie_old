@@ -56,7 +56,6 @@ class SelectLanguageViewModel(private val lifetime: Lifetime,
 
   private fun update() {
     val knownChecked = knownLanguages.filter { it.checked.value == true }
-    val learnChecked = learnLanguages.filter { it.checked.value == true }
 
     if (knownChecked.isEmpty()) {
       learnGroupVisible.value = false
@@ -66,8 +65,10 @@ class SelectLanguageViewModel(private val lifetime: Lifetime,
 
     updateLearnLanguages(knownChecked)
 
+    val learnCheckedAndVisible = learnLanguages.filter { it.checked.value == true && it.visible.value == true }
+
     learnGroupVisible.value = true
-    if (learnChecked.isEmpty()) {
+    if (learnCheckedAndVisible.isEmpty()) {
       continueBtnVisible.value = false
       return
     }
