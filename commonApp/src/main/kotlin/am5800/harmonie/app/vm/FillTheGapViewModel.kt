@@ -32,6 +32,7 @@ class FillTheGapViewModel(
   val translation = Property(lifetime, "")
   val variants = Property<List<VariantButtonViewModel>>(lifetime, emptyList())
   val variantsVisible = Property(lifetime, true)
+  private var wrongAttempts = 0
 
   init {
     for (manager in managers) {
@@ -51,13 +52,14 @@ class FillTheGapViewModel(
       val vm = VariantButtonViewModel(it, true, lifetime)
       vm.signal.subscribe(lifetime, {
         vm.enabled.value = false
+        ++wrongAttempts
       })
       vm
     }
 
     val correct = VariantButtonViewModel(question.correctAnswer, true, lifetime)
     correct.signal.subscribe(lifetime, {
-      flowManager.next()
+      flowManager.next(1, wrongAttempts)
     })
 
     variants.value = wrongs.plus(correct).shuffle(null)
@@ -67,6 +69,7 @@ class FillTheGapViewModel(
     val text = question.sentence.text
     val firstPart = text.substring(0, question.occurrenceStart)
     val secondPart = text.substring(question.occurrenceEnd)
+    wrongAttempts = 0
     return firstPart + " <?> " + secondPart
   }
 }

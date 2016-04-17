@@ -70,3 +70,9 @@ fun <TSrc : Any, TDst : Any> Property<TSrc>.convert(srcDst: (TSrc?) -> TDst?, ds
   result.onChange(this.lifetime, { value = dstSrc(it.newValue) })
   return result
 }
+
+fun <TIn : Any, TOut : Any> Property<TIn>.onChangeNotNull(lifetime: Lifetime, property: Property<TOut>, converter: (TIn) -> TOut) {
+  this.onChangeNotNull(lifetime, {
+    property.value = converter(it)
+  })
+}

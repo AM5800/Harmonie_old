@@ -15,6 +15,10 @@ import android.widget.TextView
 class SelectLanguageController(private val vm: SelectLanguageViewModel,
                                private val lifetime: Lifetime,
                                private val controllerStack: ControllerStack) : FragmentController {
+  override fun tryClose(): Boolean {
+    return vm.canCloseNow()
+  }
+
   override val menuItems = null
 
   override fun bind(view: BindableView, bindingLifetime: Lifetime) {
@@ -50,7 +54,7 @@ class SelectLanguageController(private val vm: SelectLanguageViewModel,
 
   init {
     vm.activationRequested.subscribe(lifetime, {
-      controllerStack.push(this, this.javaClass.name, { vm.canCloseNow() })
+      controllerStack.push(this, this.javaClass.name)
     })
 
     vm.closeRequested.subscribe(lifetime, {

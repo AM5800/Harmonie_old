@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentManager
 import java.util.*
 
 class ControllerStack() {
-  private class StackItem(val key: String?, val controller: FragmentController, val canClose: () -> Boolean)
+  private class StackItem(val key: String?, val controller: FragmentController)
 
   private val controllerStack = LinkedList<StackItem>()
 
@@ -21,7 +21,7 @@ class ControllerStack() {
   }
 
   fun push(controller: FragmentController, key: String?) {
-    push(StackItem(key, controller, { true }))
+    push(StackItem(key, controller))
   }
 
   private fun push(item: StackItem) {
@@ -33,10 +33,6 @@ class ControllerStack() {
     ft.commit()
   }
 
-  fun push(controller: FragmentController, key: String?, canClose: () -> Boolean) {
-    push(StackItem(key, controller, canClose))
-  }
-
   fun initialize(fm: FragmentManager) {
     fragmentManager = fm
   }
@@ -44,7 +40,7 @@ class ControllerStack() {
   fun back(): Boolean {
     if (controllerStack.size <= 1) return false
     val last = controllerStack.last()
-    val canClose = last.canClose()
+    val canClose = last.controller.tryClose()
     if (!canClose) return true
 
     controllerStack.removeLast()

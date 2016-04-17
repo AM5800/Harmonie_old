@@ -5,7 +5,6 @@ import am5800.harmonie.app.model.features.feedback.FeedbackService
 import am5800.harmonie.app.model.features.flow.FlowItemDistributionService
 import am5800.harmonie.app.model.features.flow.FlowManager
 import am5800.harmonie.app.model.features.localization.LocalizationService
-import org.joda.time.Minutes
 
 class StartScreenViewModel(private val flowManager: FlowManager,
                            lifetime: Lifetime,
@@ -13,8 +12,6 @@ class StartScreenViewModel(private val flowManager: FlowManager,
                            private val distributionService: FlowItemDistributionService,
                            private val selectLanguageViewModel: SelectLanguageViewModel,
                            private val feedbackService: FeedbackService) : ViewModelBase(lifetime) {
-  private val defaultDuration = Minutes.minutes(10).toStandardDuration()
-
   val learnAllText = localizationService.createProperty(lifetime, { it.learnAll })
   val chooseLanguagesText = localizationService.createProperty(lifetime, { it.chooseLanguages })
   val sendFeedbackText = localizationService.createProperty(lifetime, { it.sendStatistics })
@@ -24,7 +21,7 @@ class StartScreenViewModel(private val flowManager: FlowManager,
   }
 
   fun learnAll() {
-    flowManager.start(distributionService.getDistribution(), defaultDuration)
+    flowManager.start(distributionService.getDistribution())
   }
 
   fun sendFeedback() {

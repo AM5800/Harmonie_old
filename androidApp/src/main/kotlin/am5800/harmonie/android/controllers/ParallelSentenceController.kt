@@ -10,6 +10,7 @@ import am5800.harmonie.app.vm.ParallelSentenceViewModel
 import am5800.harmonie.app.vm.ToggleableWordViewModel
 import am5800.harmonie.app.vm.WordViewModel
 import android.app.Activity
+import android.app.AlertDialog
 import android.graphics.Color
 import android.util.TypedValue
 import android.widget.Button

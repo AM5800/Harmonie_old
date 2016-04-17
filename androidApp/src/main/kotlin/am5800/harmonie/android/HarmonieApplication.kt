@@ -52,7 +52,7 @@ class HarmonieApplication : Application() {
       val flowItemProviders = listOf(parallelSentenceFlowManager, seinFlowManager)
       val languageService = PreferredLanguagesServiceImpl(keyValueDb, lt, flowItemProviders, debugOptions)
 
-      val flowManager = FlowManager(lt, loggerProvider, flowItemProviders, debugOptions)
+      val flowManager = FlowManager(lt, flowItemProviders, debugOptions)
       val distributionService = FlowItemDistributionService(flowItemProviders, languageService)
 
       val localizationService = AndroidLocalizationService.create(resources, keyValueDb, lt)
@@ -63,7 +63,7 @@ class HarmonieApplication : Application() {
       val welcomeScreenViewModel = SelectLanguageViewModel(lt, localizationService, languageService)
       val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService, keyValueDb, reportingService)
       val startScreenViewModel = StartScreenViewModel(flowManager, lt, localizationService, distributionService, welcomeScreenViewModel, feedbackService)
-      val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt, localizationService)
+      val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt)
       val fillTheGapViewModel = FillTheGapViewModel(lt, listOf(seinFlowManager), flowManager, reportingService, localizationService)
 
       // View components

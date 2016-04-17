@@ -21,5 +21,7 @@ interface ControllerWithMenu : BindableController {
 }
 
 interface FragmentController : ControllerWithMenu {
-
+  fun tryClose(): Boolean {
+    return true
+  }
 }

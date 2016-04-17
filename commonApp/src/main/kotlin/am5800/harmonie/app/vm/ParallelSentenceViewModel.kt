@@ -57,7 +57,7 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
         scores.put(vm.word, vm.state.value!!)
       }
       parallelSentenceFlowManager.submitScore(scores)
-      flowManager.next()
+      flowManager.next(scores.count { it.value == LearnScore.Good }, scores.count { it.value == LearnScore.Bad })
     }
   }
 

@@ -17,6 +17,11 @@ import android.widget.TextView
 class DefaultFlowControllerOwner(private val stack: ControllerStack,
                                  lifetime: Lifetime,
                                  private val vm: DefaultFlowControllerOwnerViewModel) : FlowController, FragmentController {
+  override fun tryClose(): Boolean {
+    vm.stop()
+    return true
+  }
+
   override val menuItems = Property(lifetime, emptyList<MenuItem>())
   private val content = Property<ControllerWithMenu>(lifetime, null)
   override val id: Int = R.layout.flow_fragment
@@ -32,7 +37,7 @@ class DefaultFlowControllerOwner(private val stack: ControllerStack,
     val statusMessage = view.getChild<TextView>(R.id.statusTextView)
 
     statusGroup.bindVisibility(bindingLifetime, view, vm.statusVisibility, Visibility.Collapsed)
-    statusMessage.bindText(bindingLifetime, view, vm.timeLeft)
+    statusMessage.bindText(bindingLifetime, view, vm.timeString)
 
     val placeholder = view.getChild<LinearLayout>(R.id.placeholder)
     content.onChangeNotNull(bindingLifetime, {
