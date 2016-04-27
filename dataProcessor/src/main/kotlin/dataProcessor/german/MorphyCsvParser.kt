@@ -10,7 +10,7 @@ fun normalizeGermanWord(word: String): String {
 
 class MorphyCsvParser(path: File) : GermanLemmatizer {
   override fun looksLikeSeparablePrefix(word: String): Boolean {
-    val knownPrefixes = setOf("zu", "an")
+    val knownPrefixes = setOf("zu", "an", "ein", "aus", "auf")
     return knownPrefixes.contains(normalize(word))
   }
 

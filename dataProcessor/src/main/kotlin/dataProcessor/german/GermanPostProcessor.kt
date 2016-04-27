@@ -21,8 +21,8 @@ class GermanPostProcessor(private val lemmatizer: GermanLemmatizer) : PostProces
 
       if (occurrences.isEmpty()) return
       if (needToProcessPrefixes(metadata) && (endsSequence(occurrence) || occurrence == occurrences.last())) {
-        processSequence(linearSequence)
-        linearSequence.clear()
+        if (processSequence(linearSequence))
+          linearSequence.clear()
       }
     }
   }
@@ -33,8 +33,8 @@ class GermanPostProcessor(private val lemmatizer: GermanLemmatizer) : PostProces
   }
 
 
-  private fun processSequence(linearSequence: List<ParseWordOccurrence>) {
-    if (linearSequence.size < 2) return
+  private fun processSequence(linearSequence: List<ParseWordOccurrence>): Boolean {
+    if (linearSequence.size < 2) return false
 
     val possiblePrefix = linearSequence.last()
     if (lemmatizer.looksLikeSeparablePrefix(possiblePrefix.lemma)) {
@@ -43,14 +43,14 @@ class GermanPostProcessor(private val lemmatizer: GermanLemmatizer) : PostProces
 
         possiblePrefix.lemma = verb
         occurrence.lemma = verb
-        return
+        return true
       }
     }
+
+    return false
   }
 
   private fun endsSequence(occurrence: ParseWordOccurrence): Boolean {
     return isPunctuation(occurrence.lemma)
   }
-
-
 }
