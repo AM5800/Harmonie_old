@@ -4,7 +4,7 @@ import am5800.common.LanguageParser
 import am5800.common.Sentence
 import am5800.common.Word
 import am5800.common.WordOccurrence
-import corpus.CorpusInfo
+import dataProcessor.corpus.CorpusInfo
 import org.xml.sax.Attributes
 import org.xml.sax.helpers.DefaultHandler
 import java.io.File

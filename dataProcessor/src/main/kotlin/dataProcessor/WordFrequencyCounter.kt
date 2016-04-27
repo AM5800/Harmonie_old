@@ -3,9 +3,9 @@ package dataProcessor
 import am5800.common.Language
 import am5800.common.LanguageParser
 import am5800.common.Word
-import corpus.CorpusInfo
-import corpus.parsing.CorpusParserHandler
-import corpus.parsing.ParsePartOfSpeech
+import dataProcessor.corpus.CorpusInfo
+import dataProcessor.corpus.parsing.CorpusParserHandler
+import dataProcessor.corpus.parsing.ParsePartOfSpeech
 
 class WordFrequencyCounter(private val postProcessors: List<SentencePostProcessor>, data: Data) : CorpusParserHandler() {
   private val occurrences = mutableListOf<ParseWordOccurrence>()

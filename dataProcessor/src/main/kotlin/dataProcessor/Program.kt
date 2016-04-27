@@ -4,10 +4,10 @@ import am5800.common.Language
 import am5800.common.Sentence
 import am5800.common.Word
 import am5800.common.WordOccurrence
-import corpus.CorpusInfo
-import corpus.CorpusRepository
-import corpus.parsing.CorpusParsersSet
-import corpus.parsing.NegraParser
+import dataProcessor.corpus.CorpusInfo
+import dataProcessor.corpus.CorpusRepository
+import dataProcessor.corpus.parsing.CorpusParsersSet
+import dataProcessor.corpus.parsing.NegraParser
 import dataProcessor.english.EnglishPostProcessor
 import dataProcessor.german.GermanPostProcessor
 import dataProcessor.german.MorphyCsvParser
@@ -74,8 +74,11 @@ fun computeFrequencies(data: Data, repository: CorpusRepository, postProcessors:
   parsers.registerParser(NegraParser())
 
   val handler = WordFrequencyCounter(postProcessors, data)
+  val disambCounter = LemmaDisambiguationCounter()
   // TODO fix hardcode
-  parsers.parse(repository.getCorpuses().filter { it.formatId.equals("NEGRA4", true) }, handler)
+  parsers.parse(repository.getCorpuses().filter { it.formatId.equals("NEGRA4", true) }, handler, disambCounter)
+
+  disambCounter.print()
 
   return Data(data.sentenceTranslations, data.wordOccurrences, data.difficulties, handler.wordCounts, emptyList())
 }
@@ -137,10 +140,10 @@ fun filterByDifficulty(data: Data, language: Language): Map<Sentence, Int> {
       .mapValues { it.value.fold(1.0, { i, d -> i * d }) }
       .toList()
       .sortedByDescending { it.second }
-      .take(10000)
+      .take(15000)
 
   val actualCount = sentencesWithDifficulties.size
-  val requiredBuckets = 100
+  val requiredBuckets = 10
   val bucketSize = if (actualCount < requiredBuckets) requiredBuckets else actualCount / requiredBuckets
 
   return sentencesWithDifficulties.mapIndexed { i, pair -> Pair(pair.first, i / bucketSize) }
