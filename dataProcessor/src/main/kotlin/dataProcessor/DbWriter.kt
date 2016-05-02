@@ -74,9 +74,8 @@ class DbWriter {
     for (occurrencePair in wordsOccurrences.distinct().groupBy { it.word }) {
       val word = occurrencePair.key
       val lang = word.language.code
-
+      val count = wordCounts[word] ?: continue
       val wordId = wordsTable.insert(lang, word.lemma)
-      val count = wordCounts[word]!!
 
       countsTable.insert(wordId, count)
 
