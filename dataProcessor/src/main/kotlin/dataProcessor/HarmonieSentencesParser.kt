@@ -9,12 +9,8 @@ import org.xml.sax.helpers.DefaultHandler
 import java.io.File
 import javax.xml.parsers.SAXParserFactory
 
-class HarmonieParallelSentencesParser() {
-  private class HarmonieParserHandler() : DefaultHandler() {
-    fun getData(): Data {
-      return Data(sentences, translations, occurrences.toList(), emptyMap(), emptyList(), occurrencePos)
-    }
-
+class HarmonieSentencesParser() {
+  private class HarmonieParserHandler() : DefaultHandler(), ParseResult {
     override fun endElement(uri: String?, localName: String?, qName: String?) {
       if (qName == "ss") {
         if (sentencesInGroup.size > 1) {
@@ -22,20 +18,33 @@ class HarmonieParallelSentencesParser() {
             for (s2 in sentencesInGroup) {
               if (s1 === s2) continue
 
-              translations.put(s1, s2)
-              translations.put(s2, s1)
+              _translations.put(s1, s2)
+              _translations.put(s2, s1)
             }
           }
         }
+        _sentences.addAll(sentencesInGroup)
         sentencesInGroup.clear()
       }
     }
 
     private val sentencesInGroup = mutableListOf<Sentence>()
-    private val occurrencePos = mutableMapOf<WordOccurrence, PartOfSpeech>()
-    private val occurrences = mutableSetOf<WordOccurrence>()
-    private val translations = mutableMapOf<Sentence, Sentence>()
-    private val sentences = mutableListOf<Sentence>()
+    private val _occurrencePos = mutableMapOf<WordOccurrence, PartOfSpeech>()
+    override val occurrencePos: Map<WordOccurrence, PartOfSpeech>
+      get() = _occurrencePos
+
+    private val _occurrences = mutableSetOf<WordOccurrence>()
+    override val occurrences: Set<WordOccurrence>
+      get() = _occurrences
+
+    private val _translations = mutableMapOf<Sentence, Sentence>()
+    override val translations: Map<Sentence, Sentence>
+      get() = _translations
+
+    private val _sentences = mutableListOf<Sentence>()
+
+    override val sentences: List<Sentence>
+      get() = _sentences
 
     override fun startElement(uri: String?, localName: String?, qName: String?, attributes: Attributes) {
       if (qName == "s") {
@@ -53,9 +62,9 @@ class HarmonieParallelSentencesParser() {
         val sentence = sentencesInGroup.last()
         val word = Word(sentence.language, lemma)
         val occurrence = WordOccurrence(word, sentence, start, end)
-        if (pos != PartOfSpeech.Other) occurrencePos.put(occurrence, pos)
+        if (pos != PartOfSpeech.Other) _occurrencePos.put(occurrence, pos)
 
-        occurrences.add(occurrence)
+        _occurrences.add(occurrence)
       }
     }
 
@@ -68,11 +77,11 @@ class HarmonieParallelSentencesParser() {
     }
   }
 
-  fun parse(path: File): Data {
+  fun parse(path: File): ParseResult {
     val factory = SAXParserFactory.newInstance()
     val parser = factory.newSAXParser()
     val handler = HarmonieParserHandler()
     parser.parse(path, handler)
-    return handler.getData()
+    return handler
   }
 }
