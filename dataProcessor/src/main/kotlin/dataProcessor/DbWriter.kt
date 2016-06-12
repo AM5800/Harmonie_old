@@ -14,9 +14,8 @@ class DbWriter {
     val database = SqlJetDb.open(path, true)
     database.runTransaction({ db ->
       createDbSchema(db)
-      val sentenceMapping = writeSentences(data.sentenceTranslations, db)
+      val sentenceMapping = writeSentences(data.sentences, data.sentenceTranslations, db)
       val occurrenceMapping = writeWords(data.wordOccurrences, sentenceMapping, data.realWorldWordsCount, db)
-      writeDifficulties(data.difficulties, sentenceMapping, db)
       writeLanguageSupport(data.sentenceTranslations, data.wordOccurrences, db)
       writeFillTheGaps(data.fillTheGapOccurrences, occurrenceMapping, db)
     }, SqlJetTransactionMode.WRITE)
@@ -55,14 +54,6 @@ class DbWriter {
     }
   }
 
-  private fun writeDifficulties(difficulties: Map<Sentence, Int>, sentenceMapping: Map<Sentence, Long>, db: SqlJetDb) {
-    val difficultiesTable = db.getTable(ContentDbConstants.sentenceDifficulty)
-    for ((sentence, difficulty) in difficulties) {
-      val sentenceId = sentenceMapping[sentence]
-      difficultiesTable.insert(sentenceId, difficulty)
-    }
-  }
-
   private fun writeWords(wordsOccurrences: List<WordOccurrence>,
                          sentenceMapping: Map<Sentence, Long>,
                          wordCounts: Map<Word, Int>, db: SqlJetDb): Map<WordOccurrence, Long> {
@@ -88,10 +79,13 @@ class DbWriter {
     return mapping
   }
 
-  private fun writeSentences(translations: Map<Sentence, Sentence>, db: SqlJetDb): Map<Sentence, Long> {
+  private fun writeSentences(sentences: List<Sentence>, translations: Map<Sentence, Sentence>, db: SqlJetDb): Map<Sentence, Long> {
     val sentenceIdToRealId = mutableMapOf<Sentence, Long>()
-
     val sentencesTable = db.getTable(ContentDbConstants.sentences)
+
+    for (sentence in sentences) {
+      getOrInsert(sentence, sentenceIdToRealId, sentencesTable)
+    }
 
     val sentenceTranslations = db.getTable(ContentDbConstants.sentenceTranslations)
     for (pair in translations) {
@@ -117,7 +111,6 @@ class DbWriter {
     db.createTable("CREATE TABLE ${ContentDbConstants.sentenceTranslations} (key INTEGER PRIMARY KEY, value INTEGER)")
     db.createTable("CREATE TABLE ${ContentDbConstants.words} (id INTEGER PRIMARY KEY, language TEXT, lemma TEXT)")
     db.createTable("CREATE TABLE ${ContentDbConstants.wordOccurrences} (id INTEGER PRIMARY KEY, wordId INTEGER, sentenceId INTEGER, startIndex INTEGER, endIndex INTEGER)")
-    db.createTable("CREATE TABLE ${ContentDbConstants.sentenceDifficulty} (sentenceId INTEGER PRIMARY KEY, difficulty INTEGER)")
     db.createTable("CREATE TABLE ${ContentDbConstants.wordCounts} (wordId INTEGER PRIMARY KEY, count INTEGER)")
     db.createTable("CREATE TABLE ${ContentDbConstants.fillTheGapOccurrences} (form TEXT, topic TEXT, occurrenceId INTEGER)")
     db.createTable("CREATE TABLE ${ContentDbConstants.sentenceLanguages} (knownLanguage TEXT, learnLanguage TEXT, count INTEGER)")

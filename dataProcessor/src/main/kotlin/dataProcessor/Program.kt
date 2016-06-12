@@ -32,7 +32,7 @@ fun setCounts(data: Data, counts: Map<Word, Int>): Data {
     result.put(word, count)
   }
 
-  return Data(data.sentenceTranslations, data.wordOccurrences, data.difficulties, result, data.fillTheGapOccurrences, data.occurrencePos)
+  return Data(data.sentences, data.sentenceTranslations, data.wordOccurrences, result, data.fillTheGapOccurrences, data.occurrencePos)
 }
 
 fun createFillTheGaps(data: Data): Data {
@@ -59,7 +59,7 @@ fun createFillTheGaps(data: Data): Data {
     }
   }
 
-  return Data(data.sentenceTranslations, data.wordOccurrences, data.difficulties, data.realWorldWordsCount, result, data.occurrencePos)
+  return Data(data.sentences, data.sentenceTranslations, data.wordOccurrences, data.realWorldWordsCount, result, data.occurrencePos)
 }
 
 fun loadData(corpuses: Collection<File>): Data {
@@ -76,12 +76,12 @@ fun loadData(corpuses: Collection<File>): Data {
 }
 
 fun mergeData(left: Data, right: Data): Data {
+  val sentences = left.sentences.plus(right.sentences).distinct()
   val occurrences = left.wordOccurrences.plus(right.wordOccurrences).distinct()
   val translations = left.sentenceTranslations.plus(right.sentenceTranslations)
-  val difficulties = left.difficulties.toList().plus(right.difficulties.toList()).toMap()
   val occurrencePos = left.occurrencePos.toList().plus(right.occurrencePos.toList()).toMap()
 
-  return Data(translations, occurrences, difficulties, emptyMap(), emptyList(), occurrencePos)
+  return Data(sentences, translations, occurrences, emptyMap(), emptyList(), occurrencePos)
 }
 
 

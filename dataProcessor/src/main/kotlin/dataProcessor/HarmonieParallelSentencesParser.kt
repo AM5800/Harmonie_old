@@ -12,34 +12,36 @@ import javax.xml.parsers.SAXParserFactory
 class HarmonieParallelSentencesParser() {
   private class HarmonieParserHandler() : DefaultHandler() {
     fun getData(): Data {
-      return Data(translations, occurrences.toList(), difficulties, emptyMap(), emptyList(), occurrencePos)
+      return Data(sentences, translations, occurrences.toList(), emptyMap(), emptyList(), occurrencePos)
     }
 
     override fun endElement(uri: String?, localName: String?, qName: String?) {
-      if (qName == "sp") {
-        assert(sentencesInGroup.size == 2)
-        translations.put(sentencesInGroup[0], sentencesInGroup[1])
-        translations.put(sentencesInGroup[1], sentencesInGroup[0])
+      if (qName == "ss") {
+        if (sentencesInGroup.size > 1) {
+          for (s1 in sentencesInGroup) {
+            for (s2 in sentencesInGroup) {
+              if (s1 === s2) continue
+
+              translations.put(s1, s2)
+              translations.put(s2, s1)
+            }
+          }
+        }
         sentencesInGroup.clear()
       }
     }
 
     private val sentencesInGroup = mutableListOf<Sentence>()
-
-    private val difficulties = mutableMapOf<Sentence, Int>()
     private val occurrencePos = mutableMapOf<WordOccurrence, PartOfSpeech>()
     private val occurrences = mutableSetOf<WordOccurrence>()
     private val translations = mutableMapOf<Sentence, Sentence>()
+    private val sentences = mutableListOf<Sentence>()
 
     override fun startElement(uri: String?, localName: String?, qName: String?, attributes: Attributes) {
       if (qName == "s") {
         val language = LanguageParser.parse(attributes.getValue("language"))
         val text = attributes.getValue("text")
-        val difficulty = Integer.parseInt(attributes.getValue("difficulty") ?: "-1")
-
         val sentence = Sentence(language, text)
-
-        if (difficulty != -1) difficulties.put(sentence, difficulty)
 
         sentencesInGroup.add(sentence)
       } else if (qName == "w") {
@@ -65,7 +67,6 @@ class HarmonieParallelSentencesParser() {
       }
     }
   }
-
 
   fun parse(path: File): Data {
     val factory = SAXParserFactory.newInstance()
