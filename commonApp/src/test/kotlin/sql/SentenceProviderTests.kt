@@ -18,7 +18,7 @@ class SentenceProviderTests : DbTestBase() {
     val languagePairs = sentenceProvider.getAvailableLanguagePairs()
     val pair = languagePairs.single()
     Assert.assertEquals(Language.Russian, pair.entity.knownLanguage)
-    Assert.assertEquals(Language.English, pair.entity.learnLanguage)
+    Assert.assertEquals(Language.German, pair.entity.learnLanguage)
     Assert.assertEquals(2, pair.count)
   }
 
