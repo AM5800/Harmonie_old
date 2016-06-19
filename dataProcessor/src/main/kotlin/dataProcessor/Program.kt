@@ -14,15 +14,15 @@ fun main(args: Array<String>) {
 
   val counts = loadCounts(corpusDir)
 
-  run(corpuses, File("androidApp/src/main/assets/content.db"), counts)
-  run(listOf(File(corpusDir, "test")), File("data/test.db"), counts)
+  run(corpuses, File("androidApp/src/main/assets/content.db"), corpusDir)
+  run(listOf(File(corpusDir, "test")), File("data/test.db"), corpusDir)
 }
 
 fun loadCounts(corpusDir: File): Map<Word, Int> {
   return CountsParser().parse(File(corpusDir, "counts"))
 }
 
-private fun run(corpuses: Collection<File>, outFile: File, counts: Map<Word, Int>) {
+private fun run(corpuses: Collection<File>, outFile: File, corpusDir: File) {
   val parseResult = loadData(corpuses).merge()
   val db = openDb(outFile)
   db.runTransaction({ transaction ->
@@ -34,6 +34,7 @@ private fun run(corpuses: Collection<File>, outFile: File, counts: Map<Word, Int
 
     val fillTheGapsWriter = JetSqlFillTheGapsWriter(db, sentenceWriter)
     createFillTheGaps(parseResult, fillTheGapsWriter)
+    WordsOrderCreator.createWordsOrder(CountsParser().parse(File(corpusDir, "counts")), parseResult.occurrences)
   }, SqlJetTransactionMode.WRITE)
 
 
