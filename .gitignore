@@ -1,8 +1,6 @@
 data/*
-!data/morphy.csv
-!data/corpuses/test.cdef
-!data/corpuses/Test/harmonie.xml
-
+!data/corpus/test
+!data/test.db
 
 #apks
 *.apk
@@ -43,4 +41,4 @@ proguard/
 *.db
 *db-journal
 
-!data/test.db
+

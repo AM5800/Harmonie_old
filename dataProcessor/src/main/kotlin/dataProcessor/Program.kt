@@ -15,7 +15,7 @@ fun main(args: Array<String>) {
 
   val counts = loadCounts(corpusDir)
 
-  //run(corpuses, File("androidApp/src/main/assets/content.db"), counts)
+  run(corpuses, File("androidApp/src/main/assets/content.db"), counts)
   run(listOf(File(corpusDir, "test")), File("data/test.db"), counts)
 }
 
