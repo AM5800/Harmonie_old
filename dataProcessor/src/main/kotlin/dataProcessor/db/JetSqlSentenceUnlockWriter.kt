@@ -22,7 +22,8 @@ class JetSqlSentenceUnlockWriter(private val sentenceWriter: JetSqlSentenceWrite
 
   private fun ensureTable(): ISqlJetTable {
     val name = "sentenceUnlockOrder"
-    db.createTable("CREATE TABLE $name (wordId: INTEGER, sentenceId: INTEGER, order: INTEGER")
+    db.createTable("CREATE TABLE $name (wordId INTEGER, sentenceId INTEGER, wordOrder INTEGER)")
+
     return db.getTable(name)
   }
 }

@@ -15,7 +15,7 @@ fun main(args: Array<String>) {
 
   val counts = loadCounts(corpusDir)
 
-  run(corpuses, File("androidApp/src/main/assets/content.db"), counts)
+  //run(corpuses, File("androidApp/src/main/assets/content.db"), counts)
   run(listOf(File(corpusDir, "test")), File("data/test.db"), counts)
 }
 
@@ -27,15 +27,15 @@ private fun run(corpuses: Collection<File>, outFile: File, counts: Map<Word, Int
   val parseResult = loadData(corpuses).merge()
   val db = openDb(outFile)
   db.runTransaction({ transaction ->
-    val sentenceWriter = JetSqlSentenceWriter(db)
+    val sentenceWriter = JetSqlSentenceWriter(transaction)
 
     sentenceWriter.write(parseResult.sentences)
     sentenceWriter.write(parseResult.occurrences)
     sentenceWriter.write(parseResult.translations)
 
-    val fillTheGapsWriter = JetSqlFillTheGapsWriter(db, sentenceWriter)
+    val fillTheGapsWriter = JetSqlFillTheGapsWriter(transaction, sentenceWriter)
     createFillTheGaps(parseResult, fillTheGapsWriter)
-    writeSentenceUnlocks(counts, db, parseResult, sentenceWriter)
+    writeSentenceUnlocks(counts, transaction, parseResult, sentenceWriter)
 
   }, SqlJetTransactionMode.WRITE)
 
@@ -44,8 +44,7 @@ private fun run(corpuses: Collection<File>, outFile: File, counts: Map<Word, Int
 }
 
 private fun writeSentenceUnlocks(counts: Map<Word, Int>, db: SqlJetDb, parseResult: ParseResult, sentenceWriter: JetSqlSentenceWriter) {
-  val filteredCounts = counts.filter { it.value > 5 }
-  val unlockInfos = SentenceUnlocker.createUnlockOrder(filteredCounts, parseResult.occurrences)
+  val unlockInfos = SentenceUnlocker.createUnlockOrder(counts, parseResult.occurrences)
   val unlockWriter = JetSqlSentenceUnlockWriter(sentenceWriter, db)
   unlockWriter.write(unlockInfos)
 }

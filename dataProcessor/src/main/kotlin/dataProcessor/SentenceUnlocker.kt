@@ -53,17 +53,11 @@ class SentenceUnlocker {
         result.addAll(intersection.filter { it != word }.map { UnlockInfo(it, emptyList()) })
         result.add(UnlockInfo(word, unlockedSentences))
 
-        for (notThisTimeWord in batch.minus(intersection).reversed()) {
-          queue.addFirst(notThisTimeWord)
-        }
-
         for ((sentence, words) in sentences.asMap()) {
           for (w in intersection) sentences.remove(sentence, w)
         }
 
-        println("queue size: ${queue.size}")
-
-        batch.clear()
+        batch.removeAll(intersection)
       }
 
       return result.toList()
