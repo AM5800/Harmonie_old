@@ -13,14 +13,12 @@ fun main(args: Array<String>) {
   val corpuses = corpusDir
       .listFiles { file -> file.extension.equals("xml", true) }.toList()
 
-  val counts = loadCounts(corpusDir)
-
-  run(corpuses, File("androidApp/src/main/assets/content.db"), counts)
-  run(listOf(File(corpusDir, "test")), File("data/test.db"), counts)
+  run(corpuses, File("androidApp/src/main/assets/content.db"), loadCounts(File(corpusDir, "counts")))
+  run(listOf(File(corpusDir, "test")), File("data/test.db"), loadCounts(File(corpusDir, "test_counts")))
 }
 
-fun loadCounts(corpusDir: File): Map<Word, Int> {
-  return CountsParser().parse(File(corpusDir, "counts"))
+fun loadCounts(file: File): Map<Word, Int> {
+  return CountsParser().parse(file)
 }
 
 private fun run(corpuses: Collection<File>, outFile: File, counts: Map<Word, Int>) {

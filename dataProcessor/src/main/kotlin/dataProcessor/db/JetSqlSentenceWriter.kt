@@ -24,7 +24,7 @@ class JetSqlSentenceWriter(private val db: SqlJetDb) : SentenceWriter {
 
     val existingId = wordsMapping[word]
     if (existingId != null) return existingId
-    val wordId = wordsTable.insert(word.language.toString(), word.lemma)
+    val wordId = wordsTable.insert(word.language.code, word.lemma)
     wordsMapping[word] = wordId
     return wordId
   }

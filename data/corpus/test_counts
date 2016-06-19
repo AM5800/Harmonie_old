@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lemmas>
+  <lemma value="fuer" language="de" count="138" />
+  <lemma value="jed" language="de" count="34" />
+  <lemma value="aufgabe" language="de" count="5" />
+  <lemma value="geben" language="de" count="83" />
+  <lemma value="ich" language="de" count="2387" />
+  <lemma value="nur" language="de" count="59" />
+  <lemma value="ein" language="de" count="348" />
+  <lemma value="richtig" language="de" count="10" />
+  <lemma value="loesung" language="de" count="7" />
+</lemmas>
