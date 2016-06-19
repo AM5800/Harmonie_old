@@ -3,11 +3,11 @@ import am5800.common.Sentence
 import am5800.common.Word
 import am5800.common.WordOccurrence
 import dataProcessor.UnlockInfo
-import dataProcessor.WordsOrderCreator
+import dataProcessor.SentenceUnlocker
 import org.junit.Assert
 import org.junit.Test
 
-class WordsOrderCreatorTests {
+class SentenceUnlockerTests {
   private val language = Language.German
   private val counts = mapOf<Word, Int>(
       Pair(Word(language, "100"), 100),
@@ -28,7 +28,7 @@ class WordsOrderCreatorTests {
     val occurrences = mutableListOf<WordOccurrence>()
     occurrences.addAll(createOccurrences("FIRST", "1", "100", "1"))
     occurrences.addAll(createOccurrences("SECOND", "30", "10"))
-    val actual = WordsOrderCreator.createWordsOrder(counts, language, occurrences)
+    val actual = SentenceUnlocker.createUnlockOrder(counts, language, occurrences)
     val expected = listOf(makeUi("30"), makeUi("10", "SECOND"), makeUi("100"), makeUi("1", "FIRST"))
     Assert.assertArrayEquals(expected.toTypedArray(), actual.toTypedArray())
   }
@@ -44,7 +44,7 @@ class WordsOrderCreatorTests {
     occurrences.addAll(createOccurrences("SECOND", "50", "1"))
     occurrences.addAll(createOccurrences("THIRD", "30", "1"))
     occurrences.addAll(createOccurrences("FOURTH", "10", "1"))
-    val actual = WordsOrderCreator.createWordsOrder(counts, language, occurrences)
+    val actual = SentenceUnlocker.createUnlockOrder(counts, language, occurrences)
     val expected = listOf(makeUi("100"), makeUi("50"), makeUi("30"), makeUi("10"), makeUi("1", "FIRST", "SECOND", "THIRD", "FOURTH"))
     Assert.assertArrayEquals(expected.toTypedArray(), actual.toTypedArray())
   }

@@ -11,19 +11,19 @@ import java.util.*
 
 data class UnlockInfo(val word: Word, val sentences: List<Sentence>)
 
-class WordsOrderCreator {
+class SentenceUnlocker {
   companion object {
-    fun createWordsOrder(counts: Map<Word, Int>, occurrences: Collection<WordOccurrence>): Multimap<Language, UnlockInfo> {
+    fun createUnlockOrder(counts: Map<Word, Int>, occurrences: Collection<WordOccurrence>): Multimap<Language, UnlockInfo> {
       val byLanguage = occurrences.groupBy { it.word.language }
       val result = LinkedHashMultimap.create<Language, UnlockInfo>()
       for ((language, languageOccurrences) in byLanguage) {
-        result.putAll(language, createWordsOrder(counts, language, languageOccurrences))
+        result.putAll(language, createUnlockOrder(counts, language, languageOccurrences))
       }
 
       return result
     }
 
-    fun createWordsOrder(counts: Map<Word, Int>, language: Language, occurrences: Collection<WordOccurrence>): List<UnlockInfo> {
+    fun createUnlockOrder(counts: Map<Word, Int>, language: Language, occurrences: Collection<WordOccurrence>): List<UnlockInfo> {
       val thisLangOccurrences = occurrences.filter { it.word.language == language }
       val sentences = LinkedListMultimap.create<Sentence, Word>()
       for (occurrence in thisLangOccurrences) {
@@ -60,6 +60,8 @@ class WordsOrderCreator {
         for ((sentence, words) in sentences.asMap()) {
           for (w in intersection) sentences.remove(sentence, w)
         }
+
+        println("queue size: ${queue.size}")
 
         batch.clear()
       }
