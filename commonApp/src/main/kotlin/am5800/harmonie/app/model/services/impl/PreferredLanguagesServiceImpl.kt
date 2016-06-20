@@ -13,15 +13,15 @@ class PreferredLanguagesServiceImpl(keyValueDatabase: KeyValueDatabase,
                                     lifetime: Lifetime,
                                     itemProviders: List<FlowItemProvider>,
                                     private val debugOptions: DebugOptions) : PreferredLanguagesService {
-  override val knownLanguages = keyValueDatabase.createProperty(lifetime, "knownLanguages", "").convert({ stringToLanguages(it) }, { languagesToString(it) })
-  override val learnLanguages = keyValueDatabase.createProperty(lifetime, "learnLanguages", "").convert({ stringToLanguages(it) }, { languagesToString(it) })
+  override val selectedKnownLanguages = keyValueDatabase.createProperty(lifetime, "knownLanguages", "").convert({ stringToLanguages(it) }, { languagesToString(it) })
+  override val selectedLearnLanguages = keyValueDatabase.createProperty(lifetime, "learnLanguages", "").convert({ stringToLanguages(it) }, { languagesToString(it) })
 
   private val supportedDirections = mutableListOf<WithCounter<LanguagePair>>()
 
   init {
     if (debugOptions.dropPreferredLanguagesOnStart) {
-      knownLanguages.value = emptyList()
-      learnLanguages.value = emptyList()
+      selectedKnownLanguages.value = emptyList()
+      selectedLearnLanguages.value = emptyList()
     }
 
     val directions = itemProviders
@@ -49,7 +49,7 @@ class PreferredLanguagesServiceImpl(keyValueDatabase: KeyValueDatabase,
   }
 
   override val configurationRequired: Boolean
-    get() = knownLanguages.value!!.isEmpty() || learnLanguages.value!!.isEmpty()
+    get() = selectedKnownLanguages.value!!.isEmpty() || selectedLearnLanguages.value!!.isEmpty()
 
   private fun languagesToString(languages: List<Language>?): String {
     return languages!!.map { it.code }.joinToString (", ")

@@ -5,6 +5,7 @@ import am5800.common.utils.Property
 import am5800.common.utils.ReadonlyProperty
 import am5800.common.utils.SequentialLifetime
 import am5800.harmonie.app.model.DebugOptions
+import am5800.harmonie.app.model.services.EnumerableDistribution
 
 
 class FlowManager(private val lifetime: Lifetime, val providers: Collection<FlowItemProvider>, val debugOptions: DebugOptions) {
@@ -13,7 +14,7 @@ class FlowManager(private val lifetime: Lifetime, val providers: Collection<Flow
   val currentFlow: ReadonlyProperty<Flow>
     get() = _currentFlow
 
-  fun start(distribution: CategoryDistribution) {
+  fun start(distribution: EnumerableDistribution<FlowItemCategory>) {
     val lt = flowLifetime.current
     lt.addAction { _currentFlow.value = null }
     val flow = Flow(lt, providers, debugOptions, distribution)

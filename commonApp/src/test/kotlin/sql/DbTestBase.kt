@@ -2,17 +2,25 @@ package sql
 
 import am5800.common.utils.Lifetime
 import org.junit.AfterClass
+import org.junit.BeforeClass
 
 open class DbTestBase {
-  val database = TestSqlDatabase(lifetime)
+  val testClassLifetime = Lifetime(lifetime)
+  val database = TestSqlDatabase(testClassLifetime)
 
   companion object {
-    val lifetime = Lifetime()
+    private var lifetime : Lifetime? = null
+
+    @BeforeClass
+    @JvmStatic
+    fun setup() {
+      lifetime = Lifetime()
+    }
 
     @AfterClass
     @JvmStatic
     fun teardown() {
-      lifetime.terminate()
+      lifetime!!.terminate()
     }
   }
 }

@@ -16,6 +16,9 @@ import am5800.harmonie.app.model.features.parallelSentence.ParallelSentenceFlowM
 import am5800.harmonie.app.model.features.repetition.BucketRepetitionAlgorithm
 import am5800.harmonie.app.model.features.repetition.WordsRepetitionServiceImpl
 import am5800.harmonie.app.model.services.impl.*
+import am5800.harmonie.app.model.services.languagePairs.SqlLanguagePairsProvider
+import am5800.harmonie.app.model.services.learnGraph.LearnGraphServiceImpl
+import am5800.harmonie.app.model.services.sentenceSelection.SentenceSelectionStrategy
 import am5800.harmonie.app.vm.*
 import android.app.Application
 
@@ -43,11 +46,10 @@ class HarmonieApplication : Application() {
       val repetitionService = SqlRepetitionService(BucketRepetitionAlgorithm(), permanentDb, debugOptions)
       val wordsRepetitionService = WordsRepetitionServiceImpl(repetitionService, lt, contentDb)
 
-      val sentenceProvider = SqlSentenceProvider(contentDb, debugOptions)
-      val wordSelector = SqlWordSelector(wordsRepetitionService, keyValueDb, contentDb, lt, debugOptions)
-      val sentenceSelector = SqlSentenceSelector(wordsRepetitionService, loggerProvider, wordSelector, sentenceProvider)
+      val sentenceAndWordsProvider = SqlSentenceAndWordsProvider(contentDb, debugOptions)
+      val sentenceSelectionStrategy = SentenceSelectionStrategy(wordsRepetitionService, debugOptions, loggerProvider, sentenceAndWordsProvider, LearnGraphServiceImpl())
 
-      val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceProvider, wordsRepetitionService, sentenceSelector)
+      val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceAndWordsProvider, wordsRepetitionService, sentenceSelectionStrategy, SqlLanguagePairsProvider(contentDb))
       val seinFlowManager = FillTheGapFlowItemManagerImpl(contentDb, lt, debugOptions)
       val flowItemProviders = listOf(parallelSentenceFlowManager, seinFlowManager)
       val languageService = PreferredLanguagesServiceImpl(keyValueDb, lt, flowItemProviders, debugOptions)

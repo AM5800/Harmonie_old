@@ -8,6 +8,6 @@ interface PreferredLanguagesService {
   fun getAvailableKnownLanguages(): Collection<Language>
   fun getAvailableLearnLanguages(language: Language): Collection<WithCounter<Language>>
   val configurationRequired: Boolean
-  val knownLanguages: Property<List<Language>>
-  val learnLanguages: Property<List<Language>>
+  val selectedKnownLanguages: Property<List<Language>>
+  val selectedLearnLanguages: Property<List<Language>>
 }

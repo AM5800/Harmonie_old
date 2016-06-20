@@ -26,8 +26,8 @@ class SelectLanguageViewModel(private val lifetime: Lifetime,
   val continueBtnVisible = Property(lifetime, false)
 
   fun next() {
-    preferredLanguagesService.knownLanguages.value = knownLanguages.filter { it.checked.value!! }.map { it.language }
-    preferredLanguagesService.learnLanguages.value = learnLanguages.filter { it.checked.value!! }.map { it.language }
+    preferredLanguagesService.selectedKnownLanguages.value = knownLanguages.filter { it.checked.value!! }.map { it.language }
+    preferredLanguagesService.selectedLearnLanguages.value = learnLanguages.filter { it.checked.value!! }.map { it.language }
     closeRequested.fire(Unit)
   }
 
@@ -40,12 +40,12 @@ class SelectLanguageViewModel(private val lifetime: Lifetime,
       vm.checked.onChange(lifetime, { if (!it.isAcknowledge) update() })
     }
     activationRequested.subscribe(lifetime, {
-      val selectedKnownLanguages = preferredLanguagesService.knownLanguages.value!!.toSet()
+      val selectedKnownLanguages = preferredLanguagesService.selectedKnownLanguages.value!!.toSet()
       for (knownLanguageVm in knownLanguages) {
         knownLanguageVm.checked.value = selectedKnownLanguages.contains(knownLanguageVm.language)
       }
 
-      val selectedLearnLanguages = preferredLanguagesService.learnLanguages.value!!.toSet()
+      val selectedLearnLanguages = preferredLanguagesService.selectedLearnLanguages.value!!.toSet()
       for (learnLanguageVm in learnLanguages) {
         learnLanguageVm.checked.value = selectedLearnLanguages.contains(learnLanguageVm.language)
       }

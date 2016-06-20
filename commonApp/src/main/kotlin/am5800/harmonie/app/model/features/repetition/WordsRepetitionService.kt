@@ -15,7 +15,7 @@ class WordAttemptResult(val word: Word, val dueDate: DateTime, val score: LearnS
 interface WordsRepetitionService {
   fun submitAttempt(word: Word, score: LearnScore)
   fun computeDueDate(word: Word, score: LearnScore): DateTime
-  fun getScheduledWords(language: Language, dateTime: DateTime): List<Word>
+  fun getNextScheduledWord(language: Language, dateTime: DateTime): Word?
   fun getAttemptedWords(language: Language): List<Word>
   val attemptResultReceived: Signal<WordAttemptResult>
   fun getBinaryWordScore(word: Word): LearnScore?
@@ -56,10 +56,10 @@ class WordsRepetitionServiceImpl(private val repetitionService: RepetitionServic
     return repetitionService.computeDueDate(word.lemma, category, score)
   }
 
-  override fun getScheduledWords(language: Language, dateTime: DateTime): List<Word> {
+  override fun getNextScheduledWord(language: Language, dateTime: DateTime): Word? {
     val category = getCategory(language)
-    val scheduled = repetitionService.getScheduledEntities(category, DateTime.now())
-    return getWords(scheduled, language)
+    val scheduled = repetitionService.getScheduledEntities(category, dateTime).firstOrNull() ?: return null
+    return getWords(listOf(scheduled), language).first()
   }
 
   private fun getWords(lemmas: List<String>, language: Language): List<Word> {

@@ -16,13 +16,26 @@
   </ss>
   <ss>
     <s language="de" text="Kreuzen Sie bitte auf dem Antwortbogen an.">
-      <w lemma="ankreuzen" pos="Unknown" start="0" end="7" />
+      <w lemma="kreuz" pos="Unknown" start="0" end="7" />
       <w lemma="ich" pos="Unknown" start="8" end="11" />
       <w lemma="bitten" pos="Unknown" start="12" end="17" />
       <w lemma="auf" pos="Unknown" start="18" end="21" />
       <w lemma="der" pos="Unknown" start="22" end="25" />
       <w lemma="antwortbogen" pos="Unknown" start="26" end="38" />
-      <w lemma="ankreuzen" pos="Unknown" start="39" end="41" />
+      <w lemma="an" pos="Unknown" start="39" end="41" />
+    </s>
+    <s language="ru" text="Не важно"/>
+  </ss>
+  <ss>
+    <s language="de" text="Bitte übertragen Sie ihre lösungen auf den Antwortbogen.">
+      <w lemma="bitten" pos="Unknown" start="0" end="5" />
+      <w lemma="uebertragen" pos="Unknown" start="6" end="16" />
+      <w lemma="ich" pos="Unknown" start="17" end="20" />
+      <w lemma="mein" pos="Unknown" start="21" end="25" />
+      <w lemma="loesung" pos="Unknown" start="26" end="34" />
+      <w lemma="auf" pos="Unknown" start="35" end="38" />
+      <w lemma="der" pos="Unknown" start="39" end="42" />
+      <w lemma="antwortbogen" pos="Unknown" start="43" end="55" />
     </s>
     <s language="ru" text="Не важно"/>
   </ss>

@@ -4,6 +4,7 @@ import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
 import am5800.common.utils.Signal
 import am5800.harmonie.app.model.DebugOptions
+import am5800.harmonie.app.model.services.EnumerableDistribution
 import org.joda.time.Duration
 import org.joda.time.Seconds
 import java.util.*
@@ -12,7 +13,7 @@ import kotlin.concurrent.schedule
 class Flow(lifetime: Lifetime,
            private val providers: Collection<FlowItemProvider>,
            debugOptions: DebugOptions,
-           private val distribution: CategoryDistribution) {
+           private val distribution: EnumerableDistribution<FlowItemCategory>) {
   private val random = debugOptions.random
   private var successful = 0
   private var failed = 0
@@ -25,7 +26,7 @@ class Flow(lifetime: Lifetime,
 
     var provider: FlowItemProvider? = null
     for (i in 1..10) {
-      val category = distribution.getCategory(random.nextDouble())
+      val category = distribution.get(random)
 
       provider = providers
           .filter { it.supportedCategories.contains(category) }
