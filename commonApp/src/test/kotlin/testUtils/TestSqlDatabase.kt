@@ -1,4 +1,4 @@
-package sql
+package testUtils
 
 import am5800.common.utils.Lifetime
 import am5800.harmonie.app.model.services.ContentDb

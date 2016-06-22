@@ -4,9 +4,9 @@ import am5800.common.Language
 import am5800.common.LearnGraphNode
 import am5800.harmonie.app.model.services.ContentDb
 import am5800.harmonie.app.model.services.Tuple3
-import am5800.harmonie.app.model.services.impl.SqlSentence
-import am5800.harmonie.app.model.services.impl.SqlSentenceAndWordsProvider
-import am5800.harmonie.app.model.services.impl.SqlWord
+import am5800.harmonie.app.model.services.SqlSentence
+import am5800.harmonie.app.model.services.sentencesAndWords.SqlSentenceAndWordsProvider
+import am5800.harmonie.app.model.services.SqlWord
 import am5800.harmonie.app.model.services.query3
 
 class SqlLearnGraphLoader(private val contentDb: ContentDb, private val sentenceAndWordsProvider: SqlSentenceAndWordsProvider) : LearnGraphLoader {

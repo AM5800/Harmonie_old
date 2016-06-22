@@ -1,3 +1,5 @@
+package model.features
+
 import am5800.harmonie.app.model.features.repetition.Attempt
 import am5800.harmonie.app.model.features.repetition.BucketRepetitionAlgorithm
 import am5800.harmonie.app.model.features.repetition.LearnScore

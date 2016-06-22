@@ -5,7 +5,7 @@ import org.junit.Test
 
 class LearnGraphCreatorTests {
   private val language = Language.German
-  private val counts = mapOf<Word, Int>(
+  private val counts = mapOf(
       Pair(Word(language, "100"), 100),
       Pair(Word(language, "10"), 10),
       Pair(Word(language, "1"), 1),

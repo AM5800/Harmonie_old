@@ -1,10 +1,12 @@
-package am5800.harmonie.app.model.services.impl
+package am5800.harmonie.app.model.services.sentencesAndWords
 
 import am5800.common.*
 import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.services.*
+import am5800.harmonie.app.model.services.SqlSentence
+import am5800.harmonie.app.model.services.SqlWord
 
-class SqlSentenceAndWordsProvider(private val contentDb: ContentDb, private val debugOptions: DebugOptions) : SentenceAndWordsProvider {
+class SqlSentenceAndWordsProvider(private val contentDb: ContentDb) : SentenceAndWordsProvider {
   override fun getRandomSentenceWith(word: Word, knownLanguage: Language, availableSentences: List<Sentence>): SentencePair? {
     val sentenceIds = availableSentences
         .map { it as SqlSentence }
@@ -48,7 +50,7 @@ class SqlSentenceAndWordsProvider(private val contentDb: ContentDb, private val 
     val wordsData = contentDb.query5<Long, String, Int, Int, String>(query)
 
     val result = wordsData.map {
-      WordOccurrence(SqlWord(it.value1, LanguageParser.parse(it.value5), it.value2), sentence, it.value3, it.value4)
+      WordOccurrence(SqlWord(it.value1, LanguageParser.Companion.parse(it.value5), it.value2), sentence, it.value3, it.value4)
     }
 
     if (result.isNotEmpty() && result.any { it.word.language != sentence.language }) throw Exception("Word language differ from sentence language")

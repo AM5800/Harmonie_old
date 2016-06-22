@@ -1,7 +1,7 @@
 package am5800.harmonie.app.model.features.flow
 
 import am5800.harmonie.app.model.features.fillTheGap.FillTheGapCategory
-import am5800.harmonie.app.model.services.EnumerableDistribution
+import am5800.common.utils.EnumerableDistribution
 import am5800.harmonie.app.model.services.PreferredLanguagesService
 import com.google.common.collect.LinkedHashMultimap
 

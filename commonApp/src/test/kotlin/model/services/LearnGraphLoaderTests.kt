@@ -1,18 +1,19 @@
-package sql
+package model.services
 
 import am5800.common.Language
 import am5800.harmonie.app.model.DebugOptions
-import am5800.harmonie.app.model.services.impl.SqlSentence
-import am5800.harmonie.app.model.services.impl.SqlSentenceAndWordsProvider
-import am5800.harmonie.app.model.services.impl.SqlWord
+import am5800.harmonie.app.model.services.SqlSentence
+import am5800.harmonie.app.model.services.sentencesAndWords.SqlSentenceAndWordsProvider
+import am5800.harmonie.app.model.services.SqlWord
 import am5800.harmonie.app.model.services.learnGraph.SqlLearnGraphLoader
 import org.junit.Assert
 import org.junit.Test
+import testUtils.DbTestBase
 
 
 class LearnGraphLoaderTests : DbTestBase() {
 
-  private val sqlSentenceAndWordsProvider = SqlSentenceAndWordsProvider(database, DebugOptions(false, false, 0))
+  private val sqlSentenceAndWordsProvider = SqlSentenceAndWordsProvider(database)
 
   private val graphLoader = SqlLearnGraphLoader(database, sqlSentenceAndWordsProvider)
 

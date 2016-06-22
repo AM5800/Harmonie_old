@@ -4,7 +4,7 @@ import am5800.common.utils.Lifetime
 import am5800.common.utils.Property
 import am5800.common.utils.Signal
 import am5800.harmonie.app.model.DebugOptions
-import am5800.harmonie.app.model.services.EnumerableDistribution
+import am5800.common.utils.EnumerableDistribution
 import org.joda.time.Duration
 import org.joda.time.Seconds
 import java.util.*

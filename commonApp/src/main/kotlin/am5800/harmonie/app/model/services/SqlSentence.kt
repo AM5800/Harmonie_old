@@ -1,4 +1,4 @@
-package am5800.harmonie.app.model.services.impl
+package am5800.harmonie.app.model.services
 
 import am5800.common.Language
 import am5800.common.Sentence

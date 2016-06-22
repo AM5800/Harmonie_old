@@ -1,3 +1,5 @@
+package model.features
+
 import am5800.common.Language
 import am5800.harmonie.app.model.features.fillTheGap.FillTheGapCategory
 import am5800.harmonie.app.model.features.flow.createDefaultCategoryDistribution

@@ -1,14 +1,10 @@
-package am5800.harmonie.app.model.services.impl
+package am5800.harmonie.app.model.services
 
 import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.features.repetition.Attempt
 import am5800.harmonie.app.model.features.repetition.LearnScore
 import am5800.harmonie.app.model.features.repetition.RepetitionAlgorithm
 import am5800.harmonie.app.model.features.repetition.RepetitionService
-import am5800.harmonie.app.model.services.PermanentDb
-import am5800.harmonie.app.model.services.query1
-import am5800.harmonie.app.model.services.query2
-import am5800.harmonie.app.model.services.query3
 import org.joda.time.DateTime
 
 class SqlRepetitionService(private val repetitionAlgorithm: RepetitionAlgorithm,

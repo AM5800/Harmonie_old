@@ -1,17 +1,18 @@
-package sql
+package model.services
 
 import am5800.common.Language
 import am5800.harmonie.app.model.DebugOptions
-import am5800.harmonie.app.model.services.impl.SqlSentence
-import am5800.harmonie.app.model.services.impl.SqlSentenceAndWordsProvider
-import am5800.harmonie.app.model.services.impl.SqlWord
+import am5800.harmonie.app.model.services.SqlSentence
+import am5800.harmonie.app.model.services.sentencesAndWords.SqlSentenceAndWordsProvider
+import am5800.harmonie.app.model.services.SqlWord
 import org.junit.Assert
 import org.junit.Test
+import testUtils.DbTestBase
 
 
 class SqlSentenceAndWordsProviderTests : DbTestBase() {
   private val key = "aufgabe"
-  val sentenceProvider = SqlSentenceAndWordsProvider(database, DebugOptions(false, false, 42))
+  val sentenceProvider = SqlSentenceAndWordsProvider(database)
   val sentences = listOf(
       SqlSentence(1, Language.German, ""),
       SqlSentence(2, Language.Russian, ""),

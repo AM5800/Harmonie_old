@@ -49,7 +49,7 @@ class LearnGraphCreator {
         result.addAll(intersection.filter { it != word }.map { LearnGraphNode(it, emptyList()) })
         result.add(LearnGraphNode(word, unlockedSentences))
 
-        for ((sentence, words) in sentences.asMap()) {
+        for ((sentence, words) in sentences.asMap().toList()) {
           for (w in intersection) sentences.remove(sentence, w)
         }
 

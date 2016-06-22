@@ -1,4 +1,4 @@
-package am5800.harmonie.app.model.services.impl
+package am5800.harmonie.app.model.services
 
 import am5800.common.*
 import am5800.common.utils.Lifetime
@@ -6,8 +6,6 @@ import am5800.common.utils.convert
 import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.features.flow.FlowItemProvider
 import am5800.harmonie.app.model.features.flow.LanguageCategory
-import am5800.harmonie.app.model.services.KeyValueDatabase
-import am5800.harmonie.app.model.services.PreferredLanguagesService
 
 class PreferredLanguagesServiceImpl(keyValueDatabase: KeyValueDatabase,
                                     lifetime: Lifetime,

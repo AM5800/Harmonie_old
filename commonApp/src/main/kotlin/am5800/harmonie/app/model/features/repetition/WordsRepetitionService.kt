@@ -6,7 +6,7 @@ import am5800.common.db.ContentDbConstants
 import am5800.common.utils.Lifetime
 import am5800.common.utils.Signal
 import am5800.harmonie.app.model.services.ContentDb
-import am5800.harmonie.app.model.services.impl.SqlWord
+import am5800.harmonie.app.model.services.SqlWord
 import am5800.harmonie.app.model.services.query2
 import org.joda.time.DateTime
 

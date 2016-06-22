@@ -1,9 +1,10 @@
-package sql
+package model.services
 
 import am5800.common.Language
 import am5800.harmonie.app.model.services.languagePairs.SqlLanguagePairsProvider
 import org.junit.Assert
 import org.junit.Test
+import testUtils.DbTestBase
 
 
 class LanguagePairsProviderTests : DbTestBase() {

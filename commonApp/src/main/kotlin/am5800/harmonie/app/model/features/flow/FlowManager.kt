@@ -5,7 +5,7 @@ import am5800.common.utils.Property
 import am5800.common.utils.ReadonlyProperty
 import am5800.common.utils.SequentialLifetime
 import am5800.harmonie.app.model.DebugOptions
-import am5800.harmonie.app.model.services.EnumerableDistribution
+import am5800.common.utils.EnumerableDistribution
 
 
 class FlowManager(private val lifetime: Lifetime, val providers: Collection<FlowItemProvider>, val debugOptions: DebugOptions) {

@@ -1,7 +1,9 @@
-package am5800.harmonie.app.model.services
+package am5800.harmonie.app.model.services.sentencesAndWords
 
-import am5800.common.*
-import am5800.harmonie.app.model.services.impl.SqlWord
+import am5800.common.Language
+import am5800.common.Sentence
+import am5800.common.Word
+import am5800.common.WordOccurrence
 
 data class SentencePair(val knownLanguageSentence: Sentence, val learnLanguageSentence: Sentence)
 
