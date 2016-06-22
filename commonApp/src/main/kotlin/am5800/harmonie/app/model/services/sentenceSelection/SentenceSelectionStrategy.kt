@@ -33,7 +33,7 @@ class SentenceSelectionStrategy(private val repetitionService: WordsRepetitionSe
     val scheduled = repetitionService.getNextScheduledWord(learnLanguage, DateTime.now())
     if (scheduled != null) {
       logger.info("Repeating scheduled word: ${scheduled.lemma}, language: $learnLanguage")
-      return sentenceAndWordsProvider.getRandomSentenceWith(scheduled, knownLanguage, learnGraphService.getUnlockedSentences())
+      return sentenceAndWordsProvider.getRandomSentenceWith(scheduled, knownLanguage, learnGraphService.getUnlockedSentences(learnLanguage))
     }
 
     val canRepeatRandomWord = repetitionService.getAttemptedWords(learnLanguage).any()
@@ -43,38 +43,38 @@ class SentenceSelectionStrategy(private val repetitionService: WordsRepetitionSe
     if (canLearnNewWord && canRepeatRandomWord) {
       val nextTask = nextTaskDistribution.get(debugOptions.random)
       if (nextTask == NextTask.LearnNewWord) return learnNewWord(learnLanguage, knownLanguage)
-      else return repeatRandomWord(knownLanguage)
+      else return repeatRandomWord(learnLanguage, knownLanguage)
     }
 
     if (canLearnNewWord) return learnNewWord(learnLanguage, knownLanguage)
-    else if (canRepeatRandomWord) return repeatRandomWord(knownLanguage)
+    else if (canRepeatRandomWord) return repeatRandomWord(learnLanguage, knownLanguage)
     else throw Exception("If this happens - then I am a steamship")
   }
 
   private fun hasNotAttemptedWords(learnLanguage: Language): Boolean {
     val attemptedWords = repetitionService.getAttemptedWords(learnLanguage)
-    val unlockedWords = learnGraphService.getUnlockedWords()
+    val unlockedWords = learnGraphService.getUnlockedWords(learnLanguage)
     val notAttemptedWords = unlockedWords.minus(attemptedWords)
     return notAttemptedWords.any()
   }
 
-  private fun repeatRandomWord(knownLanguage: Language): SentencePair? {
+  private fun repeatRandomWord(learnLanguage: Language, knownLanguage: Language): SentencePair? {
     // TODO: user might want to NEVER see some words
-    val word = learnGraphService.getUnlockedWords().random(debugOptions.random)
-    val sentences = learnGraphService.getUnlockedSentences()
+    val word = learnGraphService.getUnlockedWords(learnLanguage).random(debugOptions.random)
+    val sentences = learnGraphService.getUnlockedSentences(learnLanguage)
     return sentenceAndWordsProvider.getRandomSentenceWith(word, knownLanguage, sentences)
   }
 
   private fun learnNewWord(learnLanguage: Language, knownLanguage: Language): SentencePair? {
     val attemptedWords = repetitionService.getAttemptedWords(learnLanguage)
-    val unlockedWords = learnGraphService.getUnlockedWords()
+    val unlockedWords = learnGraphService.getUnlockedWords(learnLanguage)
     val notAttemptedWords = unlockedWords.minus(attemptedWords)
     val word =
         if (notAttemptedWords.size == 0)
           learnGraphService.unlockNextWordsGroup().first()
         else notAttemptedWords.first()
 
-    val sentences = learnGraphService.getUnlockedSentences()
+    val sentences = learnGraphService.getUnlockedSentences(learnLanguage)
     return sentenceAndWordsProvider.getRandomSentenceWith(word, knownLanguage, sentences)
   }
 }

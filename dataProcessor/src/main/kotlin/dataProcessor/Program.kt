@@ -2,7 +2,7 @@ package dataProcessor
 
 import am5800.common.Word
 import dataProcessor.db.JetSqlFillTheGapsWriter
-import dataProcessor.db.JetSqlSentenceUnlockWriter
+import dataProcessor.db.JetSqlLearnGraphWriter
 import dataProcessor.db.JetSqlSentenceWriter
 import org.tmatesoft.sqljet.core.SqlJetTransactionMode
 import org.tmatesoft.sqljet.core.table.SqlJetDb
@@ -13,7 +13,7 @@ fun main(args: Array<String>) {
   val corpuses = corpusDir
       .listFiles { file -> file.extension.equals("xml", true) }.toList()
 
-  //run(corpuses, File("androidApp/src/main/assets/content.db"), loadCounts(File(corpusDir, "counts")))
+  run(corpuses, File("androidApp/src/main/assets/content.db"), loadCounts(File(corpusDir, "counts")))
   run(listOf(File(corpusDir, "test")), File("data/test.db"), loadCounts(File(corpusDir, "test_counts")))
 }
 
@@ -42,9 +42,9 @@ private fun run(corpuses: Collection<File>, outFile: File, counts: Map<Word, Int
 }
 
 private fun writeSentenceUnlocks(counts: Map<Word, Int>, db: SqlJetDb, parseResult: ParseResult, sentenceWriter: JetSqlSentenceWriter) {
-  val unlockInfos = SentenceUnlocker.createUnlockOrder(counts, parseResult.occurrences)
-  val unlockWriter = JetSqlSentenceUnlockWriter(sentenceWriter, db)
-  unlockWriter.write(unlockInfos)
+  val learnGraph = LearnGraphCreator.createGraph(counts, parseResult.occurrences)
+  val graphWriter = JetSqlLearnGraphWriter(sentenceWriter, db)
+  graphWriter.write(learnGraph)
 }
 
 fun openDb(path: File): SqlJetDb {

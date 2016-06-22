@@ -65,4 +65,13 @@ class SqlSentenceAndWordsProvider(private val contentDb: ContentDb, private val 
 
     return result.map { SqlWord(it.first, sentence.language, it.second) }
   }
+
+  fun getAllSentences(learnLanguage: Language): List<SqlSentence> {
+    val query = """
+      SELECT id, text FROM sentences
+        WHERE language = '${learnLanguage.code}'
+    """
+
+    return contentDb.query2<Long, String>(query).map { SqlSentence(it.first, learnLanguage, it.second) }
+  }
 }
