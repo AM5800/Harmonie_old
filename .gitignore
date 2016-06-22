@@ -1,7 +1,6 @@
 data/*
 !data/corpus/test
 !data/corpus/test_counts
-!data/test.db
 
 #apks
 *.apk
