@@ -5,6 +5,10 @@
         <option name="PATTERN" value="am5800.*" />
         <option name="ENABLED" value="true" />
       </pattern>
+      <pattern>
+        <option name="PATTERN" value="dataProcessor.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
     </extension>
     <module name="" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
