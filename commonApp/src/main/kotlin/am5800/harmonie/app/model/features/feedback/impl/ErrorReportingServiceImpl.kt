@@ -1,15 +1,15 @@
 package am5800.harmonie.app.model.features.feedback.impl
 
 import am5800.harmonie.app.model.features.feedback.ErrorReportingService
-import am5800.harmonie.app.model.services.PermanentDb
+import am5800.harmonie.app.model.services.UserDb
 
 
-class ErrorReportingServiceImpl(private val permanentDb: PermanentDb) : ErrorReportingService {
+class ErrorReportingServiceImpl(private val userDb: UserDb) : ErrorReportingService {
   override fun report(issueCategory: String, issueDescription: String) {
-    permanentDb.execute("INSERT INTO errorReports VALUES(?, ?)", issueCategory, issueDescription)
+    userDb.execute("INSERT INTO errorReports VALUES(?, ?)", issueCategory, issueDescription)
   }
 
   init {
-    permanentDb.execute("CREATE TABLE IF NOT EXISTS errorReports(category TEXT, description TEXT)")
+    userDb.execute("CREATE TABLE IF NOT EXISTS errorReports(category TEXT, description TEXT)")
   }
 }

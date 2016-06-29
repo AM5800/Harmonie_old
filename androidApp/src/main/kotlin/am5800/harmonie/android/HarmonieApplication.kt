@@ -4,7 +4,7 @@ import am5800.common.componentContainer.ComponentContainer
 import am5800.common.utils.Lifetime
 import am5800.harmonie.android.controllers.*
 import am5800.harmonie.android.dbAccess.AndroidContentDb
-import am5800.harmonie.android.dbAccess.AndroidPermanentDb
+import am5800.harmonie.android.dbAccess.AndroidUserDb
 import am5800.harmonie.android.dbAccess.KeyValueDatabaseImpl
 import am5800.harmonie.android.logging.AndroidLoggerProvider
 import am5800.harmonie.app.model.DebugOptions
@@ -19,6 +19,7 @@ import am5800.harmonie.app.model.services.PreferredLanguagesServiceImpl
 import am5800.harmonie.app.model.services.SqlRepetitionService
 import am5800.harmonie.app.model.services.languagePairs.SqlLanguagePairsProvider
 import am5800.harmonie.app.model.services.learnGraph.LearnGraphServiceImpl
+import am5800.harmonie.app.model.services.learnGraph.SqlLearnGraphLoader
 import am5800.harmonie.app.model.services.sentenceSelection.SentenceSelectionStrategyImpl
 import am5800.harmonie.app.model.services.sentencesAndWords.SqlSentenceAndWordsProvider
 import am5800.harmonie.app.vm.*
@@ -41,7 +42,7 @@ class HarmonieApplication : Application() {
       val debugOptions = DebugOptions(false, false, null)
       modelContainer = container
 
-      val permanentDb = AndroidPermanentDb(this, lt)
+      val permanentDb = AndroidUserDb(this, lt)
       val keyValueDb = KeyValueDatabaseImpl(permanentDb)
       val contentDb = AndroidContentDb(this, keyValueDb, loggerProvider, lt)
 
@@ -49,7 +50,8 @@ class HarmonieApplication : Application() {
       val wordsRepetitionService = WordsRepetitionServiceImpl(repetitionService, lt, contentDb)
 
       val sentenceAndWordsProvider = SqlSentenceAndWordsProvider(contentDb)
-      val sentenceSelectionStrategy = SentenceSelectionStrategyImpl(wordsRepetitionService, debugOptions, loggerProvider, sentenceAndWordsProvider, LearnGraphServiceImpl())
+      val learnGraphService = LearnGraphServiceImpl(SqlLearnGraphLoader(contentDb, sentenceAndWordsProvider), keyValueDb, lt)
+      val sentenceSelectionStrategy = SentenceSelectionStrategyImpl(wordsRepetitionService, debugOptions, loggerProvider, sentenceAndWordsProvider, learnGraphService)
 
       val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceAndWordsProvider, wordsRepetitionService, sentenceSelectionStrategy, SqlLanguagePairsProvider(contentDb))
       val seinFlowManager = FillTheGapFlowItemManagerImpl(contentDb, lt, debugOptions)

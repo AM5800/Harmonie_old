@@ -8,7 +8,7 @@ import am5800.harmonie.app.model.features.repetition.RepetitionService
 import org.joda.time.DateTime
 
 class SqlRepetitionService(private val repetitionAlgorithm: RepetitionAlgorithm,
-                           private val db: PermanentDb,
+                           private val db: UserDb,
                            private val debugOptions: DebugOptions) : RepetitionService {
   override fun getBinaryScore(entityId: String, entityCategory: String): LearnScore? {
     return repetitionAlgorithm.getBinaryScore(getAttempts(entityCategory, entityId))

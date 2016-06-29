@@ -36,7 +36,7 @@ class SentenceSelectionStrategyImpl(private val repetitionService: WordsRepetiti
     }
 
     val canRepeatRandomWord = repetitionService.getAttemptedWords(learnLanguage).any()
-    val canLearnNewWord = learnGraphService.canUnlockNextWord() || hasNotAttemptedWords(learnLanguage)
+    val canLearnNewWord = learnGraphService.canUnlockNextWordGroup(learnLanguage) || hasNotAttemptedWords(learnLanguage)
 
     if (canLearnNewWord == false && canRepeatRandomWord) throw Exception("Impossible state. Empty database?")
     if (canLearnNewWord && canRepeatRandomWord) {
@@ -70,7 +70,7 @@ class SentenceSelectionStrategyImpl(private val repetitionService: WordsRepetiti
     val notAttemptedWords = unlockedWords.minus(attemptedWords)
     val word =
         if (notAttemptedWords.size == 0)
-          learnGraphService.unlockNextWordsGroup().first()
+          learnGraphService.unlockNextWordsGroup(learnLanguage).first()
         else notAttemptedWords.first()
 
     val sentences = learnGraphService.getUnlockedSentences(learnLanguage)

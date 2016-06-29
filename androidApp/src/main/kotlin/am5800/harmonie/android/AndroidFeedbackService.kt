@@ -1,7 +1,7 @@
 package am5800.harmonie.android
 
 import am5800.common.utils.Lifetime
-import am5800.harmonie.android.dbAccess.AndroidPermanentDb
+import am5800.harmonie.android.dbAccess.AndroidUserDb
 import am5800.harmonie.android.viewBinding.ActivityConsumer
 import am5800.harmonie.app.model.features.feedback.FeedbackService
 import android.app.Activity
@@ -14,7 +14,7 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 
 
-class AndroidFeedbackService(private val db: AndroidPermanentDb) : FeedbackService, ActivityConsumer {
+class AndroidFeedbackService(private val db: AndroidUserDb) : FeedbackService, ActivityConsumer {
   override fun setActivity(activity: Activity, lifetime: Lifetime) {
     lifetime.execute {
       this.context = activity

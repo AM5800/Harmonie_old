@@ -2,14 +2,14 @@ package am5800.harmonie.android.dbAccess
 
 import am5800.common.utils.Lifetime
 import am5800.harmonie.app.model.services.Cursor
-import am5800.harmonie.app.model.services.PermanentDb
+import am5800.harmonie.app.model.services.UserDb
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import java.io.File
 
 
-class AndroidPermanentDb(context: Context, lifetime: Lifetime) : PermanentDb {
+class AndroidUserDb(context: Context, lifetime: Lifetime) : UserDb {
   override fun execute(query: String, vararg args: Any) {
     instance.writableDatabase.execSQL(query, args)
   }
