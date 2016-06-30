@@ -9,8 +9,6 @@ import am5800.harmonie.app.vm.StartScreenViewModel
 import android.widget.Button
 
 class StartScreenController(private val viewModel: StartScreenViewModel, lifetime: Lifetime, stack: ControllerStack) : FragmentController {
-  override val menuItems = null
-
   override fun bind(view: BindableView, bindingLifetime: Lifetime) {
     val learnBtn = view.getChild<Button>(R.id.learnAllBtn)
     learnBtn.bind(bindingLifetime, view, viewModel.learnAllText, { viewModel.learnAll() })

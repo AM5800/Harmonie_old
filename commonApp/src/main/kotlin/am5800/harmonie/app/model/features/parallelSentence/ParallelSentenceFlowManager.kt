@@ -3,16 +3,16 @@ package am5800.harmonie.app.model.features.parallelSentence
 import am5800.common.Sentence
 import am5800.common.Word
 import am5800.common.utils.Lifetime
-import am5800.common.utils.Property
 import am5800.common.utils.TextRange
+import am5800.common.utils.properties.NullableProperty
 import am5800.harmonie.app.model.features.flow.FlowItemCategory
 import am5800.harmonie.app.model.features.flow.FlowItemProvider
 import am5800.harmonie.app.model.features.repetition.LearnScore
 import am5800.harmonie.app.model.features.repetition.WordsRepetitionService
-import am5800.harmonie.app.model.services.sentencesAndWords.SentencePair
-import am5800.harmonie.app.model.services.sentencesAndWords.SentenceAndWordsProvider
-import am5800.harmonie.app.model.services.sentenceSelection.SentenceSelectionStrategy
 import am5800.harmonie.app.model.services.languagePairs.LanguagePairsProvider
+import am5800.harmonie.app.model.services.sentenceSelection.SentenceSelectionStrategy
+import am5800.harmonie.app.model.services.sentencesAndWords.SentenceAndWordsProvider
+import am5800.harmonie.app.model.services.sentencesAndWords.SentencePair
 import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.Multimap
 
@@ -36,11 +36,15 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
 
   override val supportedCategories = availableLanguagePairs.map { ParallelSentenceCategory(it.entity.learnLanguage, it.entity.knownLanguage) }.toSet()
 
-  val question = Property<ParallelSentenceQuestion>(lifetime, null)
+  val question = NullableProperty<ParallelSentenceQuestion>(lifetime, null)
 
   override fun tryPresentNextItem(category: FlowItemCategory): Boolean {
     if (category !is ParallelSentenceCategory) throw UnsupportedOperationException("Category is not supported")
-    val findResult = sentenceSelector.findBestSentenceByAttempts(category.learnLanguage, category.knownLanguage) ?: return false
+    val findResult = sentenceSelector.findBestSentenceByAttempts(category.learnLanguage, category.knownLanguage)
+    if (findResult == null) {
+      question.value = null
+      return false
+    }
     question.value = prepareQuestion(findResult)
     return true
   }

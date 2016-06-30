@@ -1,7 +1,7 @@
 package am5800.harmonie.app.model.services
 
 import am5800.common.utils.Lifetime
-import am5800.common.utils.Property
+import am5800.common.utils.properties.Property
 
 interface KeyValueDatabase {
   fun tryGetValue(key: String): String?

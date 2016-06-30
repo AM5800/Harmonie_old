@@ -23,7 +23,7 @@ class TestCursor(private val rs: ResultSet) : Cursor {
 }
 
 class TestSqlDatabase(lifetime: Lifetime) : ContentDb {
-  private val connection = DriverManager.getConnection("jdbc:sqlite:${findDb().absolutePath}");
+  private val connection = DriverManager.getConnection("jdbc:sqlite:${findDb().absolutePath}")
   private val stmt = connection.createStatement()
 
   init {

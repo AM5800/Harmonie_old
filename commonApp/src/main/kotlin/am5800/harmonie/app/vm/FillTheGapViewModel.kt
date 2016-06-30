@@ -1,7 +1,7 @@
 package am5800.harmonie.app.vm
 
 import am5800.common.utils.Lifetime
-import am5800.common.utils.Property
+import am5800.common.utils.properties.Property
 import am5800.common.utils.Signal
 import am5800.common.utils.functions.shuffle
 import am5800.harmonie.app.model.features.feedback.ErrorReportingService
@@ -25,7 +25,7 @@ class FillTheGapViewModel(
   val reportCommands = IssueReportingMenuHelper.createMenuItems(reportingService, localizationService, lifetime, { describeState() })
 
   private fun describeState(): String {
-    return sentence.value!! + "/" + translation.value!! + "/" + variants.value!!.joinToString(";") { it.title }
+    return sentence.value + "/" + translation.value + "/" + variants.value.joinToString(";") { it.title }
   }
 
   val sentence = Property(lifetime, "")

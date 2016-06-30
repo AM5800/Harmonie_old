@@ -13,13 +13,11 @@ import android.widget.LinearLayout
 import android.widget.TextView
 
 class SelectLanguageController(private val vm: SelectLanguageViewModel,
-                               private val lifetime: Lifetime,
+                               lifetime: Lifetime,
                                private val controllerStack: ControllerStack) : FragmentController {
   override fun tryClose(): Boolean {
     return vm.canCloseNow()
   }
-
-  override val menuItems = null
 
   override fun bind(view: BindableView, bindingLifetime: Lifetime) {
     // always visible group

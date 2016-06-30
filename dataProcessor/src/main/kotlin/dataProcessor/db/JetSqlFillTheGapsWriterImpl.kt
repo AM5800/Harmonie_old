@@ -9,11 +9,9 @@ class JetSqlFillTheGapsWriter(private val db: SqlJetDb, private val sentenceWrit
   override fun write(result: List<FormOccurrence>) {
     val table = getOrCreateTable()
 
-    for (formOccurrence in result) {
-      val occurrence = formOccurrence.occurrence
-      val topic = formOccurrence.topic
+    for ((form, topic, occurrence) in result) {
       val wordOccurrenceId = sentenceWriter.getOccurrenceIdOrCreate(occurrence)
-      table.insert(formOccurrence.form, topic, wordOccurrenceId)
+      table.insert(form, topic, wordOccurrenceId)
     }
   }
 

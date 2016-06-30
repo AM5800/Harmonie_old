@@ -23,8 +23,8 @@ class FlowItemDistributionService(private val providers: Collection<FlowItemProv
   fun getDistribution(): EnumerableDistribution<FlowItemCategory> {
     val allCategories = providers.flatMap { it.supportedCategories }.distinct().filter {
       if (it !is LanguageCategory) return@filter true
-      if (!preferredLanguagesService.selectedKnownLanguages.value!!.contains(it.knownLanguage)) return@filter false
-      if (!preferredLanguagesService.selectedLearnLanguages.value!!.contains(it.learnLanguage)) return@filter false
+      if (!preferredLanguagesService.selectedKnownLanguages.value.contains(it.knownLanguage)) return@filter false
+      if (!preferredLanguagesService.selectedLearnLanguages.value.contains(it.learnLanguage)) return@filter false
       return@filter true
     }
 

@@ -4,8 +4,8 @@ import am5800.common.Language
 import am5800.common.LearnGraphNode
 import am5800.common.Sentence
 import am5800.common.Word
-import am5800.common.utils.Property
-import am5800.common.utils.convert
+import am5800.common.utils.properties.Property
+import am5800.common.utils.properties.convert
 import am5800.harmonie.app.model.services.learnGraph.LearnGraphService
 import am5800.harmonie.app.model.services.learnGraph.LearnGraphServiceImpl
 import org.junit.Assert
@@ -18,7 +18,7 @@ class LearnGraphServiceTests : DbTestBase() {
   private val language = Language.German
   private fun createService(graph: List<LearnGraphNode>, position: Property<Int>): LearnGraphService {
     val dbMock = KeyValueDatabaseMock()
-    dbMock.addPropertyForKey(LearnGraphServiceImpl.settingsKey + ":de", position.convert({ it?.toString() }, { it?.toInt() }))
+    dbMock.addPropertyForKey(LearnGraphServiceImpl.settingsKey + ":de", position.convert({ it.toString() }, { it.toInt() }))
     val loader = LearnGraphLoaderMock(graph)
     return LearnGraphServiceImpl(loader, dbMock, testClassLifetime)
   }
@@ -40,7 +40,7 @@ class LearnGraphServiceTests : DbTestBase() {
   @Test
   fun newGraph() {
     val graph = listOf(node("W1"), node("W2", "S1"), node("W3"), node("W4", "S2"))
-    val index = Property<Int>(testClassLifetime, null)
+    val index = Property(testClassLifetime, 0)
     val service = createService(graph, index)
     service.canUnlockNextWordGroup(language)
 
@@ -52,7 +52,7 @@ class LearnGraphServiceTests : DbTestBase() {
   @Test
   fun testUnlockingGraph() {
     val graph = listOf(node("W1"), node("W2", "S1"), node("W3"), node("W4", "S2"))
-    val index = Property<Int>(testClassLifetime, null)
+    val index = Property(testClassLifetime, 0)
     val service = createService(graph, index)
 
     Assert.assertTrue(service.canUnlockNextWordGroup(language))

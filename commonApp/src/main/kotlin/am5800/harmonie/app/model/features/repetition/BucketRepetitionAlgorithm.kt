@@ -24,7 +24,7 @@ class BucketRepetitionAlgorithm() : RepetitionAlgorithm {
 
 
   private fun compute(sortedAttempts: List<Attempt>): Pair<Int, DateTime> {
-    if (sortedAttempts.isEmpty()) return Pair(-1, DateTime());
+    if (sortedAttempts.isEmpty()) return Pair(-1, DateTime())
     var bucket = if (isSuccessful(sortedAttempts.first())) 2 else 0
     var base = sortedAttempts.first()
     for (attempt in sortedAttempts.drop(1)) {

@@ -37,7 +37,7 @@ class CheckableLanguageController(override val id: Int, private val viewModel: C
   }
 
   override fun onClicked() {
-    viewModel.checked.value = !viewModel.checked.value!!
+    viewModel.checked.value = !viewModel.checked.value
   }
 
   private fun getResource(language: Language): Int {

@@ -30,10 +30,10 @@ inline fun <reified T> valueFromCursor(index: Int, cursor: Cursor): T {
   throw Exception("Unsupported type: ${T::class.qualifiedName}")
 }
 
-data class Tuple4<T1, T2, T3, T4>(val value1: T1, val value2: T2, val value3: T3, val value4: T4)
-data class Tuple5<T1, T2, T3, T4, T5>(val value1: T1, val value2: T2, val value3: T3, val value4: T4, val value5: T5)
-data class Tuple6<T1, T2, T3, T4, T5, T6>(val value1: T1, val value2: T2, val value3: T3, val value4: T4, val value5: T5, val value6: T6)
-data class Tuple3<T1, T2, T3>(val value1: T1, val value2: T2, val value3: T3)
+data class Tuple4<out T1, out T2, out T3, out T4>(val value1: T1, val value2: T2, val value3: T3, val value4: T4)
+data class Tuple5<out T1, out T2, out T3, out T4, out T5>(val value1: T1, val value2: T2, val value3: T3, val value4: T4, val value5: T5)
+data class Tuple6<out T1, out T2, out T3, out T4, out T5, out T6>(val value1: T1, val value2: T2, val value3: T3, val value4: T4, val value5: T5, val value6: T6)
+data class Tuple3<out T1, out T2, out T3>(val value1: T1, val value2: T2, val value3: T3)
 
 inline fun <reified T1> SqlDatabase.query1(query: String): List<T1> {
   this.query(query).use { cursor ->

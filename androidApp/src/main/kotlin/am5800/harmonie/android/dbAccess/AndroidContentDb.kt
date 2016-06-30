@@ -13,8 +13,8 @@ import com.google.common.io.ByteStreams
 import java.io.File
 import java.io.FileOutputStream
 
-class AndroidContentDb(private val context: Context,
-                       private val keyValueDb: KeyValueDatabaseImpl,
+class AndroidContentDb(context: Context,
+                       keyValueDb: KeyValueDatabaseImpl,
                        loggerProvider: LoggerProvider,
                        lifetime: Lifetime) : ContentDb {
 
@@ -28,7 +28,7 @@ class AndroidContentDb(private val context: Context,
 
   private class DbInstance(private val context: Context,
                            private val keyValueDb: KeyValueDatabaseImpl,
-                           private val logger: Logger) : SQLiteOpenHelper(context, DbName, null, 1) {
+                           logger: Logger) : SQLiteOpenHelper(context, DbName, null, 1) {
 
     init {
       if (checkDbUpdateNeeded()) {

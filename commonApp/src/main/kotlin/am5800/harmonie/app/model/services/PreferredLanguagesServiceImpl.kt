@@ -2,7 +2,7 @@ package am5800.harmonie.app.model.services
 
 import am5800.common.*
 import am5800.common.utils.Lifetime
-import am5800.common.utils.convert
+import am5800.common.utils.properties.convert
 import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.features.flow.FlowItemProvider
 import am5800.harmonie.app.model.features.flow.LanguageCategory
@@ -10,7 +10,7 @@ import am5800.harmonie.app.model.features.flow.LanguageCategory
 class PreferredLanguagesServiceImpl(keyValueDatabase: KeyValueDatabase,
                                     lifetime: Lifetime,
                                     itemProviders: List<FlowItemProvider>,
-                                    private val debugOptions: DebugOptions) : PreferredLanguagesService {
+                                    debugOptions: DebugOptions) : PreferredLanguagesService {
   override val selectedKnownLanguages = keyValueDatabase.createProperty(lifetime, "knownLanguages", "").convert({ stringToLanguages(it) }, { languagesToString(it) })
   override val selectedLearnLanguages = keyValueDatabase.createProperty(lifetime, "learnLanguages", "").convert({ stringToLanguages(it) }, { languagesToString(it) })
 
@@ -47,7 +47,7 @@ class PreferredLanguagesServiceImpl(keyValueDatabase: KeyValueDatabase,
   }
 
   override val configurationRequired: Boolean
-    get() = selectedKnownLanguages.value!!.isEmpty() || selectedLearnLanguages.value!!.isEmpty()
+    get() = selectedKnownLanguages.value.isEmpty() || selectedLearnLanguages.value.isEmpty()
 
   private fun languagesToString(languages: List<Language>?): String {
     return languages!!.map { it.code }.joinToString (", ")

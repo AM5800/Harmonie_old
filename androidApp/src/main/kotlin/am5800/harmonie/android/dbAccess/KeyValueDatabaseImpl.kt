@@ -1,7 +1,7 @@
 package am5800.harmonie.android.dbAccess
 
 import am5800.common.utils.Lifetime
-import am5800.common.utils.Property
+import am5800.common.utils.properties.Property
 import am5800.harmonie.app.model.services.KeyValueDatabase
 import am5800.harmonie.app.model.services.query1
 
@@ -9,8 +9,8 @@ class KeyValueDatabaseImpl(private val db: AndroidUserDb) : KeyValueDatabase {
   override fun createProperty(lifetime: Lifetime, key: String, defaultValue: String): Property<String> {
     val result = Property(lifetime, getValue(key, defaultValue))
     result.onChange(lifetime, {
+      if (it.isAcknowledge) return@onChange
       val newValue = it.newValue
-      if (newValue == null || !it.hasOld) return@onChange
       setValue(key, newValue)
     })
     return result

@@ -1,17 +1,17 @@
 package am5800.harmonie.app.model.features.flow
 
-import am5800.common.utils.Lifetime
-import am5800.common.utils.Property
-import am5800.common.utils.ReadonlyProperty
-import am5800.common.utils.SequentialLifetime
-import am5800.harmonie.app.model.DebugOptions
 import am5800.common.utils.EnumerableDistribution
+import am5800.common.utils.Lifetime
+import am5800.common.utils.SequentialLifetime
+import am5800.common.utils.properties.NullableProperty
+import am5800.common.utils.properties.NullableReadonlyProperty
+import am5800.harmonie.app.model.DebugOptions
 
 
-class FlowManager(private val lifetime: Lifetime, val providers: Collection<FlowItemProvider>, val debugOptions: DebugOptions) {
+class FlowManager(lifetime: Lifetime, val providers: Collection<FlowItemProvider>, val debugOptions: DebugOptions) {
   private val flowLifetime = SequentialLifetime(lifetime)
-  private val _currentFlow = Property<Flow>(lifetime, null)
-  val currentFlow: ReadonlyProperty<Flow>
+  private val _currentFlow = NullableProperty<Flow>(lifetime, null)
+  val currentFlow: NullableReadonlyProperty<Flow>
     get() = _currentFlow
 
   fun start(distribution: EnumerableDistribution<FlowItemCategory>) {

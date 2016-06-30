@@ -2,7 +2,8 @@ package am5800.harmonie.app.vm
 
 import am5800.common.Word
 import am5800.common.utils.Lifetime
-import am5800.common.utils.Property
+import am5800.common.utils.properties.NullableProperty
+import am5800.common.utils.properties.Property
 import am5800.harmonie.app.model.features.feedback.ErrorReportingService
 import am5800.harmonie.app.model.features.flow.FlowManager
 import am5800.harmonie.app.model.features.localization.LocalizationService
@@ -33,7 +34,7 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
     ShowAnswer
   }
 
-  val help = Property<String>(lifetime, null)
+  val help = NullableProperty<String>(lifetime, null)
 
   val reportCommands = IssueReportingMenuHelper.createMenuItems(reportingService, localizationService, lifetime, { describeState() })
 
@@ -52,9 +53,9 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
       state.value = State.ShowAnswer
     } else {
       val scores = LinkedHashMap<Word, LearnScore>()
-      val vms = question.value?.filterIsInstance<ToggleableWordViewModel>() ?: emptyList()
+      val vms = question.value.filterIsInstance<ToggleableWordViewModel>()
       for (vm in vms) {
-        scores.put(vm.word, vm.state.value!!)
+        scores.put(vm.word, vm.state.value)
       }
       parallelSentenceFlowManager.submitScore(scores)
       flowManager.next(scores.count { it.value == LearnScore.Good }, scores.count { it.value == LearnScore.Bad })

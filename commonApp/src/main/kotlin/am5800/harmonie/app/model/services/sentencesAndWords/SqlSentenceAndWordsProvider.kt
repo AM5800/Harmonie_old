@@ -1,10 +1,7 @@
 package am5800.harmonie.app.model.services.sentencesAndWords
 
 import am5800.common.*
-import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.services.*
-import am5800.harmonie.app.model.services.SqlSentence
-import am5800.harmonie.app.model.services.SqlWord
 
 class SqlSentenceAndWordsProvider(private val contentDb: ContentDb) : SentenceAndWordsProvider {
   override fun getRandomSentenceWith(word: Word, knownLanguage: Language, availableSentences: List<Sentence>): SentencePair? {

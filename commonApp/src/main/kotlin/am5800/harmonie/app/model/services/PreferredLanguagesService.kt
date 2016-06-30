@@ -2,7 +2,7 @@ package am5800.harmonie.app.model.services
 
 import am5800.common.Language
 import am5800.common.WithCounter
-import am5800.common.utils.Property
+import am5800.common.utils.properties.Property
 
 interface PreferredLanguagesService {
   fun getAvailableKnownLanguages(): Collection<Language>

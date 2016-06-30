@@ -2,7 +2,7 @@ package am5800.common.utils
 
 import java.util.*
 
-class EnumerableDistribution<T>(distribution: Map<T, Double>) {
+class EnumerableDistribution<out T>(distribution: Map<T, Double>) {
   private val summedDistribution = mutableListOf<Pair<Double, T>>()
 
   init {

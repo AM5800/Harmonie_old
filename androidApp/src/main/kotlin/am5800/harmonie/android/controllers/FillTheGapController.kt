@@ -1,7 +1,8 @@
 package am5800.harmonie.android.controllers
 
 import am5800.common.utils.Lifetime
-import am5800.common.utils.Property
+import am5800.common.utils.properties.Property
+import am5800.common.utils.properties.ReadonlyProperty
 import am5800.harmonie.android.R
 import am5800.harmonie.android.Visibility
 import am5800.harmonie.android.viewBinding.BindableView
@@ -16,7 +17,7 @@ import android.widget.TextView
 class FillTheGapController(private val viewModel: FillTheGapViewModel,
                            flowContentController: FlowController,
                            lifetime: Lifetime) : ControllerWithMenu {
-  override val menuItems = Property(lifetime, viewModel.reportCommands.map { SimpleMenuItem(it) }.filterIsInstance<MenuItem>())
+  override val menuItems: ReadonlyProperty<List<MenuItem>> = Property(lifetime, viewModel.reportCommands.map { SimpleMenuItem(it) }.filterIsInstance<MenuItem>())
 
   override val id = R.layout.fill_the_gap
   override fun bind(view: BindableView, bindingLifetime: Lifetime) {
@@ -30,9 +31,9 @@ class FillTheGapController(private val viewModel: FillTheGapViewModel,
     variant3.bindVisibility(bindingLifetime, view, viewModel.variantsVisible, Visibility.Collapsed)
     variant4.bindVisibility(bindingLifetime, view, viewModel.variantsVisible, Visibility.Collapsed)
 
-    viewModel.variants.onChangeNotNull(bindingLifetime, { variants ->
+    viewModel.variants.onChange(bindingLifetime, {
       val vs = listOf(variant1, variant2, variant3, variant4)
-      val vms = viewModel.variants.value!!
+      val vms = viewModel.variants.value
 
       val zipped = vs.zip(vms)
       for ((button, vm) in zipped) {

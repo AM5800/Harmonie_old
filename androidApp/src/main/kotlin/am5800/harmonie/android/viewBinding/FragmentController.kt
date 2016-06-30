@@ -1,6 +1,6 @@
 package am5800.harmonie.android.viewBinding
 
-import am5800.common.utils.ReadonlyProperty
+import am5800.common.utils.properties.ReadonlyProperty
 import am5800.harmonie.app.vm.SimpleCommand
 
 interface MenuItem {
@@ -17,10 +17,10 @@ class SimpleMenuItem(override val title: ReadonlyProperty<String>, private val a
 }
 
 interface ControllerWithMenu : BindableController {
-  val menuItems: ReadonlyProperty<List<MenuItem>>?
+  val menuItems: ReadonlyProperty<List<MenuItem>>
 }
 
-interface FragmentController : ControllerWithMenu {
+interface FragmentController : BindableController {
   fun tryClose(): Boolean {
     return true
   }

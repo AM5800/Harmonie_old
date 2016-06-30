@@ -1,10 +1,9 @@
 package model.services
 
 import am5800.common.Language
-import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.services.SqlSentence
-import am5800.harmonie.app.model.services.sentencesAndWords.SqlSentenceAndWordsProvider
 import am5800.harmonie.app.model.services.SqlWord
+import am5800.harmonie.app.model.services.sentencesAndWords.SqlSentenceAndWordsProvider
 import org.junit.Assert
 import org.junit.Test
 import testUtils.DbTestBase

@@ -1,7 +1,7 @@
 package am5800.common
 
 
-class WithCounter<T>(val entity: T, val count: Int) {
+class WithCounter<out T>(val entity: T, val count: Int) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other?.javaClass != javaClass) return false

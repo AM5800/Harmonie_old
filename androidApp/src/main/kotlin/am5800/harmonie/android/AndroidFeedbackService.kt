@@ -30,7 +30,7 @@ class AndroidFeedbackService(private val db: AndroidUserDb) : FeedbackService, A
 
   override fun collectAndSendData() {
     val email = Intent(Intent.ACTION_SEND)
-    email.type = "message/rfc822";
+    email.type = "message/rfc822"
     email.putExtra(Intent.EXTRA_EMAIL, arrayOf("am5800+harmonie@gmail.com"))
     email.putExtra(Intent.EXTRA_SUBJECT, "Usage statistics")
     email.putExtra(Intent.EXTRA_TEXT, """
@@ -45,7 +45,7 @@ File format is sqlite3. And it does not contain any private information
 
     val inStream = FileInputStream(db.getLocation())
     val outFile = getTempDbFile()
-    val outStream = FileOutputStream(outFile);
+    val outStream = FileOutputStream(outFile)
     outStream.use { outStream ->
       inStream.copyTo(outStream)
     }

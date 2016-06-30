@@ -4,9 +4,9 @@ import am5800.common.Language
 import am5800.common.LanguageParser
 import am5800.common.Sentence
 import am5800.common.utils.Lifetime
-import am5800.common.utils.Property
 import am5800.common.utils.functions.random
 import am5800.common.utils.functions.shuffle
+import am5800.common.utils.properties.NullableProperty
 import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.features.flow.FlowItemCategory
 import am5800.harmonie.app.model.features.flow.FlowItemProvider
@@ -24,7 +24,7 @@ class FillTheGapFlowItemManagerImpl(
   private val forms = getForms()
   override val supportedCategories: Set<FlowItemCategory> = forms.map { FillTheGapCategory(it.learnLanguage, it.knownLanguage) }.toSet()
 
-  override val question = Property<FillTheGapQuestion>(lifetime, null)
+  override val question = NullableProperty<FillTheGapQuestion>(lifetime)
 
   private fun getForms(): List<FormData> {
     val query = """

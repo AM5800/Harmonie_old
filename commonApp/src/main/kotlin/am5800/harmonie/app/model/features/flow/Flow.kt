@@ -1,10 +1,11 @@
 package am5800.harmonie.app.model.features.flow
 
 import am5800.common.utils.Lifetime
-import am5800.common.utils.Property
+import am5800.common.utils.properties.Property
 import am5800.common.utils.Signal
 import am5800.harmonie.app.model.DebugOptions
 import am5800.common.utils.EnumerableDistribution
+import am5800.common.utils.properties.NullableProperty
 import org.joda.time.Duration
 import org.joda.time.Seconds
 import java.util.*
@@ -18,8 +19,8 @@ class Flow(lifetime: Lifetime,
   private var successful = 0
   private var failed = 0
 
-  val spentTime = Property(lifetime, Duration.ZERO)
-  val successRate = Property<Double>(lifetime, null)
+  val spentTime: Property<Duration> = Property(lifetime, Duration.ZERO)
+  val successRate = NullableProperty<Double>(lifetime, null)
 
   fun next(successDelta: Int, failureDelta: Int) {
     updateSuccessRate(failureDelta, successDelta)
@@ -57,7 +58,7 @@ class Flow(lifetime: Lifetime,
     lifetime.addAction { timer.cancel() }
 
     timer.schedule(0, 1000, {
-      spentTime.value = spentTime.value!!.plus(Seconds.ONE.toStandardDuration())
+      spentTime.value = spentTime.value.plus(Seconds.ONE.toStandardDuration())
     })
   }
 }

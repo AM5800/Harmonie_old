@@ -31,7 +31,9 @@ class BindableFragment : Fragment() {
     val bindableView = BindableViewImpl(controller.id, activity)
     controller.bind(bindableView, fragmentLifetime)
     controller.onActivated()
-    setHasOptionsMenu(controller.menuItems?.value?.any() == true)
+    if (controller is ControllerWithMenu) {
+      setHasOptionsMenu(controller.menuItems.value.any() == true)
+    }
     return bindableView.view
   }
 
@@ -42,10 +44,11 @@ class BindableFragment : Fragment() {
 
   override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater?) {
     val controller = currentController!!
-    controller.menuItems!!.onChangeNotNull(fragmentLifetime, {
+    if (controller !is ControllerWithMenu) return
+    controller.menuItems.onChange(fragmentLifetime, {
       menu.clear()
-      for (item in it) {
-        val menuItem = menu.add(item.title.value!!)
+      for (item in it.newValue) {
+        val menuItem = menu.add(item.title.value)
         menuItem.setOnMenuItemClickListener {
           item.onClick()
           true
