@@ -16,11 +16,21 @@ interface LocalizationService {
   fun setLanguage(language: Language)
   fun getCurrentTable(): LocalizationTable
   fun createFormatProperty(valueGetter: (LocalizationTable) -> FormatString, lifetime: Lifetime, vararg args: ReadonlyProperty<Any>): ReadonlyProperty<String>
+  fun createFormatProperty(valueGetter: (LocalizationTable) -> FormatString, lifetime: Lifetime, vararg args: Any): ReadonlyProperty<String>
 }
 
 open class LocalizationServiceImpl(private val defaultLanguage: Language,
                                    lifetime: Lifetime,
                                    keyValueDatabase: KeyValueDatabase) : LocalizationService {
+  override fun createFormatProperty(valueGetter: (LocalizationTable) -> FormatString, lifetime: Lifetime, vararg args: Any): ReadonlyProperty<String> {
+    val result = Property(lifetime, "")
+    val updateFunc = {
+      result.value = valueGetter(getCurrentTable()).build(args.map { it.toString() }.toList())
+    }
+    currentLanguage.onChange(lifetime, { updateFunc() })
+    return result
+  }
+
   override fun createFormatProperty(valueGetter: (LocalizationTable) -> FormatString, lifetime: Lifetime, vararg args: ReadonlyProperty<Any>): ReadonlyProperty<String> {
     val result = Property(lifetime, "")
     val updateFunc = {

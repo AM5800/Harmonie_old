@@ -18,12 +18,10 @@ class WorkspaceViewModel(private val lifetime: Lifetime,
   private fun createDefaultItems(): Collection<SimpleWorkspaceItemViewModel> {
     val all = SimpleWorkspaceItemViewModel("Learn all",
         listOf(ParallelSentenceCategory(Language.German, Language.English), FillTheGapCategory(Language.German, Language.English)),
-        lifetime,
         flowManager)
 
     val onlySentences = SimpleWorkspaceItemViewModel("Learn all(without exercises)",
         listOf(ParallelSentenceCategory(Language.German, Language.English)),
-        lifetime,
         flowManager)
 
 

@@ -20,8 +20,8 @@ class SimpleWorkspaceItemController(private val vm: SimpleWorkspaceItemViewModel
 
     header.text = vm.header
     val stats = vm.computeBriefStats()
-    onDue.bindText(bindingLifetime, view, localizationService.createFormatProperty({ it.onDue }, bindingLifetime, stats.onDue))
-    onLearning.bindText(bindingLifetime, view, localizationService.createFormatProperty({ it.onLearning }, bindingLifetime, stats.onLearning, stats.total))
+    onDue.bindText(bindingLifetime, view, localizationService.createFormatProperty({ it.onDue }, bindingLifetime, stats.onDue.toString()))
+    onLearning.bindText(bindingLifetime, view, localizationService.createFormatProperty({ it.onLearning }, bindingLifetime, stats.onLearning.toString(), stats.total.toString()))
   }
 
   override fun onClicked() {
