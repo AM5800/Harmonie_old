@@ -12,7 +12,7 @@ class DefaultFlowControllerOwnerViewModel(private val flowManager: FlowManager, 
 
   init {
     flowManager.currentFlow.forEachValue(lifetime, { flow, lt ->
-      flow!!
+      if (flow == null) return@forEachValue
       flow.spentTime.onChange(lt, timeString, { duration ->
         val formatter = PeriodFormatterBuilder()
             .printZeroAlways()

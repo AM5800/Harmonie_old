@@ -1,14 +1,14 @@
 package am5800.harmonie.app.model.services.sentenceSelection
 
 import am5800.common.Language
+import am5800.common.utils.EnumerableDistribution
 import am5800.common.utils.functions.random
 import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.features.repetition.WordsRepetitionService
-import am5800.common.utils.EnumerableDistribution
-import am5800.harmonie.app.model.services.sentencesAndWords.SentenceAndWordsProvider
-import am5800.harmonie.app.model.services.sentencesAndWords.SentencePair
 import am5800.harmonie.app.model.services.learnGraph.LearnGraphService
 import am5800.harmonie.app.model.services.logging.LoggerProvider
+import am5800.harmonie.app.model.services.sentencesAndWords.SentenceAndWordsProvider
+import am5800.harmonie.app.model.services.sentencesAndWords.SentencePair
 import org.joda.time.DateTime
 
 class SentenceSelectionStrategyImpl(private val repetitionService: WordsRepetitionService,
@@ -23,7 +23,7 @@ class SentenceSelectionStrategyImpl(private val repetitionService: WordsRepetiti
 
   private val nextTaskDistribution = EnumerableDistribution.define<NextTask> {
     add(NextTask.LearnNewWord, 0.7)
-    addRest(NextTask.LearnNewWord)
+    addRest(NextTask.RepeatRandomWord)
   }
 
   private val logger = loggerProvider.getLogger(javaClass)

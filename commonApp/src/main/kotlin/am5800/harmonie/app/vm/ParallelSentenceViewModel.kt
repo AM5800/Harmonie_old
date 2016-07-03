@@ -76,7 +76,7 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
     })
 
     parallelSentenceFlowManager.question.forEachValue(lifetime, { data, lt ->
-      data!!
+      if (data == null) return@forEachValue
       state.value = State.ShowQuestion
       question.value = createViewModelsForQuestion(data, lifetime)
       answer.value = data.answer.text

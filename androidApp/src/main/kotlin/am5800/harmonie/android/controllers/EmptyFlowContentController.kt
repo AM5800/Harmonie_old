@@ -21,7 +21,8 @@ class EmptyFlowContentController(flowController: FlowController,
 
   init {
     flowManager.currentFlow.forEachValue(lifetime, { flow, lt ->
-      flow!!.isEmptySignal.subscribe(lt, { flowController.setContent(this) })
+      if (flow == null) return@forEachValue
+      flow.isEmptySignal.subscribe(lt, { flowController.setContent(this) })
     })
   }
 }

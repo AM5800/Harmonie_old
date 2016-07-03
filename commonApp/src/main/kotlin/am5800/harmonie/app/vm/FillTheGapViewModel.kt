@@ -1,9 +1,9 @@
 package am5800.harmonie.app.vm
 
 import am5800.common.utils.Lifetime
-import am5800.common.utils.properties.Property
 import am5800.common.utils.Signal
 import am5800.common.utils.functions.shuffle
+import am5800.common.utils.properties.Property
 import am5800.harmonie.app.model.features.feedback.ErrorReportingService
 import am5800.harmonie.app.model.features.fillTheGap.FillTheGapFlowItemManager
 import am5800.harmonie.app.model.features.fillTheGap.FillTheGapQuestion
@@ -37,7 +37,7 @@ class FillTheGapViewModel(
   init {
     for (manager in managers) {
       manager.question.forEachValue(lifetime, { question, lt ->
-        question!!
+        if (question == null) return@forEachValue
         sentence.value = prepareQuestion(question)
         translation.value = question.translation.text
         buildVariants(question, lt)
