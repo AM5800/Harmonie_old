@@ -4,6 +4,9 @@ import am5800.common.Language
 import am5800.common.utils.Lifetime
 import am5800.harmonie.android.R
 import am5800.harmonie.android.Visibility
+import am5800.harmonie.android.controllers.util.bindCheckedTwoWay
+import am5800.harmonie.android.controllers.util.bindText
+import am5800.harmonie.android.controllers.util.bindVisibility
 import am5800.harmonie.android.toAndroidVisibility
 import am5800.harmonie.android.viewBinding.BindableController
 import am5800.harmonie.android.viewBinding.BindableView

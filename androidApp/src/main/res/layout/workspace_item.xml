@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:background="@color/panelBackground"
+              android:layout_width="match_parent"
+              android:layout_margin="10dp"
+              android:layout_height="wrap_content">
+    <TextView android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_margin="5dp"
+              android:textSize="@dimen/panelHeaderFontSize"
+              android:textColor="@color/panelForeground"
+              android:id="@+id/header"
+              android:text="Learn all"/>
+
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginBottom="5dp"
+              android:layout_marginLeft="5dp"
+              android:id="@+id/onDue"
+              android:textColor="@color/panelForegroundError"
+              android:text="On due: 25"/>
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginBottom="5dp"
+              android:layout_marginLeft="5dp"
+              android:id="@+id/onLearning"
+              android:text="Total on learning: 25/2000"/>
+</LinearLayout>

@@ -3,4 +3,10 @@
     <color name="colorPrimary">#282828</color>
     <color name="colorPrimaryDark">#282828</color>
     <color name="colorAccent">#40acff</color>
+    <color name="panelBackground">#e4e4e4</color>
+    <color name="panelForeground">#646464</color>
+    <color name="panelForegroundError">#d60000</color>
+    <color name="panelForegroundWarning">#ffab40</color>
+    <color name="separator">#a1a1a1</color>
+
 </resources>

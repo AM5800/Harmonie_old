@@ -1,4 +1,4 @@
-package am5800.harmonie.android.controllers
+package am5800.harmonie.android.controllers.util
 
 import am5800.common.utils.Lifetime
 import am5800.common.utils.properties.Property
@@ -15,7 +15,7 @@ import android.widget.TextView
 fun View.bindVisibility(lifetime: Lifetime, uiThreadRunner: UIThreadRunner, property: Property<Boolean>, invisibleValue: Visibility) {
   property.onChange(lifetime, {
     uiThreadRunner.runOnUiThread {
-      if (it.newValue) this.visibility = Visibility.Visible.toAndroidVisibility()
+      if (it.newValue) this.visibility = am5800.harmonie.android.Visibility.Visible.toAndroidVisibility()
       else this.visibility = invisibleValue.toAndroidVisibility()
     }
   })

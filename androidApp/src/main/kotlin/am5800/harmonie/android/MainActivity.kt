@@ -4,7 +4,7 @@ import am5800.common.componentContainer.getComponent
 import am5800.common.componentContainer.getComponents
 import am5800.common.utils.Lifetime
 import am5800.harmonie.android.viewBinding.ActivityConsumer
-import am5800.harmonie.app.vm.StartScreenViewModel
+import am5800.harmonie.app.vm.workspace.WorkspaceViewModel
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 
@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
 
     stack.initialize(supportFragmentManager)
     if (savedInstanceState == null) {
-      val startScreen = modelContainer.getComponent<StartScreenViewModel>()
+      val startScreen = modelContainer.getComponent<WorkspaceViewModel>()
       startScreen.activationRequested.fire(Unit)
     }
   }

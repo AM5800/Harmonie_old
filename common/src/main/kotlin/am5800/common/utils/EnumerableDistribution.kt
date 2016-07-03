@@ -40,6 +40,13 @@ class EnumerableDistribution<out T>(distribution: Map<T, Double>) {
 
       add(value, 1.0 - sum)
     }
+
+    fun equal(values: Collection<T>) {
+      val delta = 1.0 / values.size
+      for (value in values) {
+        add(value, delta)
+      }
+    }
   }
 
   companion object {

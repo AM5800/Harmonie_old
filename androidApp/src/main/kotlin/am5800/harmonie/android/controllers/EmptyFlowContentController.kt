@@ -2,6 +2,7 @@ package am5800.harmonie.android.controllers
 
 import am5800.common.utils.Lifetime
 import am5800.harmonie.android.R
+import am5800.harmonie.android.controllers.util.bindText
 import am5800.harmonie.android.viewBinding.BindableController
 import am5800.harmonie.android.viewBinding.BindableView
 import am5800.harmonie.app.model.features.flow.FlowManager

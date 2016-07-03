@@ -1,10 +1,13 @@
 package am5800.harmonie.app.model.features.localization.languages
 
 import am5800.common.Language
+import am5800.harmonie.app.model.features.localization.FormatStringImpl
 import am5800.harmonie.app.model.features.localization.LocalizationTable
 
 
 class EnglishLocalizationTable : LocalizationTable {
+  override val onDue = FormatStringImpl("On due: %0")
+  override val onLearning = FormatStringImpl("On learning: %0/%1")
   override val nSentencesAvailable = EnglishQuantityString("%i sentence", "%i sentences")
   override val parallelSentencesQuizHelp = "Read sentences and check that you understand them right. Mark words you translated wrong/do not know"
   override val reportUnclearSentencePair = "Report: unclear meaning"

@@ -6,6 +6,9 @@ import am5800.common.utils.properties.ReadonlyProperty
 import am5800.common.utils.properties.onChangeNotNull
 import am5800.harmonie.android.R
 import am5800.harmonie.android.Visibility
+import am5800.harmonie.android.controllers.util.bindOnClick
+import am5800.harmonie.android.controllers.util.bindText
+import am5800.harmonie.android.controllers.util.bindVisibility
 import am5800.harmonie.android.viewBinding.*
 import am5800.harmonie.app.model.features.repetition.LearnScore
 import am5800.harmonie.app.vm.ParallelSentenceViewModel

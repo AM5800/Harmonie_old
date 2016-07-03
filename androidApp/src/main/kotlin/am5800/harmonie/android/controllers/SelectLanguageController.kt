@@ -4,6 +4,9 @@ import am5800.common.utils.Lifetime
 import am5800.harmonie.android.ControllerStack
 import am5800.harmonie.android.R
 import am5800.harmonie.android.Visibility
+import am5800.harmonie.android.controllers.util.bindOnClick
+import am5800.harmonie.android.controllers.util.bindText
+import am5800.harmonie.android.controllers.util.bindVisibility
 import am5800.harmonie.android.viewBinding.BindableView
 import am5800.harmonie.android.viewBinding.FragmentController
 import am5800.harmonie.app.vm.CheckableLanguageViewModel

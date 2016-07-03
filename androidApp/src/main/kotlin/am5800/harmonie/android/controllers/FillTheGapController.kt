@@ -5,6 +5,10 @@ import am5800.common.utils.properties.Property
 import am5800.common.utils.properties.ReadonlyProperty
 import am5800.harmonie.android.R
 import am5800.harmonie.android.Visibility
+import am5800.harmonie.android.controllers.util.bindEnabled
+import am5800.harmonie.android.controllers.util.bindOnClick
+import am5800.harmonie.android.controllers.util.bindText
+import am5800.harmonie.android.controllers.util.bindVisibility
 import am5800.harmonie.android.viewBinding.BindableView
 import am5800.harmonie.android.viewBinding.ControllerWithMenu
 import am5800.harmonie.android.viewBinding.MenuItem

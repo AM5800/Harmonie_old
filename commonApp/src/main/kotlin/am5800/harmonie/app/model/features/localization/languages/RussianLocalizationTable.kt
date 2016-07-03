@@ -1,9 +1,12 @@
 package am5800.harmonie.app.model.features.localization.languages
 
 import am5800.common.Language
+import am5800.harmonie.app.model.features.localization.FormatStringImpl
 import am5800.harmonie.app.model.features.localization.LocalizationTable
 
 class RussianLocalizationTable : LocalizationTable {
+  override val onDue = FormatStringImpl("Повторить: %0")
+  override val onLearning = FormatStringImpl("На изучении: %0/%1")
   override val nSentencesAvailable = RussianQuantityString("%i предложение", "%i предложения", "%i предложений")
   override val parallelSentencesQuizHelp = "Читайте предложения и сверяйтесь с переводом. Отмечайте слова, в которых вы ошиблись или которые не знали"
   override val reportUnclearSentencePair = "Сообщить: неудачный пример"
