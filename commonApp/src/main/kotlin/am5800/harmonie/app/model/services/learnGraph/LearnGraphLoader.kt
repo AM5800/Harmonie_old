@@ -5,5 +5,5 @@ import am5800.common.LearnGraphNode
 
 
 interface LearnGraphLoader {
-  fun load(learnLanguage: Language) : List<LearnGraphNode>
+  fun load(learnLanguage: Language): List<LearnGraphNode>
 }

@@ -9,7 +9,7 @@ open class DbTestBase {
   val database = TestSqlDatabase(testClassLifetime)
 
   companion object {
-    private var lifetime : Lifetime? = null
+    private var lifetime: Lifetime? = null
 
     @BeforeClass
     @JvmStatic

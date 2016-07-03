@@ -11,7 +11,7 @@ import am5800.harmonie.app.vm.ViewModelBase
 
 class WorkspaceViewModel(private val lifetime: Lifetime,
                          private val flowManager: FlowManager) : ViewModelBase(lifetime) {
-  private val _items = Property<Collection<SimpleWorkspaceItemViewModel>>(lifetime, createDefaultItems())
+  private val _items = Property(lifetime, createDefaultItems())
   val items: ReadonlyProperty<Collection<SimpleWorkspaceItemViewModel>>
     get() = _items
 

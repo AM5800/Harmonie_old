@@ -62,7 +62,7 @@ class BindableFragment : Fragment() {
     if (activity !is MainActivity) return
 
     controllers = activity.controllerStack
-    activity.mainActivityLifetime?.addAction { fragmentLifetime.terminate () }
+    activity.mainActivityLifetime?.addAction { fragmentLifetime.terminate() }
   }
 
   override fun onDetach() {

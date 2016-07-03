@@ -43,7 +43,7 @@ class Lifetime(parentLifetime: Lifetime? = null) : Closeable {
   fun addAction(action: () -> Unit) {
     synchronized(lockObject) {
       if (isTerminated) throw TerminatedLifetimeException()
-      actions.add (action)
+      actions.add(action)
     }
   }
 

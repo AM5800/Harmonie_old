@@ -28,7 +28,7 @@ class DefaultCategoryDistributionTests {
     val item3 = ParallelSentenceCategory(Language.German, Language.Russian)
 
     val distribution = createDefaultCategoryDistribution(listOf(item1, item2, item3))
-    Assert.assertEquals(1.0, distribution.map {it.value}.sum(), 0.0001)
+    Assert.assertEquals(1.0, distribution.map { it.value }.sum(), 0.0001)
   }
 
 }

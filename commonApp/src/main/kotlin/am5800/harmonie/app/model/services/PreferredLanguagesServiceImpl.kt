@@ -50,7 +50,7 @@ class PreferredLanguagesServiceImpl(keyValueDatabase: KeyValueDatabase,
     get() = selectedKnownLanguages.value.isEmpty() || selectedLearnLanguages.value.isEmpty()
 
   private fun languagesToString(languages: List<Language>?): String {
-    return languages!!.map { it.code }.joinToString (", ")
+    return languages!!.map { it.code }.joinToString(", ")
   }
 
   private fun stringToLanguages(string: String?): List<Language> {

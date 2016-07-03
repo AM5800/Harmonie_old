@@ -31,7 +31,7 @@ class LearnGraphLoaderTests : DbTestBase() {
 
     for (i in 0..graph.size - 1) {
       val expectedSentenceIds = expectedSentencesMap[i] ?: continue
-      val sentenceIds = graph[i].sentences.map {it as SqlSentence }.map {it.id}.toTypedArray()
+      val sentenceIds = graph[i].sentences.map { it as SqlSentence }.map { it.id }.toTypedArray()
       Assert.assertArrayEquals(expectedSentenceIds.toTypedArray(), sentenceIds)
     }
   }

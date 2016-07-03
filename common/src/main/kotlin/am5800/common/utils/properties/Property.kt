@@ -24,7 +24,7 @@ class Property<T : Any>(val lifetime: Lifetime, initialValue: T) : ReadonlyPrope
 
   override fun onChange(lifetime: Lifetime, handler: (PropertyChangedArg<T>) -> Unit) {
     handlers.add(handler)
-    lifetime.addAction { handlers.remove (handler) }
+    lifetime.addAction { handlers.remove(handler) }
     handler(PropertyChangedArg(null, value))
   }
 
