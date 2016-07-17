@@ -13,13 +13,13 @@ class JetSqlSentenceWriter(private val db: SqlJetDb) : SentenceWriter {
                        val wordOccurrencesTable: ISqlJetTable,
                        val languagesTable: ISqlJetTable)
 
-  override fun write(occurrences: Set<WordOccurrence>, levels: Map<Word, Int>) {
+  override fun write(occurrences: Set<WordOccurrence>, levels: Map<Word, Int?>) {
     for (occurrence in occurrences) {
       getOccurrenceIdOrCreate(occurrence, levels)
     }
   }
 
-  fun getWordIdOrWrite(word: Word, levels: Map<Word, Int>): Long {
+  fun getWordIdOrWrite(word: Word, levels: Map<Word, Int?>): Long {
     val wordsTable = ensureTables().wordsTable
 
     val existingId = wordsMapping[word]
@@ -29,7 +29,7 @@ class JetSqlSentenceWriter(private val db: SqlJetDb) : SentenceWriter {
     return wordId
   }
 
-  override fun write(translations: Map<Sentence, Sentence>, levels: Map<Sentence, Int>) {
+  override fun write(translations: Map<Sentence, Sentence>, levels: Map<Sentence, Int?>) {
     val tables = ensureTables()
     for ((s1, s2) in translations) {
       val s1Id = getSentenceIdOrWrite(s1, levels)
@@ -68,13 +68,13 @@ class JetSqlSentenceWriter(private val db: SqlJetDb) : SentenceWriter {
     return result
   }
 
-  override fun write(sentences: List<Sentence>, levels: Map<Sentence, Int>) {
+  override fun write(sentences: List<Sentence>, levels: Map<Sentence, Int?>) {
     for (sentence in sentences) {
       getSentenceIdOrWrite(sentence, levels)
     }
   }
 
-  fun getSentenceIdOrWrite(sentence: Sentence, levels: Map<Sentence, Int>): Long {
+  fun getSentenceIdOrWrite(sentence: Sentence, levels: Map<Sentence, Int?>): Long {
     val existingId = sentenceMapping[sentence]
     if (existingId != null) return existingId
     val sentencesTable = ensureTables().sentencesTable
@@ -104,7 +104,7 @@ class JetSqlSentenceWriter(private val db: SqlJetDb) : SentenceWriter {
     }
   }
 
-  fun getOccurrenceIdOrCreate(occurrence: WordOccurrence, levels: Map<Word, Int>): Long {
+  fun getOccurrenceIdOrCreate(occurrence: WordOccurrence, levels: Map<Word, Int?>): Long {
     val tables = ensureTables()
     val existingId = occurrencesMapping[occurrence]
     if (existingId != null) return existingId

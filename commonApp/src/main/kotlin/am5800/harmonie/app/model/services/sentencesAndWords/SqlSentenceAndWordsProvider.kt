@@ -10,7 +10,7 @@ class SqlSentenceAndWordsProvider(private val contentDb: ContentDb,
                                   private val debugOptions: DebugOptions) : SentenceAndWordsProvider {
   override fun getAllWords(learnLanguage: Language): List<WithLevel<Word>> {
     val query = """
-        SELECT id, lemma, level FROM words WHERE language = ${learnLanguage.code}
+        SELECT id, lemma, level FROM words WHERE language = '${learnLanguage.code}'
     """
 
     val result = contentDb.query3<Long, String, Int>(query)
@@ -39,7 +39,7 @@ class SqlSentenceAndWordsProvider(private val contentDb: ContentDb,
 
     val learnLanguageSentence = SqlSentence(result.value1, learnLanguage, result.value2)
     val knownLanguageSentence = SqlSentence(result.value3, LanguageParser.parse(result.value5), result.value4)
-    return SentenceAndTranslation(knownLanguageSentence, learnLanguageSentence)
+    return SentenceAndTranslation(learnLanguageSentence, knownLanguageSentence)
   }
 
   private fun competenceToSql(fieldName: String, competence: List<LanguageCompetence>): String {

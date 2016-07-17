@@ -8,5 +8,5 @@ class ParseResultImpl(override val occurrencePos: Map<WordOccurrence, PartOfSpee
                       override val occurrences: Set<WordOccurrence>,
                       override val translations: Map<Sentence, Sentence>,
                       override val sentences: List<Sentence>,
-                      override val sentenceLevels: Map<Sentence, Int>,
-                      override val wordLevels: Map<Word, Int>) : ParseResult
+                      override val sentenceLevels: Map<Sentence, Int?>,
+                      override val wordLevels: Map<Word, Int?>) : ParseResult

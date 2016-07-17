@@ -9,8 +9,8 @@ interface ParseResult {
   val occurrences: Set<WordOccurrence>
   val translations: Map<Sentence, Sentence>
   val sentences: List<Sentence>
-  val sentenceLevels: Map<Sentence, Int>
-  val wordLevels: Map<Word, Int>
+  val sentenceLevels: Map<Sentence, Int?>
+  val wordLevels: Map<Word, Int?>
 }
 
 fun Collection<ParseResult>.merge(): ParseResult {

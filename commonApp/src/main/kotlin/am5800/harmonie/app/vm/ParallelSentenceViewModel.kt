@@ -40,7 +40,7 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
 
   private fun describeState(): String {
     val pair = parallelSentenceFlowManager.question.value!!
-    return pair.question.text + "/" + pair.answer?.text
+    return pair.question.text + "/" + pair.answer.text
   }
 
   val continueBtnText = localizationService.createProperty(lifetime, { it.continueButton })
@@ -79,7 +79,7 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
       if (data == null) return@forEachValue
       state.value = State.ShowQuestion
       question.value = createViewModelsForQuestion(data, lifetime)
-      answer.value = data.answer?.text ?: "translation not available"
+      answer.value = data.answer.text
       activationRequested.fire(Unit)
       if (keyValueDatabase.getValue("ParallelSentenceQuizHelpShowed", "no") == "no") {
         help.value = localizationService.getCurrentTable().parallelSentencesQuizHelp

@@ -11,8 +11,8 @@ import javax.xml.parsers.SAXParserFactory
 
 class HarmonieSentencesParser() {
   private class HarmonieParserHandler() : DefaultHandler(), ParseResult {
-    private val _sentenceLevels = mutableMapOf<Sentence, Int>()
-    override val sentenceLevels: Map<Sentence, Int>
+    private val _sentenceLevels = mutableMapOf<Sentence, Int?>()
+    override val sentenceLevels: Map<Sentence, Int?>
       get() = _sentenceLevels
 
     private val _wordLevels = mutableMapOf<Word, Int>()
@@ -58,7 +58,7 @@ class HarmonieSentencesParser() {
       if (qName == "s") {
         val language = LanguageParser.parse(attributes.getValue("language"))
         val text = attributes.getValue("text")
-        val level = attributes.getValue("level")?.toInt() ?: throw Exception("Unable to parse level: " + text)
+        val level = attributes.getValue("level")?.toInt()
         val sentence = Sentence(language, text)
         _sentenceLevels[sentence] = level
 
