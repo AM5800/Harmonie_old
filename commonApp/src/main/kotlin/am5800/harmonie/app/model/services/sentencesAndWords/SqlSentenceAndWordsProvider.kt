@@ -24,9 +24,9 @@ class SqlSentenceAndWordsProvider(private val contentDb: ContentDb,
 
     val query = """
         SELECT s1.id, s1.text, s2.id, s2.text, s2.language FROM sentences AS s1
-          LEFT JOIN sentenceMapping
+          JOIN sentenceMapping
             ON sentenceMapping.key = s1.id
-          LEFT JOIN sentences AS s2
+          JOIN sentences AS s2
             ON sentenceMapping.value = s2.id
           INNER JOIN wordOccurrences
             ON wordOccurrences.sentenceId = s1.id
@@ -35,14 +35,11 @@ class SqlSentenceAndWordsProvider(private val contentDb: ContentDb,
           LIMIT 20
     """
 
-    val result = contentDb.query5<Long, String, Long?, String?, String>(query).randomOrNull(debugOptions.random) ?: return null
+    val result = contentDb.query5<Long, String, Long, String, String>(query).randomOrNull(debugOptions.random) ?: return null
 
     val learnLanguageSentence = SqlSentence(result.value1, learnLanguage, result.value2)
-    if (result.value3 != null && result.value4 != null) {
-      val knownLanguageSentence = SqlSentence(result.value3, LanguageParser.parse(result.value5), result.value4)
-      return SentenceAndTranslation(knownLanguageSentence, learnLanguageSentence)
-    }
-    return SentenceAndTranslation(learnLanguageSentence, null)
+    val knownLanguageSentence = SqlSentence(result.value3, LanguageParser.parse(result.value5), result.value4)
+    return SentenceAndTranslation(knownLanguageSentence, learnLanguageSentence)
   }
 
   private fun competenceToSql(fieldName: String, competence: List<LanguageCompetence>): String {

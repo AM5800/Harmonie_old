@@ -19,7 +19,7 @@ import com.google.common.collect.Multimap
 
 
 class ParallelSentenceQuestion(val question: Sentence,
-                               val answer: Sentence?,
+                               val answer: Sentence,
                                val occurrences: Multimap<Word, TextRange>)
 
 class ParallelSentenceFlowManager(lifetime: Lifetime,
