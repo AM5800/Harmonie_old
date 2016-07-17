@@ -10,4 +10,12 @@ fun <T> List<T>.random(random: Random? = null): T {
   return this[i]
 }
 
+fun <T> List<T>.randomOrNull(random: Random? = null): T? {
+  if (this.isEmpty()) return null
+  val rnd = random ?: Random()
+  val i = rnd.nextInt(this.size)
+
+  return this[i]
+}
+
 

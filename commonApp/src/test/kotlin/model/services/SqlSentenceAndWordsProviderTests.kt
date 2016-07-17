@@ -1,6 +1,9 @@
 package model.services
 
+import TestDebugOptions
 import am5800.common.Language
+import am5800.harmonie.app.model.features.flow.Competence
+import am5800.harmonie.app.model.features.flow.LanguageCompetence
 import am5800.harmonie.app.model.services.SqlSentence
 import am5800.harmonie.app.model.services.SqlWord
 import am5800.harmonie.app.model.services.sentencesAndWords.SqlSentenceAndWordsProvider
@@ -11,7 +14,7 @@ import testUtils.DbTestBase
 
 class SqlSentenceAndWordsProviderTests : DbTestBase() {
   private val key = "aufgabe"
-  val sentenceProvider = SqlSentenceAndWordsProvider(database)
+  val sentenceProvider = SqlSentenceAndWordsProvider(database, TestDebugOptions.instance)
   val sentences = listOf(
       SqlSentence(1, Language.German, ""),
       SqlSentence(2, Language.Russian, ""),
@@ -46,20 +49,20 @@ class SqlSentenceAndWordsProviderTests : DbTestBase() {
     Assert.assertEquals(Language.English, keyOccurrence.word.language)
   }
 
+  private fun getCompetence(language: Language): List<LanguageCompetence> = listOf(LanguageCompetence(language, Competence.Native))
+
   @Test
   fun testGetSentenceWithFilter() {
-    val germanSentences = sentences.filter { it.language == Language.German }.take(1)
     val word = getWord(key)
-    val result = sentenceProvider.getRandomSentenceWith(word, Language.Russian, germanSentences)!!
-    val learnLanguageSentence = result.learnLanguageSentence as SqlSentence
+    val result = sentenceProvider.getEasiestRandomSentenceWith(word, getCompetence(Language.Russian))!!
+    val learnLanguageSentence = result.translation as SqlSentence
     Assert.assertEquals(1L, learnLanguageSentence.id)
   }
 
   @Test()
   fun testGetSentenceWithInconsistentFilter() {
-    val germanSentences = sentences.filter { it.language == Language.German }.take(2)
     val word = getWord("mein")
-    val result = sentenceProvider.getRandomSentenceWith(word, Language.Russian, germanSentences)
+    val result = sentenceProvider.getEasiestRandomSentenceWith(word, getCompetence(Language.Japanese))
     Assert.assertNull(result)
   }
 

@@ -13,27 +13,27 @@ class JetSqlSentenceWriter(private val db: SqlJetDb) : SentenceWriter {
                        val wordOccurrencesTable: ISqlJetTable,
                        val languagesTable: ISqlJetTable)
 
-  override fun write(occurrences: Set<WordOccurrence>) {
+  override fun write(occurrences: Set<WordOccurrence>, levels: Map<Word, Int>) {
     for (occurrence in occurrences) {
-      getOccurrenceIdOrCreate(occurrence)
+      getOccurrenceIdOrCreate(occurrence, levels)
     }
   }
 
-  fun getWordIdOrCreate(word: Word): Long {
+  fun getWordIdOrWrite(word: Word, levels: Map<Word, Int>): Long {
     val wordsTable = ensureTables().wordsTable
 
     val existingId = wordsMapping[word]
     if (existingId != null) return existingId
-    val wordId = wordsTable.insert(word.language.code, word.lemma)
+    val wordId = wordsTable.insert(word.language.code, word.lemma, levels[word])
     wordsMapping[word] = wordId
     return wordId
   }
 
-  override fun write(translations: Map<Sentence, Sentence>) {
+  override fun write(translations: Map<Sentence, Sentence>, levels: Map<Sentence, Int>) {
     val tables = ensureTables()
     for ((s1, s2) in translations) {
-      val s1Id = getSentenceIdOrCreate(s1)
-      val s2Id = getSentenceIdOrCreate(s2)
+      val s1Id = getSentenceIdOrWrite(s1, levels)
+      val s2Id = getSentenceIdOrWrite(s2, levels)
 
       tables.sentenceTranslationsTable.insert(s1Id, s2Id)
     }
@@ -51,9 +51,9 @@ class JetSqlSentenceWriter(private val db: SqlJetDb) : SentenceWriter {
     if (instance != null) return instance
 
     db.createTable("CREATE TABLE ${ContentDbConstants.sentenceTranslations} (key INTEGER PRIMARY KEY, value INTEGER)")
-    db.createTable("CREATE TABLE ${ContentDbConstants.sentences} (id INTEGER PRIMARY KEY, language TEXT, text TEXT)")
+    db.createTable("CREATE TABLE ${ContentDbConstants.sentences} (id INTEGER PRIMARY KEY, language TEXT, text TEXT, level INTEGER)")
     db.createTable("CREATE TABLE ${ContentDbConstants.sentenceLanguages} (knownLanguage TEXT, learnLanguage TEXT, count INTEGER)")
-    db.createTable("CREATE TABLE ${ContentDbConstants.words} (id INTEGER PRIMARY KEY, language TEXT, lemma TEXT)")
+    db.createTable("CREATE TABLE ${ContentDbConstants.words} (id INTEGER PRIMARY KEY, language TEXT, lemma TEXT, level INTEGER)")
     db.createTable("CREATE TABLE ${ContentDbConstants.wordOccurrences} (id INTEGER PRIMARY KEY, wordId INTEGER, sentenceId INTEGER, startIndex INTEGER, endIndex INTEGER)")
     db.createIndex("CREATE INDEX germanWordOccurrencesIndex ON ${ContentDbConstants.wordOccurrences} (wordId, sentenceId)")
 
@@ -68,17 +68,17 @@ class JetSqlSentenceWriter(private val db: SqlJetDb) : SentenceWriter {
     return result
   }
 
-  override fun write(sentences: List<Sentence>) {
+  override fun write(sentences: List<Sentence>, levels: Map<Sentence, Int>) {
     for (sentence in sentences) {
-      getSentenceIdOrCreate(sentence)
+      getSentenceIdOrWrite(sentence, levels)
     }
   }
 
-  fun getSentenceIdOrCreate(sentence: Sentence): Long {
-    val sentencesTable = ensureTables().sentencesTable
+  fun getSentenceIdOrWrite(sentence: Sentence, levels: Map<Sentence, Int>): Long {
     val existingId = sentenceMapping[sentence]
     if (existingId != null) return existingId
-    val insertedId = sentencesTable.insert(sentence.language.code, sentence.text)
+    val sentencesTable = ensureTables().sentencesTable
+    val insertedId = sentencesTable.insert(sentence.language.code, sentence.text, levels[sentence])
     sentenceMapping[sentence] = insertedId
     return insertedId
   }
@@ -104,14 +104,22 @@ class JetSqlSentenceWriter(private val db: SqlJetDb) : SentenceWriter {
     }
   }
 
-  fun getOccurrenceIdOrCreate(occurrence: WordOccurrence): Long {
+  fun getOccurrenceIdOrCreate(occurrence: WordOccurrence, levels: Map<Word, Int>): Long {
     val tables = ensureTables()
     val existingId = occurrencesMapping[occurrence]
     if (existingId != null) return existingId
-    val wordId = getWordIdOrCreate(occurrence.word)
-    val sentenceId = getSentenceIdOrCreate(occurrence.sentence)
+    val wordId = getWordIdOrWrite(occurrence.word, levels)
+    val sentenceId = getSentenceId(occurrence.sentence)
     val occurrenceId = tables.wordOccurrencesTable.insert(wordId, sentenceId, occurrence.startIndex, occurrence.endIndex)
     occurrencesMapping[occurrence] = occurrenceId
     return occurrenceId
+  }
+
+  private fun getSentenceId(sentence: Sentence): Long {
+    return sentenceMapping[sentence] ?: throw Exception("Sentence not found")
+  }
+
+  fun getOccurrenceId(occurrence: WordOccurrence): Long {
+    return occurrencesMapping[occurrence] ?: throw Exception("Occurrence not found: " + occurrence.word)
   }
 }

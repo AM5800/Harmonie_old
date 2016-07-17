@@ -11,6 +11,14 @@ import javax.xml.parsers.SAXParserFactory
 
 class HarmonieSentencesParser() {
   private class HarmonieParserHandler() : DefaultHandler(), ParseResult {
+    private val _sentenceLevels = mutableMapOf<Sentence, Int>()
+    override val sentenceLevels: Map<Sentence, Int>
+      get() = _sentenceLevels
+
+    private val _wordLevels = mutableMapOf<Word, Int>()
+    override val wordLevels: Map<Word, Int>
+      get() = _wordLevels
+
     override fun endElement(uri: String?, localName: String?, qName: String?) {
       if (qName == "ss") {
         if (sentencesInGroup.size > 1) {
@@ -50,7 +58,9 @@ class HarmonieSentencesParser() {
       if (qName == "s") {
         val language = LanguageParser.parse(attributes.getValue("language"))
         val text = attributes.getValue("text")
+        val level = attributes.getValue("level")?.toInt() ?: throw Exception("Unable to parse level: " + text)
         val sentence = Sentence(language, text)
+        _sentenceLevels[sentence] = level
 
         sentencesInGroup.add(sentence)
       } else if (qName == "w") {
@@ -58,6 +68,7 @@ class HarmonieSentencesParser() {
         val start = attributes.getValue("start").toInt()
         val end = attributes.getValue("end").toInt()
         val pos = parsePos(attributes.getValue("pos"))
+        val level = attributes.getValue("level").toInt()
 
         val sentence = sentencesInGroup.last()
         val word = Word(sentence.language, lemma)
@@ -65,6 +76,7 @@ class HarmonieSentencesParser() {
         if (pos != PartOfSpeech.Other) _occurrencePos.put(occurrence, pos)
 
         _occurrences.add(occurrence)
+        _wordLevels[word] = level
       }
     }
 

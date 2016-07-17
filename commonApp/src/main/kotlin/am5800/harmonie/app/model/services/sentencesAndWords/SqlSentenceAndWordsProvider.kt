@@ -1,36 +1,55 @@
 package am5800.harmonie.app.model.services.sentencesAndWords
 
 import am5800.common.*
+import am5800.common.utils.functions.randomOrNull
+import am5800.harmonie.app.model.DebugOptions
+import am5800.harmonie.app.model.features.flow.LanguageCompetence
 import am5800.harmonie.app.model.services.*
 
-class SqlSentenceAndWordsProvider(private val contentDb: ContentDb) : SentenceAndWordsProvider {
-  override fun getRandomSentenceWith(word: Word, knownLanguage: Language, availableSentences: List<Sentence>): SentencePair? {
-    val sentenceIds = availableSentences
-        .map { it as SqlSentence }
-        .map { it.id }
-        .joinToString(", ")
+class SqlSentenceAndWordsProvider(private val contentDb: ContentDb,
+                                  private val debugOptions: DebugOptions) : SentenceAndWordsProvider {
+  override fun getAllWords(learnLanguage: Language): List<WithLevel<Word>> {
+    val query = """
+        SELECT id, lemma, level FROM words WHERE language = ${learnLanguage.code}
+    """
+
+    val result = contentDb.query3<Long, String, Int>(query)
+
+    return result.map { WithLevel(SqlWord(it.value1, learnLanguage, it.value2), it.value3) }
+  }
+
+  override fun getEasiestRandomSentenceWith(word: Word, competence: List<LanguageCompetence>): SentenceAndTranslation? {
     val wordId = (word as SqlWord).id
     val learnLanguage = word.language
 
-
     val query = """
-        SELECT s1.id, s1.text, s2.id, s2.text FROM sentenceMapping
-          INNER JOIN sentences AS s1
-            ON s1.id = sentenceMapping.key
-          INNER JOIN sentences AS s2
-            ON s2.id = sentenceMapping.value
+        SELECT s1.id, s1.text, s2.id, s2.text, s2.language FROM sentences AS s1
+          LEFT JOIN sentenceMapping
+            ON sentenceMapping.key = s1.id
+          LEFT JOIN sentences AS s2
+            ON sentenceMapping.value = s2.id
           INNER JOIN wordOccurrences
             ON wordOccurrences.sentenceId = s1.id
-          WHERE s1.id IN ($sentenceIds)  AND wordId = $wordId AND s2.language='${knownLanguage.code}'
-          ORDER BY RANDOM()
-          LIMIT 1
+          WHERE wordId = $wordId AND (${competenceToSql("s2.language", competence)})
+          ORDER BY s1.level
+          LIMIT 20
     """
 
-    val result = contentDb.query4<Long, String, Long, String>(query).singleOrNull() ?: return null
+    val result = contentDb.query5<Long, String, Long?, String?, String>(query).randomOrNull(debugOptions.random) ?: return null
 
-    val knownLanguageSentence = SqlSentence(result.value3, knownLanguage, result.value4)
     val learnLanguageSentence = SqlSentence(result.value1, learnLanguage, result.value2)
-    return SentencePair(knownLanguageSentence, learnLanguageSentence)
+    if (result.value3 != null && result.value4 != null) {
+      val knownLanguageSentence = SqlSentence(result.value3, LanguageParser.parse(result.value5), result.value4)
+      return SentenceAndTranslation(knownLanguageSentence, learnLanguageSentence)
+    }
+    return SentenceAndTranslation(learnLanguageSentence, null)
+  }
+
+  private fun competenceToSql(fieldName: String, competence: List<LanguageCompetence>): String {
+    return competence.map {
+      val language = it.language.code
+      "($fieldName = '$language')"
+    }.joinToString(" OR ")
   }
 
   override fun getOccurrences(sentence: Sentence): List<WordOccurrence> {
@@ -65,12 +84,4 @@ class SqlSentenceAndWordsProvider(private val contentDb: ContentDb) : SentenceAn
     return result.map { SqlWord(it.first, sentence.language, it.second) }
   }
 
-  fun getAllSentences(learnLanguage: Language): List<SqlSentence> {
-    val query = """
-      SELECT id, text FROM sentences
-        WHERE language = '${learnLanguage.code}'
-    """
-
-    return contentDb.query2<Long, String>(query).map { SqlSentence(it.first, learnLanguage, it.second) }
-  }
 }

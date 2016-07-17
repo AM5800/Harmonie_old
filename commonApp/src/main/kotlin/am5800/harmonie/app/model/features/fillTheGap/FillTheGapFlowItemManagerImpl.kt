@@ -11,18 +11,20 @@ import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.features.flow.FlowItemCategory
 import am5800.harmonie.app.model.features.flow.FlowItemProvider
 import am5800.harmonie.app.model.services.ContentDb
+import am5800.harmonie.app.model.services.LanguageCompetenceManager
 import am5800.harmonie.app.model.services.query5
 
 class FillTheGapFlowItemManagerImpl(
     private val contentDb: ContentDb,
     lifetime: Lifetime,
-    private val debugOptions: DebugOptions) : FlowItemProvider, FillTheGapFlowItemManager {
+    private val debugOptions: DebugOptions,
+    private val languageCompetenceManager: LanguageCompetenceManager) : FlowItemProvider, FillTheGapFlowItemManager {
   override fun getAvailableDataSetSize(category: FlowItemCategory): Int {
     return 0
   }
 
   private val forms = getForms()
-  override val supportedCategories: Set<FlowItemCategory> = forms.map { FillTheGapCategory(it.learnLanguage, it.knownLanguage) }.toSet()
+  override val supportedCategories: Set<FlowItemCategory> = forms.map { FillTheGapCategory(it.learnLanguage) }.toSet()
 
   override val question = NullableProperty<FillTheGapQuestion>(lifetime)
 
@@ -49,7 +51,7 @@ class FillTheGapFlowItemManagerImpl(
     if (category !is FillTheGapCategory) throw UnsupportedOperationException("Category is not supported")
 
     val byLanguage = forms
-        .filter { it.knownLanguage == category.knownLanguage && it.learnLanguage == category.learnLanguage }
+        .filter { languageCompetenceManager.isKnown(it.knownLanguage) && it.learnLanguage == category.learnLanguage }
 
     val byTopic = byLanguage
         .groupBy { it.topicId }.toList()

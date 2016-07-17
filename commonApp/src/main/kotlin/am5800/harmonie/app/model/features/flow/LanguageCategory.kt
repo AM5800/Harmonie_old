@@ -4,5 +4,4 @@ import am5800.common.Language
 
 interface LanguageCategory : FlowItemCategory {
   val learnLanguage: Language
-  val knownLanguage: Language
 }

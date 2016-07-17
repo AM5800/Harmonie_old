@@ -119,3 +119,11 @@ inline fun <reified T1, reified T2, reified T3> SqlDatabase.query3(query: String
     return result
   }
 }
+
+fun <T : Any?> sqlEq(value: T): String {
+  if (value == null) return "IS NULL"
+  if (value is String) {
+    return "= '${value.toString()}'"
+  }
+  return "= ${value.toString()}"
+}
