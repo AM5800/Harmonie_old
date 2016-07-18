@@ -67,10 +67,7 @@ class SqlSentenceAndWordsProviderTests : DbTestBase() {
   }
 
   private fun getWord(word: String): SqlWord {
-    val query = "SELECT id FROM words WHERE lemma LIKE '$word' AND language='${Language.German.code}'"
-    val cursor = database.query(query)
-    cursor.moveToNext()
-    val id = cursor.getString(0).toLong()
-    return SqlWord(id, Language.German, word)
+    val allWords = sentenceProvider.getAllWords(Language.German)
+    return allWords.single {it.value.lemma == word}.value as SqlWord
   }
 }

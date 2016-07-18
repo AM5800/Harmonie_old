@@ -1,7 +1,6 @@
 package dataProcessor.db
 
 import am5800.common.*
-import am5800.common.db.ContentDbConstants
 import com.google.common.collect.LinkedHashMultimap
 import org.tmatesoft.sqljet.core.table.ISqlJetTable
 import org.tmatesoft.sqljet.core.table.SqlJetDb
@@ -50,18 +49,18 @@ class JetSqlSentenceWriter(private val db: SqlJetDb) : SentenceWriter {
     val instance = tables
     if (instance != null) return instance
 
-    db.createTable("CREATE TABLE ${ContentDbConstants.sentenceTranslations} (key INTEGER PRIMARY KEY, value INTEGER)")
-    db.createTable("CREATE TABLE ${ContentDbConstants.sentences} (id INTEGER PRIMARY KEY, language TEXT, text TEXT, level INTEGER)")
-    db.createTable("CREATE TABLE ${ContentDbConstants.sentenceLanguages} (knownLanguage TEXT, learnLanguage TEXT, count INTEGER)")
-    db.createTable("CREATE TABLE ${ContentDbConstants.words} (id INTEGER PRIMARY KEY, language TEXT, lemma TEXT, level INTEGER)")
-    db.createTable("CREATE TABLE ${ContentDbConstants.wordOccurrences} (id INTEGER PRIMARY KEY, wordId INTEGER, sentenceId INTEGER, startIndex INTEGER, endIndex INTEGER)")
-    db.createIndex("CREATE INDEX germanWordOccurrencesIndex ON ${ContentDbConstants.wordOccurrences} (wordId, sentenceId)")
+    db.createTable("CREATE TABLE sentenceMapping (key INTEGER PRIMARY KEY, value INTEGER)")
+    db.createTable("CREATE TABLE sentences (id INTEGER PRIMARY KEY, language TEXT, text TEXT, level INTEGER)")
+    db.createTable("CREATE TABLE sentenceLanguages (knownLanguage TEXT, learnLanguage TEXT, count INTEGER)")
+    db.createTable("CREATE TABLE words (id INTEGER PRIMARY KEY, language TEXT, lemma TEXT, level INTEGER)")
+    db.createTable("CREATE TABLE wordOccurrences (id INTEGER PRIMARY KEY, wordId INTEGER, sentenceId INTEGER, startIndex INTEGER, endIndex INTEGER)")
+    db.createIndex("CREATE INDEX germanWordOccurrencesIndex ON wordOccurrences (wordId, sentenceId)")
 
-    val sentencesTable = db.getTable(ContentDbConstants.sentences)
-    val sentenceTranslationsTable = db.getTable(ContentDbConstants.sentenceTranslations)
-    val wordsTable = db.getTable(ContentDbConstants.words)
-    val wordOccurrencesTable = db.getTable(ContentDbConstants.wordOccurrences)
-    val languagesTable = db.getTable(ContentDbConstants.sentenceLanguages)
+    val sentencesTable = db.getTable("sentences")
+    val sentenceTranslationsTable = db.getTable("sentenceMapping")
+    val wordsTable = db.getTable("words")
+    val wordOccurrencesTable = db.getTable("wordOccurrences")
+    val languagesTable = db.getTable("sentenceLanguages")
 
     val result = Tables(sentencesTable, sentenceTranslationsTable, wordsTable, wordOccurrencesTable, languagesTable)
     tables = result
