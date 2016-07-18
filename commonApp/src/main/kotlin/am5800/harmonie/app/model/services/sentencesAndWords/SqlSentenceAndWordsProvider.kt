@@ -1,7 +1,7 @@
 package am5800.harmonie.app.model.services.sentencesAndWords
 
 import am5800.common.*
-import am5800.common.utils.functions.randomOrNull
+import am5800.common.utils.functions.random
 import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.features.flow.LanguageCompetence
 import am5800.harmonie.app.model.services.*
@@ -23,19 +23,23 @@ class SqlSentenceAndWordsProvider(private val contentDb: ContentDb,
     val learnLanguage = word.language
 
     val query = """
-        SELECT s1.id, s1.text, s2.id, s2.text, s2.language FROM sentences AS s1
+        SELECT s1.id, s1.text, s2.id, s2.text, s2.language, s1.level FROM sentences AS s1
           JOIN sentenceMapping
             ON sentenceMapping.key = s1.id
           JOIN sentences AS s2
             ON sentenceMapping.value = s2.id
           INNER JOIN wordOccurrences
             ON wordOccurrences.sentenceId = s1.id
-          WHERE wordId = $wordId AND (${competenceToSql("s2.language", competence)})
+          WHERE wordId = $wordId AND (${competenceToSql("s2.language", competence)}) AND s1.level IS NOT NULL
           ORDER BY s1.level
-          LIMIT 20
+          LIMIT 100
     """
 
-    val result = contentDb.query5<Long, String, Long, String, String>(query).randomOrNull(debugOptions.random) ?: return null
+    val queryResult = contentDb.query6<Long, String, Long, String, String, Int>(query)
+    if (queryResult.isEmpty()) return null
+
+    val easiest = queryResult.filter { it.value6 == queryResult.first().value6 }
+    val result = easiest.random(debugOptions.random)
 
     val learnLanguageSentence = SqlSentence(result.value1, learnLanguage, result.value2)
     val knownLanguageSentence = SqlSentence(result.value3, LanguageParser.parse(result.value5), result.value4)

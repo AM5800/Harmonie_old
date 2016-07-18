@@ -15,7 +15,7 @@
     <s language="ru" text="Не важно" level="0"/>
   </ss>
   <ss>
-    <s language="de" text="Kreuzen Sie bitte auf dem Antwortbogen an." level="0">
+    <s language="de" text="Kreuzen Sie bitte auf dem Antwortbogen an." level="1">
       <w lemma="kreuz" pos="Unknown" start="0" end="7"  level="0"/>
       <w lemma="ich" pos="Unknown" start="8" end="11"  level="0"/>
       <w lemma="bitten" pos="Unknown" start="12" end="17"  level="0"/>
@@ -27,7 +27,7 @@
     <s language="ru" text="Не важно" level="0"/>
   </ss>
   <ss>
-    <s language="de" text="Bitte übertragen Sie ihre lösungen auf den Antwortbogen." level="0">
+    <s language="de" text="Bitte übertragen Sie ihre lösungen auf den Antwortbogen." level="2">
       <w lemma="bitten" pos="Unknown" start="0" end="5"  level="0"/>
       <w lemma="uebertragen" pos="Unknown" start="6" end="16"  level="0"/>
       <w lemma="ich" pos="Unknown" start="17" end="20"  level="0"/>

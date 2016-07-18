@@ -55,7 +55,7 @@ class SqlSentenceAndWordsProviderTests : DbTestBase() {
   fun testGetSentenceWithFilter() {
     val word = getWord(key)
     val result = sentenceProvider.getEasiestRandomSentenceWith(word, getCompetence(Language.Russian))!!
-    val learnLanguageSentence = result.translation as SqlSentence
+    val learnLanguageSentence = result.sentence as SqlSentence
     Assert.assertEquals(1L, learnLanguageSentence.id)
   }
 
