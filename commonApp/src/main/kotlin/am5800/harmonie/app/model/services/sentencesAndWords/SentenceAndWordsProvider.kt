@@ -1,7 +1,7 @@
 package am5800.harmonie.app.model.services.sentencesAndWords
 
 import am5800.common.*
-import am5800.harmonie.app.model.features.flow.LanguageCompetence
+import am5800.harmonie.app.model.services.flow.LanguageCompetence
 
 data class SentenceAndTranslation(val sentence: Sentence, val translation: Sentence)
 

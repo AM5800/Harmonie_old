@@ -14,12 +14,13 @@ import am5800.harmonie.android.logging.AndroidLoggerProvider
 import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.features.feedback.impl.ErrorReportingServiceImpl
 import am5800.harmonie.app.model.features.fillTheGap.FillTheGapFlowItemManagerImpl
-import am5800.harmonie.app.model.features.flow.FlowManager
 import am5800.harmonie.app.model.features.parallelSentence.ParallelSentenceFlowManager
 import am5800.harmonie.app.model.features.repetition.BucketRepetitionAlgorithm
 import am5800.harmonie.app.model.features.repetition.WordsRepetitionServiceImpl
+import am5800.harmonie.app.model.features.statistics.LanguageTagStatisticsProvider
 import am5800.harmonie.app.model.services.LanguageCompetenceManagerStub
 import am5800.harmonie.app.model.services.SqlRepetitionService
+import am5800.harmonie.app.model.services.flow.FlowManager
 import am5800.harmonie.app.model.services.languagePairs.SqlLanguagePairsProvider
 import am5800.harmonie.app.model.services.sentenceSelection.SentenceSelectionStrategyImpl
 import am5800.harmonie.app.model.services.sentencesAndWords.SqlSentenceAndWordsProvider
@@ -71,7 +72,7 @@ class HarmonieApplication : Application() {
       val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService, keyValueDb, reportingService)
       val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt)
       val fillTheGapViewModel = FillTheGapViewModel(lt, listOf(seinFlowManager), flowManager, reportingService, localizationService)
-      val workspaceViewModel = WorkspaceViewModel(lt, flowManager)
+      val workspaceViewModel = WorkspaceViewModel(lt, flowManager, LanguageTagStatisticsProvider(wordsRepetitionService, sentenceAndWordsProvider))
 
       // View components
       val controllerStack = ControllerStack()

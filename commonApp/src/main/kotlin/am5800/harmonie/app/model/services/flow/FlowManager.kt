@@ -1,4 +1,4 @@
-package am5800.harmonie.app.model.features.flow
+package am5800.harmonie.app.model.services.flow
 
 import am5800.common.utils.EnumerableDistribution
 import am5800.common.utils.Lifetime
@@ -14,7 +14,7 @@ class FlowManager(lifetime: Lifetime, val providers: Collection<FlowItemProvider
   val currentFlow: NullableReadonlyProperty<Flow>
     get() = _currentFlow
 
-  fun start(distribution: EnumerableDistribution<FlowItemCategory>) {
+  fun start(distribution: EnumerableDistribution<FlowItemTag>) {
     val lt = flowLifetime.current
     lt.addAction { _currentFlow.value = null }
     val flow = Flow(lt, providers, debugOptions, distribution)

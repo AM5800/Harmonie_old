@@ -3,8 +3,8 @@ package am5800.harmonie.app.model.services.sentencesAndWords
 import am5800.common.*
 import am5800.common.utils.functions.random
 import am5800.harmonie.app.model.DebugOptions
-import am5800.harmonie.app.model.features.flow.LanguageCompetence
 import am5800.harmonie.app.model.services.*
+import am5800.harmonie.app.model.services.flow.LanguageCompetence
 
 class SqlSentenceAndWordsProvider(private val contentDb: ContentDb,
                                   private val debugOptions: DebugOptions) : SentenceAndWordsProvider {

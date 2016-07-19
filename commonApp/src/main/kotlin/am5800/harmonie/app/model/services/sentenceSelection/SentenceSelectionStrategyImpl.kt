@@ -6,8 +6,8 @@ import am5800.common.Word
 import am5800.common.utils.EnumerableDistribution
 import am5800.common.utils.functions.random
 import am5800.harmonie.app.model.DebugOptions
-import am5800.harmonie.app.model.features.flow.LanguageCompetence
 import am5800.harmonie.app.model.features.repetition.WordsRepetitionService
+import am5800.harmonie.app.model.services.flow.LanguageCompetence
 import am5800.harmonie.app.model.services.logging.LoggerProvider
 import am5800.harmonie.app.model.services.sentencesAndWords.SentenceAndTranslation
 import am5800.harmonie.app.model.services.sentencesAndWords.SentenceAndWordsProvider

@@ -5,11 +5,11 @@ import am5800.common.utils.Lifetime
 import am5800.common.utils.properties.NullableProperty
 import am5800.common.utils.properties.Property
 import am5800.harmonie.app.model.features.feedback.ErrorReportingService
-import am5800.harmonie.app.model.features.flow.FlowManager
 import am5800.harmonie.app.model.features.localization.LocalizationService
 import am5800.harmonie.app.model.features.parallelSentence.ParallelSentenceFlowManager
 import am5800.harmonie.app.model.features.repetition.LearnScore
 import am5800.harmonie.app.model.services.KeyValueDatabase
+import am5800.harmonie.app.model.services.flow.FlowManager
 import java.util.*
 
 open class WordViewModel(val text: String, val needSpaceBefore: Boolean)

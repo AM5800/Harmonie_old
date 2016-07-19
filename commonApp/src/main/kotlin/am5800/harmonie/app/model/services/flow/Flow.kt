@@ -1,4 +1,4 @@
-package am5800.harmonie.app.model.features.flow
+package am5800.harmonie.app.model.services.flow
 
 import am5800.common.utils.EnumerableDistribution
 import am5800.common.utils.Lifetime
@@ -14,7 +14,7 @@ import kotlin.concurrent.schedule
 class Flow(lifetime: Lifetime,
            private val providers: Collection<FlowItemProvider>,
            debugOptions: DebugOptions,
-           private val distribution: EnumerableDistribution<FlowItemCategory>) {
+           private val distribution: EnumerableDistribution<FlowItemTag>) {
   private val random = debugOptions.random
   private var successful = 0
   private var failed = 0
@@ -27,11 +27,11 @@ class Flow(lifetime: Lifetime,
 
     var provider: FlowItemProvider? = null
     for (i in 1..10) {
-      val category = distribution.get(random)
+      val tag = distribution.get(random)
 
       provider = providers
-          .filter { it.supportedCategories.contains(category) }
-          .firstOrNull { it.tryPresentNextItem(category) }
+          .filter { it.supportedTags.contains(tag) }
+          .firstOrNull { it.tryPresentNextItem(tag) }
 
       if (provider != null) break
     }

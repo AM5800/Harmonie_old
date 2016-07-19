@@ -7,8 +7,8 @@ import am5800.common.utils.properties.Property
 import am5800.harmonie.app.model.features.feedback.ErrorReportingService
 import am5800.harmonie.app.model.features.fillTheGap.FillTheGapFlowItemManager
 import am5800.harmonie.app.model.features.fillTheGap.FillTheGapQuestion
-import am5800.harmonie.app.model.features.flow.FlowManager
 import am5800.harmonie.app.model.features.localization.LocalizationService
+import am5800.harmonie.app.model.services.flow.FlowManager
 
 class VariantButtonViewModel(val title: String, enabled: Boolean, lifetime: Lifetime) {
   val enabled = Property(lifetime, enabled)

@@ -8,10 +8,10 @@ import am5800.common.utils.functions.random
 import am5800.common.utils.functions.shuffle
 import am5800.common.utils.properties.NullableProperty
 import am5800.harmonie.app.model.DebugOptions
-import am5800.harmonie.app.model.features.flow.FlowItemCategory
-import am5800.harmonie.app.model.features.flow.FlowItemProvider
 import am5800.harmonie.app.model.services.ContentDb
 import am5800.harmonie.app.model.services.LanguageCompetenceManager
+import am5800.harmonie.app.model.services.flow.FlowItemProvider
+import am5800.harmonie.app.model.services.flow.FlowItemTag
 import am5800.harmonie.app.model.services.query5
 
 class FillTheGapFlowItemManagerImpl(
@@ -19,12 +19,12 @@ class FillTheGapFlowItemManagerImpl(
     lifetime: Lifetime,
     private val debugOptions: DebugOptions,
     private val languageCompetenceManager: LanguageCompetenceManager) : FlowItemProvider, FillTheGapFlowItemManager {
-  override fun getAvailableDataSetSize(category: FlowItemCategory): Int {
+  override fun getAvailableDataSetSize(tag: FlowItemTag): Int {
     return 0
   }
 
   private val forms = getForms()
-  override val supportedCategories: Set<FlowItemCategory> = forms.map { FillTheGapCategory(it.learnLanguage) }.toSet()
+  override val supportedTags: Set<FlowItemTag> = forms.map { FillTheGapTag(it.learnLanguage) }.toSet()
 
   override val question = NullableProperty<FillTheGapQuestion>(lifetime)
 
@@ -47,11 +47,11 @@ class FillTheGapFlowItemManagerImpl(
 
   private class FormData(val lemmaId: Long, val form: String, val topicId: String, val knownLanguage: Language, val learnLanguage: Language)
 
-  override fun tryPresentNextItem(category: FlowItemCategory): Boolean {
-    if (category !is FillTheGapCategory) throw UnsupportedOperationException("Category is not supported")
+  override fun tryPresentNextItem(tag: FlowItemTag): Boolean {
+    if (tag !is FillTheGapTag) throw UnsupportedOperationException("Category is not supported")
 
     val byLanguage = forms
-        .filter { languageCompetenceManager.isKnown(it.knownLanguage) && it.learnLanguage == category.learnLanguage }
+        .filter { languageCompetenceManager.isKnown(it.knownLanguage) && it.learnLanguage == tag.learnLanguage }
 
     val byTopic = byLanguage
         .groupBy { it.topicId }.toList()

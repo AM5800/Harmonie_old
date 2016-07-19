@@ -1,9 +1,9 @@
 package am5800.harmonie.app.model.features.parallelSentence
 
 import am5800.common.Language
-import am5800.harmonie.app.model.features.flow.LanguageCategory
+import am5800.harmonie.app.model.services.flow.LanguageTag
 
-data class ParallelSentenceCategory(override val learnLanguage: Language) : LanguageCategory {
+data class ParallelSentenceTag(override val learnLanguage: Language) : LanguageTag {
   override fun toString(): String {
     return "${javaClass.name}, learn: ${learnLanguage.code}"
   }

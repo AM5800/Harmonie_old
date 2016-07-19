@@ -19,9 +19,17 @@ interface WordsRepetitionService {
   val attemptResultReceived: Signal<WordAttemptResult>
   fun getBinaryWordScore(word: Word): LearnScore?
   fun getAverageBinaryScore(language: Language): Double
+
+  fun countAllScheduledWords(language: Language, dateTime: DateTime): Int
 }
 
 class WordsRepetitionServiceImpl(private val repetitionService: RepetitionService, lifetime: Lifetime, private val contentDb: ContentDb) : WordsRepetitionService {
+  override fun countAllScheduledWords(language: Language, dateTime: DateTime): Int {
+    val category = getCategory(language)
+    val scheduled = repetitionService.getScheduledEntities(category, dateTime)
+    return scheduled.size
+  }
+
   private val cache = mutableMapOf<Pair<String, Language>, SqlWord>()
 
   override fun getBinaryWordScore(word: Word): LearnScore? {
