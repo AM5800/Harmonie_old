@@ -8,7 +8,7 @@ class AndroidCursor(private val cursor: android.database.Cursor) : Cursor {
     cursor.close()
   }
 
-  override fun getString(index: Int): String {
+  override fun getString(index: Int): String? {
     return cursor.getString(index)
   }
 

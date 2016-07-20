@@ -1,6 +1,6 @@
 package dataProcessor
 
-import am5800.common.LanguageParser
+import am5800.common.Language
 import am5800.common.Word
 import org.xml.sax.Attributes
 import org.xml.sax.helpers.DefaultHandler
@@ -17,7 +17,7 @@ class CountsParser {
     override fun startElement(uri: String?, localName: String?, qName: String?, attributes: Attributes) {
       if (qName == "lemma") {
         val lemma = attributes.getValue("value")!!
-        val language = LanguageParser.parse(attributes.getValue("language"))
+        val language = Language.parse(attributes.getValue("language"))
         val count = Integer.parseInt(attributes.getValue("count"))
 
         _result.put(Word(language, lemma), count)

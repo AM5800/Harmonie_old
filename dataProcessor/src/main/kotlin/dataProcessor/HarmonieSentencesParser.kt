@@ -1,6 +1,6 @@
 package dataProcessor
 
-import am5800.common.LanguageParser
+import am5800.common.Language
 import am5800.common.Sentence
 import am5800.common.Word
 import am5800.common.WordOccurrence
@@ -56,10 +56,11 @@ class HarmonieSentencesParser() {
 
     override fun startElement(uri: String?, localName: String?, qName: String?, attributes: Attributes) {
       if (qName == "s") {
-        val language = LanguageParser.parse(attributes.getValue("language"))
+        val language = Language.parse(attributes.getValue("language"))
         val text = attributes.getValue("text")
         val level = attributes.getValue("level")?.toInt()
-        val sentence = Sentence(language, text)
+        val uid = attributes.getValue("id")
+        val sentence = Sentence(uid, language, text)
         _sentenceLevels[sentence] = level
 
         sentencesInGroup.add(sentence)

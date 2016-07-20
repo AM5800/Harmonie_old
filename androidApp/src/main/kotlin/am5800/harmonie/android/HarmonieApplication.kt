@@ -59,7 +59,7 @@ class HarmonieApplication : Application() {
 
       val languageCompetenceManager = LanguageCompetenceManagerStub()
       val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceAndWordsProvider, wordsRepetitionService, sentenceSelectionStrategy, SqlLanguagePairsProvider(contentDb), languageCompetenceManager)
-      val seinFlowManager = FillTheGapFlowItemManagerImpl(contentDb, lt, debugOptions, languageCompetenceManager)
+      val seinFlowManager = FillTheGapFlowItemManagerImpl(contentDb, lt, debugOptions, languageCompetenceManager, sentenceAndWordsProvider)
       val flowItemProviders = listOf(parallelSentenceFlowManager, seinFlowManager)
 
       val flowManager = FlowManager(lt, flowItemProviders, debugOptions)

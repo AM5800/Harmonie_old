@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <harmonie version="1.0">
   <ss>
-    <s language="de" text="Für jede Aufgabe gibt es nur eine richtige lösung." level="0">
+    <s id="test#1" language="de" text="Für jede Aufgabe gibt es nur eine richtige lösung." level="0">
       <w lemma="fuer" pos="Unknown" start="0" end="3"  level="0"/>
       <w lemma="jed" pos="Unknown" start="4" end="8"  level="0"/>
       <w lemma="aufgabe" pos="Unknown" start="9" end="16"  level="0"/>
@@ -12,10 +12,10 @@
       <w lemma="richtig" pos="Unknown" start="34" end="42"  level="0"/>
       <w lemma="loesung" pos="Unknown" start="43" end="49"  level="0"/>
     </s>
-    <s language="ru" text="Не важно" level="0"/>
+    <s language="ru" text="Не важно"/>
   </ss>
   <ss>
-    <s language="de" text="Kreuzen Sie bitte auf dem Antwortbogen an." level="1">
+    <s id="test#2" language="de" text="Kreuzen Sie bitte auf dem Antwortbogen an." level="1">
       <w lemma="kreuz" pos="Unknown" start="0" end="7"  level="0"/>
       <w lemma="ich" pos="Unknown" start="8" end="11"  level="0"/>
       <w lemma="bitten" pos="Unknown" start="12" end="17"  level="0"/>
@@ -24,7 +24,7 @@
       <w lemma="antwortbogen" pos="Unknown" start="26" end="38"  level="0"/>
       <w lemma="an" pos="Unknown" start="39" end="41"  level="0"/>
     </s>
-    <s language="ru" text="Не важно" level="0"/>
+    <s language="ru" text="Не важно"/>
   </ss>
   <ss>
     <s language="de" text="Bitte übertragen Sie ihre lösungen auf den Antwortbogen." level="2">
@@ -37,6 +37,6 @@
       <w lemma="der" pos="Unknown" start="39" end="42"  level="0"/>
       <w lemma="antwortbogen" pos="Unknown" start="43" end="55"  level="0"/>
     </s>
-    <s language="ru" text="Не важно" level="0"/>
+    <s language="ru" text="Не важно"/>
   </ss>
 </harmonie>

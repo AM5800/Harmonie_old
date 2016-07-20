@@ -1,12 +1,11 @@
 import am5800.common.Language
-import am5800.common.LanguageParser
 import org.junit.Assert
 import org.junit.Test
 
 class LanguageCodeTests {
   @Test
   fun deserializationEn() {
-    Assert.assertEquals(Language.English, LanguageParser.parse("En"))
+    Assert.assertEquals(Language.English, Language.parse("En"))
   }
 
   @Test
@@ -16,6 +15,6 @@ class LanguageCodeTests {
 
   @Test(expected = Exception::class)
   fun failAtWrongLanguageCode() {
-    LanguageParser.parse("NonLanguageCode")
+    Language.parse("NonLanguageCode")
   }
 }

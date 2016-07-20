@@ -3,7 +3,7 @@ package am5800.harmonie.app.model.services
 import java.io.Closeable
 
 interface Cursor : Closeable {
-  fun getString(index: Int): String
+  fun getString(index: Int): String?
   fun moveToNext(): Boolean
 }
 
@@ -18,13 +18,13 @@ inline fun <reified T> valueFromCursor(index: Int, cursor: Cursor): T {
     return string as T
   }
   if (0 is T) {
-    return string.toInt() as T
+    return string?.toInt() as T
   }
   if (0.0 is T) {
-    return string.toDouble() as T
+    return string?.toDouble() as T
   }
   if (0L is T) {
-    return string.toLong() as T
+    return string?.toLong() as T
   }
 
   throw Exception("Unsupported type: ${T::class.qualifiedName}")

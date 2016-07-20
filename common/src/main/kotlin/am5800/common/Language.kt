@@ -23,9 +23,7 @@ enum class Language(val code: String) {
   };
 
   abstract fun nameInLanguage(): String
-}
 
-class LanguageParser {
   companion object {
     fun parse(string: String): Language {
       return tryParse(string) ?: throw Exception("Unknown language code: $string")

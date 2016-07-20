@@ -50,7 +50,7 @@ class JetSqlSentenceWriter(private val db: SqlJetDb) : SentenceWriter {
     if (instance != null) return instance
 
     db.createTable("CREATE TABLE sentenceMapping (key INTEGER PRIMARY KEY, value INTEGER)")
-    db.createTable("CREATE TABLE sentences (id INTEGER PRIMARY KEY, language TEXT, text TEXT, level INTEGER)")
+    db.createTable("CREATE TABLE sentences (id INTEGER PRIMARY KEY, uid STRING, language TEXT, text TEXT, level INTEGER)")
     db.createTable("CREATE TABLE sentenceLanguages (knownLanguage TEXT, learnLanguage TEXT, count INTEGER)")
     db.createTable("CREATE TABLE words (id INTEGER PRIMARY KEY, language TEXT, lemma TEXT, level INTEGER)")
     db.createTable("CREATE TABLE wordOccurrences (id INTEGER PRIMARY KEY, wordId INTEGER, sentenceId INTEGER, startIndex INTEGER, endIndex INTEGER)")
@@ -77,7 +77,14 @@ class JetSqlSentenceWriter(private val db: SqlJetDb) : SentenceWriter {
     val existingId = sentenceMapping[sentence]
     if (existingId != null) return existingId
     val sentencesTable = ensureTables().sentencesTable
-    val insertedId = sentencesTable.insert(sentence.language.code, sentence.text, levels[sentence])
+    val map = mutableMapOf<String, Any?>()
+
+    if (sentence.uid != null) map["uid"] = sentence.uid
+    map["language"] = sentence.language.code
+    map["text"] = sentence.text
+    map["level"] = levels[sentence]
+
+    val insertedId = sentencesTable.insertByFieldNames(map)
     sentenceMapping[sentence] = insertedId
     return insertedId
   }

@@ -1,7 +1,6 @@
 package am5800.harmonie.app.model.features.localization
 
 import am5800.common.Language
-import am5800.common.LanguageParser
 import am5800.common.utils.Lifetime
 import am5800.common.utils.properties.Property
 import am5800.common.utils.properties.ReadonlyProperty
@@ -45,7 +44,7 @@ open class LocalizationServiceImpl(private val defaultLanguage: Language,
   }
 
   private val currentLanguage = keyValueDatabase.createProperty(lifetime, "LocalizationService.currentLanguage", defaultLanguage.toString())
-      .convert({ LanguageParser.tryParse(it) ?: defaultLanguage }, { it.toString() })
+      .convert({ Language.tryParse(it) ?: defaultLanguage }, { it.toString() })
 
   private val tables = listOf(EnglishLocalizationTable(), RussianLocalizationTable())
 

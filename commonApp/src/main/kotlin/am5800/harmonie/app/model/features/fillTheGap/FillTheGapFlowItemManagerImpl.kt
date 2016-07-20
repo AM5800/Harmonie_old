@@ -1,8 +1,6 @@
 package am5800.harmonie.app.model.features.fillTheGap
 
 import am5800.common.Language
-import am5800.common.LanguageParser
-import am5800.common.Sentence
 import am5800.common.utils.Lifetime
 import am5800.common.utils.functions.random
 import am5800.common.utils.functions.shuffle
@@ -12,13 +10,16 @@ import am5800.harmonie.app.model.services.ContentDb
 import am5800.harmonie.app.model.services.LanguageCompetenceManager
 import am5800.harmonie.app.model.services.flow.FlowItemProvider
 import am5800.harmonie.app.model.services.flow.FlowItemTag
+import am5800.harmonie.app.model.services.query4
 import am5800.harmonie.app.model.services.query5
+import am5800.harmonie.app.model.services.sentencesAndWords.SqlSentenceAndWordsProvider
 
 class FillTheGapFlowItemManagerImpl(
     private val contentDb: ContentDb,
     lifetime: Lifetime,
     private val debugOptions: DebugOptions,
-    private val languageCompetenceManager: LanguageCompetenceManager) : FlowItemProvider, FillTheGapFlowItemManager {
+    private val languageCompetenceManager: LanguageCompetenceManager,
+    private val sentenceAndWordsProvider: SqlSentenceAndWordsProvider) : FlowItemProvider, FillTheGapFlowItemManager {
   override fun getAvailableDataSetSize(tag: FlowItemTag): Int {
     return 0
   }
@@ -42,7 +43,7 @@ class FillTheGapFlowItemManagerImpl(
         GROUP BY wordId, form
     """
     return contentDb.query5<String, String, Long, String, String>(query)
-        .map { FormData(it.value3, it.value5, it.value4, LanguageParser.parse(it.value2), LanguageParser.parse(it.value1)) }
+        .map { FormData(it.value3, it.value5, it.value4, Language.parse(it.value2), Language.parse(it.value1)) }
   }
 
   private class FormData(val lemmaId: Long, val form: String, val topicId: String, val knownLanguage: Language, val learnLanguage: Language)
@@ -67,7 +68,7 @@ class FillTheGapFlowItemManagerImpl(
 
   private fun getQuestion(selectedForm: FormData): FillTheGapQuestion? {
     val query = """
-      SELECT s1.text, s2.text, s2.language, wordOccurrences.startIndex, wordOccurrences.endIndex FROM sentenceMapping
+      SELECT s1.id, s2.id, wordOccurrences.startIndex, wordOccurrences.endIndex FROM sentenceMapping
         INNER JOIN sentences AS s1
           ON s1.id = sentenceMapping.key
         INNER JOIN sentences AS s2
@@ -82,11 +83,15 @@ class FillTheGapFlowItemManagerImpl(
         LIMIT 1
     """
 
-    val queryResult = contentDb.query5<String, String, String, Long, Long>(query).singleOrNull() ?: return null
+    val queryResult = contentDb.query4<Long, Long, Int, Int>(query).singleOrNull() ?: return null
 
-    val question = Sentence(Language.German, queryResult.value1)
-    val answer = Sentence(LanguageParser.parse(queryResult.value3), queryResult.value2)
+    val sentences = sentenceAndWordsProvider.getSentencesFlat(listOf(queryResult.value1, queryResult.value2))
+
+    val question = sentences.first()
+    val answer = sentences.last()
     val variants = forms.filter { it.form != selectedForm.form && it.topicId == selectedForm.topicId }.shuffle(debugOptions.random).take(3).map { it.form }
-    return FillTheGapQuestion(question, answer, queryResult.value4.toInt(), queryResult.value5.toInt(), variants, selectedForm.form)
+    val occurrenceStart = queryResult.value3
+    val occurrenceEnd = queryResult.value4
+    return FillTheGapQuestion(question, answer, occurrenceStart, occurrenceEnd, variants, selectedForm.form)
   }
 }

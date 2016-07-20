@@ -20,10 +20,9 @@ class SqlSentenceAndWordsProvider(private val contentDb: ContentDb,
 
   override fun getEasiestRandomSentenceWith(word: Word, competence: List<LanguageCompetence>): SentenceAndTranslation? {
     val wordId = (word as SqlWord).id
-    val learnLanguage = word.language
 
     val query = """
-        SELECT s1.id, s1.text, s2.id, s2.text, s2.language, s1.level FROM sentences AS s1
+        SELECT s1.id, s2.id, s1.level FROM sentences AS s1
           JOIN sentenceMapping
             ON sentenceMapping.key = s1.id
           JOIN sentences AS s2
@@ -35,15 +34,42 @@ class SqlSentenceAndWordsProvider(private val contentDb: ContentDb,
           LIMIT 100
     """
 
-    val queryResult = contentDb.query6<Long, String, Long, String, String, Int>(query)
+    val queryResult = contentDb.query3<Long, Long, Int>(query)
     if (queryResult.isEmpty()) return null
 
-    val easiest = queryResult.filter { it.value6 == queryResult.first().value6 }
+    val easiest = queryResult.filter { it.value3 == queryResult.first().value3 }
     val result = easiest.random(debugOptions.random)
 
-    val learnLanguageSentence = SqlSentence(result.value1, learnLanguage, result.value2)
-    val knownLanguageSentence = SqlSentence(result.value3, LanguageParser.parse(result.value5), result.value4)
+    val sentences = getSentencesFlat(listOf(result.value1, result.value2))
+
+    val learnLanguageSentence = sentences.first()
+    val knownLanguageSentence = sentences.last()
     return SentenceAndTranslation(learnLanguageSentence, knownLanguageSentence)
+  }
+
+  fun getSentences(sqlIds: List<List<Long>>): List<List<SqlSentence>> {
+    val unfolded = sqlIds.flatMap { it }
+    val sentences = getSentencesFlat(unfolded).map { Pair(it.sqlId, it) }.toMap()
+
+    val result = sqlIds.map { group ->
+      group.map {
+        sentences[it]!!
+      }
+    }
+
+    return result
+  }
+
+  fun getSentencesFlat(sqlIds: List<Long>): List<SqlSentence> {
+    val ids = "(${sqlIds.joinToString(", ") { it.toString() }})"
+    val query = """
+      SELECT id, uid, language, text FROM sentences
+        WHERE id IN $ids
+    """
+
+    val queryResult = contentDb.query4<Long, String?, String, String>(query)
+
+    return queryResult.map { SqlSentence(it.value1, Language.parse(it.value3), it.value4, it.value2) }
   }
 
   private fun competenceToSql(fieldName: String, competence: List<LanguageCompetence>): String {
@@ -61,13 +87,13 @@ class SqlSentenceAndWordsProvider(private val contentDb: ContentDb,
         FROM words
           INNER JOIN wordOccurrences
             ON words.id = wordOccurrences.wordId
-        WHERE wordOccurrences.sentenceId = ${sentence.id}
+        WHERE wordOccurrences.sentenceId = ${sentence.sqlId}
     """
 
     val wordsData = contentDb.query5<Long, String, Int, Int, String>(query)
 
     val result = wordsData.map {
-      WordOccurrence(SqlWord(it.value1, LanguageParser.Companion.parse(it.value5), it.value2), sentence, it.value3, it.value4)
+      WordOccurrence(SqlWord(it.value1, Language.parse(it.value5), it.value2), sentence, it.value3, it.value4)
     }
 
     if (result.isNotEmpty() && result.any { it.word.language != sentence.language }) throw Exception("Word language differ from sentence language")
@@ -77,7 +103,7 @@ class SqlSentenceAndWordsProvider(private val contentDb: ContentDb,
   override fun getWordsInSentence(sentence: Sentence): List<Word> {
     if (sentence !is SqlSentence) throw Exception("Unsupported type: " + sentence.javaClass.name)
 
-    val sentenceId = sentence.id
+    val sentenceId = sentence.sqlId
     val query = "SELECT id, lemma FROM words WHERE id IN (SELECT wordId FROM wordOccurrences WHERE sentenceId = $sentenceId)"
 
     val result = contentDb.query2<Long, String>(query)

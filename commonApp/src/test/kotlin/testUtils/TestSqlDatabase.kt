@@ -12,7 +12,7 @@ class TestCursor(private val rs: ResultSet) : Cursor {
     rs.close()
   }
 
-  override fun getString(index: Int): String {
+  override fun getString(index: Int): String? {
     // Android counts columns from 0, this sql db from 1
     return rs.getString(index + 1)
   }
