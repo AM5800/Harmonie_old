@@ -9,6 +9,7 @@ import am5800.harmonie.android.Visibility
 import am5800.harmonie.android.controllers.util.bindOnClick
 import am5800.harmonie.android.controllers.util.bindText
 import am5800.harmonie.android.controllers.util.bindVisibility
+import am5800.harmonie.android.controllers.util.bindVisibilityInverted
 import am5800.harmonie.android.viewBinding.*
 import am5800.harmonie.app.model.features.repetition.LearnScore
 import am5800.harmonie.app.vm.ParallelSentenceViewModel
@@ -44,9 +45,26 @@ class ParallelSentenceController(lifetime: Lifetime,
     answer.bindText(bindingLifetime, view, vm.answer)
     answer.bindVisibility(bindingLifetime, view, vm.answerGroupVisibility, Visibility.Collapsed)
 
-    val nextBtn = view.getChild<Button>(R.id.continueBtn)
-    nextBtn.bindOnClick(bindingLifetime, { vm.next() })
-    nextBtn.bindText(bindingLifetime, view, vm.continueBtnText)
+    val showTranslationBtn = view.getChild<Button>(R.id.showTranslationBtn)
+    showTranslationBtn.bindOnClick(bindingLifetime, { vm.next() })
+    showTranslationBtn.bindText(bindingLifetime, view, vm.continueBtnText)
+    showTranslationBtn.bindVisibilityInverted(bindingLifetime, view, vm.answerGroupVisibility, Visibility.Collapsed)
+
+    val score1 = view.getChild<Button>(R.id.score1Btn)
+    val score2 = view.getChild<Button>(R.id.score2Btn)
+    val score3 = view.getChild<Button>(R.id.score3Btn)
+
+    score1.bindVisibility(bindingLifetime, view, vm.answerGroupVisibility, Visibility.Collapsed)
+    score2.bindVisibility(bindingLifetime, view, vm.answerGroupVisibility, Visibility.Collapsed)
+    score3.bindVisibility(bindingLifetime, view, vm.answerGroupVisibility, Visibility.Collapsed)
+
+    score1.bindText(bindingLifetime, view, vm.score1Text)
+    score2.bindText(bindingLifetime, view, vm.score2Text)
+    score3.bindText(bindingLifetime, view, vm.score3Text)
+
+    score1.bindOnClick(bindingLifetime, { vm.submit(1) })
+    score2.bindOnClick(bindingLifetime, { vm.submit(2) })
+    score3.bindOnClick(bindingLifetime, { vm.submit(3) })
 
     val flowLayout = view.getChild<FlowLayout>(R.id.question)
     vm.question.onChange(bindingLifetime, {

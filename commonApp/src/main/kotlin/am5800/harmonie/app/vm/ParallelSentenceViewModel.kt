@@ -7,9 +7,11 @@ import am5800.common.utils.properties.Property
 import am5800.harmonie.app.model.features.feedback.ErrorReportingService
 import am5800.harmonie.app.model.features.localization.LocalizationService
 import am5800.harmonie.app.model.features.parallelSentence.ParallelSentenceFlowManager
+import am5800.harmonie.app.model.features.parallelSentence.SentenceScore
 import am5800.harmonie.app.model.features.repetition.LearnScore
 import am5800.harmonie.app.model.services.KeyValueDatabase
 import am5800.harmonie.app.model.services.flow.FlowManager
+import sun.plugin.dom.exception.InvalidStateException
 import java.util.*
 
 open class WordViewModel(val text: String, val needSpaceBefore: Boolean)
@@ -26,7 +28,7 @@ class ToggleableWordViewModel(val word: Word, text: String,
 class ParallelSentenceViewModel(lifetime: Lifetime,
                                 private val parallelSentenceFlowManager: ParallelSentenceFlowManager,
                                 private val flowManager: FlowManager,
-                                localizationService: LocalizationService,
+                                private val localizationService: LocalizationService,
                                 keyValueDatabase: KeyValueDatabase,
                                 reportingService: ErrorReportingService) : ViewModelBase(lifetime) {
   enum class State {
@@ -43,28 +45,42 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
     return pair.question.text + "/" + pair.answer.text
   }
 
-  val continueBtnText = localizationService.createProperty(lifetime, { it.continueButton })
+  val continueBtnText = localizationService.createProperty(lifetime, { it.showTranslation })
 
   private val state = Property(lifetime, State.ShowQuestion)
+  private var currentScoreIsGood = true
 
 
   fun next() {
     if (state.value == State.ShowQuestion) {
       state.value = State.ShowAnswer
     } else {
-      val scores = LinkedHashMap<Word, LearnScore>()
-      val vms = question.value.filterIsInstance<ToggleableWordViewModel>()
-      for (vm in vms) {
-        scores.put(vm.word, vm.state.value)
-      }
-      parallelSentenceFlowManager.submitScore(scores)
-      flowManager.next(scores.count { it.value == LearnScore.Good }, scores.count { it.value == LearnScore.Bad })
+      throw InvalidStateException("Already showing answer")
+
     }
+  }
+
+  fun submit(buttonIndex: Int) {
+    if (buttonIndex < 1 || buttonIndex > 3) throw Exception("buttonIndex is out of range: $buttonIndex")
+
+    val scores = LinkedHashMap<Word, LearnScore>()
+    val vms = question.value.filterIsInstance<ToggleableWordViewModel>()
+    for (vm in vms) {
+      scores.put(vm.word, vm.state.value)
+    }
+
+    val sentenceScore = SentenceScore.values()[buttonIndex - 1 + if (currentScoreIsGood) 1 else 0]
+
+    parallelSentenceFlowManager.submitScore(scores, sentenceScore)
+    flowManager.next(scores.count { it.value == LearnScore.Good }, scores.count { it.value == LearnScore.Bad })
   }
 
   val answerGroupVisibility = Property(lifetime, false)
   val question = Property(lifetime, emptyList<WordViewModel>())
   val answer = Property(lifetime, "")
+  val score1Text = Property(lifetime, "")
+  val score2Text = Property(lifetime, "")
+  val score3Text = Property(lifetime, "")
 
   init {
     state.forEachValue(lifetime, { state, lt ->
@@ -78,8 +94,11 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
     parallelSentenceFlowManager.question.forEachValue(lifetime, { data, lt ->
       if (data == null) return@forEachValue
       state.value = State.ShowQuestion
-      question.value = createViewModelsForQuestion(data, lifetime)
+      val vms = createViewModelsForQuestion(data, lt)
+      subscribeToVms(vms, lt)
+      question.value = vms
       answer.value = data.answer.text
+      onGoodScore()
       activationRequested.fire(Unit)
       if (keyValueDatabase.getValue("ParallelSentenceQuizHelpShowed", "no") == "no") {
         help.value = localizationService.getCurrentTable().parallelSentencesQuizHelp
@@ -88,5 +107,34 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
         help.value = null
       }
     })
+  }
+
+  private fun updateScore(vms: List<ToggleableWordViewModel>) {
+    val good = vms.count { it.state.value == LearnScore.Good }
+    if (good.toDouble() / vms.size > 0.8) onGoodScore()
+    else onBadScore()
+  }
+
+  private fun subscribeToVms(vms: List<WordViewModel>, lt: Lifetime) {
+    val tvms = vms.filterIsInstance<ToggleableWordViewModel>()
+    for (tvm in tvms) {
+      tvm.state.onChange(lt, { updateScore(tvms) })
+    }
+  }
+
+  private fun onGoodScore() {
+    currentScoreIsGood = true
+    val table = localizationService.getCurrentTable()
+    score1Text.value = table.unclear
+    score2Text.value = table.uncertain
+    score3Text.value = table.clear
+  }
+
+  private fun onBadScore() {
+    currentScoreIsGood = false
+    val table = localizationService.getCurrentTable()
+    score1Text.value = table.blackout
+    score2Text.value = table.unclear
+    score3Text.value = table.uncertain
   }
 }

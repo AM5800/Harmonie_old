@@ -39,7 +39,7 @@ class SelectLanguageController(private val vm: SelectLanguageViewModel,
 
     // continue
     val continueBtn = view.getChild<Button>(R.id.continueBtn)
-    continueBtn.bindText(bindingLifetime, view, vm.continueBtnText)
+    continueBtn.bindText(bindingLifetime, view, vm.continueButton)
     continueBtn.bindVisibility(bindingLifetime, view, vm.continueBtnVisible, Visibility.Collapsed)
     continueBtn.bindOnClick(bindingLifetime, { vm.next() })
   }

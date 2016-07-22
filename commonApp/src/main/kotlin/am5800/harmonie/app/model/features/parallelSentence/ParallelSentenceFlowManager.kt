@@ -60,7 +60,8 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
     return ParallelSentenceQuestion(findResult.sentence, findResult.translation, occurrences)
   }
 
-  fun submitScore(scores: Map<Word, LearnScore>) {
+  fun submitScore(scores: Map<Word, LearnScore>, sentenceScore: SentenceScore) {
+    sentenceSelector.submitScore(question.value!!.question, sentenceScore)
     for ((word, score) in scores) {
       repetitionService.submitAttempt(word, score)
     }

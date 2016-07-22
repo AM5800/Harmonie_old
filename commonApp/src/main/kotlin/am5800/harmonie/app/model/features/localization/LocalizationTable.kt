@@ -22,4 +22,9 @@ interface LocalizationTable {
   val nSentencesAvailable: QuantityString
   val onDue: FormatString
   val onLearning: FormatString
+  val showTranslation: String
+  val unclear: String
+  val blackout: String
+  val uncertain: String
+  val clear: String
 }

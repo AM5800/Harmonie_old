@@ -20,7 +20,7 @@ class SelectLanguageViewModel(private val lifetime: Lifetime,
   val welcome = localizationService.createProperty(lifetime, { it.welcomeToHarmonie })
   val chooseKnown = localizationService.createProperty(lifetime, { it.chooseKnownLanguage })
   val chooseLearn = localizationService.createProperty(lifetime, { it.chooseLearnLanguage })
-  val continueBtnText = localizationService.createProperty(lifetime, { it.continueButton })
+  val continueButton = localizationService.createProperty(lifetime, { it.continueButton })
 
   val learnGroupVisible = Property(lifetime, false)
   val continueBtnVisible = Property(lifetime, false)

@@ -6,6 +6,10 @@ import am5800.harmonie.app.model.features.localization.LocalizationTable
 
 
 class EnglishLocalizationTable : LocalizationTable {
+  override val unclear = "Unclear"
+  override val blackout = "Blackout"
+  override val uncertain = "Uncertain"
+  override val clear = "Clear"
   override val onDue = FormatStringImpl("On due: %0")
   override val onLearning = FormatStringImpl("On learning: %0/%1")
   override val nSentencesAvailable = EnglishQuantityString("%i sentence", "%i sentences")
@@ -21,9 +25,8 @@ class EnglishLocalizationTable : LocalizationTable {
   override val chooseKnownLanguage = "Choose languages you know well:"
   override val chooseLearnLanguage = "Choose languages you want to learn:"
   override val language: Language = Language.English
-
   override val continueButton: String = "Continue"
-
+  override val showTranslation: String = "Show translation"
   override val minutesLeft = EnglishQuantityString("%i minute left", "%i minutes left")
   override val secondsLeft = EnglishQuantityString("%i second left", "%i seconds left")
 }

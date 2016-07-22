@@ -5,6 +5,10 @@ import am5800.harmonie.app.model.features.localization.FormatStringImpl
 import am5800.harmonie.app.model.features.localization.LocalizationTable
 
 class RussianLocalizationTable : LocalizationTable {
+  override val unclear = "Не понятно"
+  override val blackout = "По нулям"
+  override val uncertain = "Не уверен"
+  override val clear = "Понятно"
   override val onDue = FormatStringImpl("Повторить: %0")
   override val onLearning = FormatStringImpl("На изучении: %0/%1")
   override val nSentencesAvailable = RussianQuantityString("%i предложение", "%i предложения", "%i предложений")
@@ -17,7 +21,8 @@ class RussianLocalizationTable : LocalizationTable {
   override val chooseLanguages = "Выбрать языки"
   override val learnAll = "Учить все"
   override val language: Language = Language.Russian
-  override val continueButton: String = "Продолжить"
+  override val continueButton = "Продолжить"
+  override val showTranslation = "Показать перевод"
   override val minutesLeft = RussianQuantityString("Осталась %i минута", "Осталось %i минуты", "Осталось %i минут")
   override val secondsLeft = RussianQuantityString("Осталась %i секунда", "Осталось %i секунды", "Осталось %i секунд")
   override val welcomeToHarmonie = "Добро пожаловать в Harmonie!"

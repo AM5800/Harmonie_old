@@ -15,7 +15,16 @@ import android.widget.TextView
 fun View.bindVisibility(lifetime: Lifetime, uiThreadRunner: UIThreadRunner, property: Property<Boolean>, invisibleValue: Visibility) {
   property.onChange(lifetime, {
     uiThreadRunner.runOnUiThread {
-      if (it.newValue) this.visibility = am5800.harmonie.android.Visibility.Visible.toAndroidVisibility()
+      if (it.newValue) this.visibility = Visibility.Visible.toAndroidVisibility()
+      else this.visibility = invisibleValue.toAndroidVisibility()
+    }
+  })
+}
+
+fun View.bindVisibilityInverted(lifetime: Lifetime, uiThreadRunner: UIThreadRunner, property: Property<Boolean>, invisibleValue: Visibility) {
+  property.onChange(lifetime, {
+    uiThreadRunner.runOnUiThread {
+      if (!it.newValue) this.visibility = Visibility.Visible.toAndroidVisibility()
       else this.visibility = invisibleValue.toAndroidVisibility()
     }
   })
