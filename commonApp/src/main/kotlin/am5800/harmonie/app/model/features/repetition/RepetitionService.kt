@@ -12,5 +12,6 @@ interface RepetitionService {
   fun getScheduledEntities(entityCategory: String, dateTime: DateTime): List<String>
   fun getAttemptedItems(entityCategory: String): List<String>
   fun getBinaryScore(entityId: String, entityCategory: String): LearnScore?
+  fun remove(entityId: String, entityCategory: String)
 }
 

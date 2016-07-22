@@ -21,9 +21,16 @@ interface WordsRepetitionService {
   fun getAverageBinaryScore(language: Language): Double
 
   fun countAllScheduledWords(language: Language, dateTime: DateTime): Int
+
+  fun remove(word: Word)
 }
 
 class WordsRepetitionServiceImpl(private val repetitionService: RepetitionService, lifetime: Lifetime, private val contentDb: ContentDb) : WordsRepetitionService {
+  override fun remove(word: Word) {
+    val category = getCategory(word.language)
+    repetitionService.remove(word.lemma, category)
+  }
+
   override fun countAllScheduledWords(language: Language, dateTime: DateTime): Int {
     val category = getCategory(language)
     val scheduled = repetitionService.getScheduledEntities(category, dateTime)
@@ -66,7 +73,7 @@ class WordsRepetitionServiceImpl(private val repetitionService: RepetitionServic
   override fun getNextScheduledWord(language: Language, dateTime: DateTime): Word? {
     val category = getCategory(language)
     val scheduled = repetitionService.getScheduledEntities(category, dateTime).firstOrNull() ?: return null
-    return getWords(listOf(scheduled), language).first()
+    return getWords(listOf(scheduled), language).firstOrNull()
   }
 
   private fun getWords(lemmas: List<String>, language: Language): List<Word> {

@@ -36,10 +36,14 @@ class ParallelSentenceSelectorImpl(private val repetitionService: WordsRepetitio
   private val logger = loggerProvider.getLogger(javaClass)
 
   override fun selectSentenceToShow(learnLanguage: Language, languageCompetence: List<LanguageCompetence>): SentenceAndTranslation? {
-    val scheduled = repetitionService.getNextScheduledWord(learnLanguage, DateTime.now())
-    if (scheduled != null) {
+    while (true) {
+      val scheduled = repetitionService.getNextScheduledWord(learnLanguage, DateTime.now()) ?: break
       logger.info("Repeating scheduled word: ${scheduled.lemma}, language: $learnLanguage")
-      return selectSentence(languageCompetence, scheduled)
+      val result = selectSentence(languageCompetence, scheduled)
+      if (result != null) return result
+
+      logger.info("Can't find sentence with word: ${scheduled.lemma}, language: $learnLanguage")
+      repetitionService.remove(scheduled)
     }
 
     val attemptedWords = repetitionService.getAttemptedWords(learnLanguage)

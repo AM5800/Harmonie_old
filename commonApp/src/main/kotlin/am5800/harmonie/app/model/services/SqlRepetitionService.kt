@@ -10,6 +10,10 @@ import org.joda.time.DateTime
 class SqlRepetitionService(private val repetitionAlgorithm: RepetitionAlgorithm,
                            private val db: UserDb,
                            debugOptions: DebugOptions) : RepetitionService {
+  override fun remove(entityId: String, entityCategory: String) {
+    db.execute("DELETE FROM attempts WHERE entityId='$entityId' AND entityCategory='$entityCategory'")
+  }
+
   override fun getBinaryScore(entityId: String, entityCategory: String): LearnScore? {
     return repetitionAlgorithm.getBinaryScore(getAttempts(entityCategory, entityId))
   }
