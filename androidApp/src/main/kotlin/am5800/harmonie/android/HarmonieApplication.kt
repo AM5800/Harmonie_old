@@ -15,6 +15,9 @@ import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.features.feedback.impl.ErrorReportingServiceImpl
 import am5800.harmonie.app.model.features.fillTheGap.FillTheGapFlowItemManagerImpl
 import am5800.harmonie.app.model.features.parallelSentence.ParallelSentenceFlowManager
+import am5800.harmonie.app.model.features.parallelSentence.ParallelSentenceSelectorImpl
+import am5800.harmonie.app.model.features.parallelSentence.SentenceSelectionStrategyImpl
+import am5800.harmonie.app.model.features.parallelSentence.sql.SqlSentenceScoreStorage
 import am5800.harmonie.app.model.features.repetition.BucketRepetitionAlgorithm
 import am5800.harmonie.app.model.features.repetition.WordsRepetitionServiceImpl
 import am5800.harmonie.app.model.features.statistics.LanguageTagStatisticsProvider
@@ -22,7 +25,6 @@ import am5800.harmonie.app.model.services.LanguageCompetenceManagerStub
 import am5800.harmonie.app.model.services.SqlRepetitionService
 import am5800.harmonie.app.model.services.flow.FlowManager
 import am5800.harmonie.app.model.services.languagePairs.SqlLanguagePairsProvider
-import am5800.harmonie.app.model.services.sentenceSelection.SentenceSelectionStrategyImpl
 import am5800.harmonie.app.model.services.sentencesAndWords.SqlSentenceAndWordsProvider
 import am5800.harmonie.app.vm.DefaultFlowControllerOwnerViewModel
 import am5800.harmonie.app.vm.FillTheGapViewModel
@@ -47,15 +49,20 @@ class HarmonieApplication : Application() {
       val debugOptions = DebugOptions(false, false, null)
       modelContainer = container
 
-      val permanentDb = AndroidUserDb(this, lt)
-      val keyValueDb = KeyValueDatabaseImpl(permanentDb)
+      val userDb = AndroidUserDb(this, lt)
+      val keyValueDb = KeyValueDatabaseImpl(userDb)
       val contentDb = AndroidContentDb(this, keyValueDb, loggerProvider, lt)
 
-      val repetitionService = SqlRepetitionService(BucketRepetitionAlgorithm(), permanentDb, debugOptions)
+      val repetitionService = SqlRepetitionService(BucketRepetitionAlgorithm(), userDb, debugOptions)
       val wordsRepetitionService = WordsRepetitionServiceImpl(repetitionService, lt, contentDb)
 
-      val sentenceAndWordsProvider = SqlSentenceAndWordsProvider(contentDb, debugOptions)
-      val sentenceSelectionStrategy = SentenceSelectionStrategyImpl(wordsRepetitionService, debugOptions, loggerProvider, sentenceAndWordsProvider)
+      val sentenceAndWordsProvider = SqlSentenceAndWordsProvider(contentDb)
+      val sentenceSelectionStrategy = ParallelSentenceSelectorImpl(wordsRepetitionService,
+          debugOptions,
+          loggerProvider,
+          sentenceAndWordsProvider,
+          SqlSentenceScoreStorage(userDb),
+          SentenceSelectionStrategyImpl())
 
       val languageCompetenceManager = LanguageCompetenceManagerStub()
       val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceAndWordsProvider, wordsRepetitionService, sentenceSelectionStrategy, SqlLanguagePairsProvider(contentDb), languageCompetenceManager)
@@ -65,8 +72,8 @@ class HarmonieApplication : Application() {
       val flowManager = FlowManager(lt, flowItemProviders, debugOptions)
 
       val localizationService = AndroidLocalizationService.create(resources, keyValueDb, lt)
-      val feedbackService = AndroidFeedbackService(permanentDb)
-      val reportingService = ErrorReportingServiceImpl(permanentDb)
+      val feedbackService = AndroidFeedbackService(userDb)
+      val reportingService = ErrorReportingServiceImpl(userDb)
 
       // ViewModels
       val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService, keyValueDb, reportingService)

@@ -1,6 +1,5 @@
 package model.services
 
-import TestDebugOptions
 import am5800.common.Language
 import am5800.harmonie.app.model.services.SqlSentence
 import am5800.harmonie.app.model.services.SqlWord
@@ -14,7 +13,7 @@ import testUtils.DbTestBase
 
 class SqlSentenceAndWordsProviderTests : DbTestBase() {
   private val key = "aufgabe"
-  val sentenceProvider = SqlSentenceAndWordsProvider(database, TestDebugOptions.instance)
+  val sentenceProvider = SqlSentenceAndWordsProvider(database)
   val sentences = listOf(
       SqlSentence(1, Language.German, "", null),
       SqlSentence(2, Language.Russian, "", null),
@@ -64,23 +63,15 @@ class SqlSentenceAndWordsProviderTests : DbTestBase() {
 
   private fun getCompetence(language: Language): List<LanguageCompetence> = listOf(LanguageCompetence(language, Competence.Native))
 
-  @Test
-  fun testGetSentenceWithFilter() {
-    val word = getWord(key)
-    val result = sentenceProvider.getEasiestRandomSentenceWith(word, getCompetence(Language.Russian))!!
-    val learnLanguageSentence = result.sentence as SqlSentence
-    Assert.assertEquals(1L, learnLanguageSentence.sqlId)
-  }
-
   @Test()
   fun testGetSentenceWithInconsistentFilter() {
     val word = getWord("mein")
-    val result = sentenceProvider.getEasiestRandomSentenceWith(word, getCompetence(Language.Japanese))
-    Assert.assertNull(result)
+    val result = sentenceProvider.getEasiestSentencesWith(word, getCompetence(Language.Japanese), 50)
+    Assert.assertEquals(0, result.size)
   }
 
   private fun getWord(word: String): SqlWord {
     val allWords = sentenceProvider.getAllWords(Language.German)
-    return allWords.single {it.value.lemma == word}.value as SqlWord
+    return allWords.single { it.value.lemma == word }.value as SqlWord
   }
 }

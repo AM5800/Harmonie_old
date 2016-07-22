@@ -1,13 +1,10 @@
 package am5800.harmonie.app.model.services.sentencesAndWords
 
 import am5800.common.*
-import am5800.common.utils.functions.random
-import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.services.*
 import am5800.harmonie.app.model.services.flow.LanguageCompetence
 
-class SqlSentenceAndWordsProvider(private val contentDb: ContentDb,
-                                  private val debugOptions: DebugOptions) : SentenceAndWordsProvider {
+class SqlSentenceAndWordsProvider(private val contentDb: ContentDb) : SentenceAndWordsProvider {
   override fun getAllWords(learnLanguage: Language): List<WithLevel<Word>> {
     val query = """
         SELECT id, lemma, level FROM words WHERE language = '${learnLanguage.code}'
@@ -18,11 +15,12 @@ class SqlSentenceAndWordsProvider(private val contentDb: ContentDb,
     return result.map { WithLevel(SqlWord(it.value1, learnLanguage, it.value2), it.value3) }
   }
 
-  override fun getEasiestRandomSentenceWith(word: Word, competence: List<LanguageCompetence>): SentenceAndTranslation? {
+  override fun getEasiestSentencesWith(word: Word, competence: List<LanguageCompetence>, amount: Int): List<SentenceAndTranslation> {
     val wordId = (word as SqlWord).id
 
+    // It is, of course, possible to do this in one query, but it is harder to support such queries
     val query = """
-        SELECT s1.id, s2.id, s1.level FROM sentences AS s1
+        SELECT s1.id, s2.id FROM sentences AS s1
           JOIN sentenceMapping
             ON sentenceMapping.key = s1.id
           JOIN sentences AS s2
@@ -34,17 +32,12 @@ class SqlSentenceAndWordsProvider(private val contentDb: ContentDb,
           LIMIT 100
     """
 
-    val queryResult = contentDb.query3<Long, Long, Int>(query)
-    if (queryResult.isEmpty()) return null
+    val queryResult = contentDb.query2<Long, Long>(query)
 
-    val easiest = queryResult.filter { it.value3 == queryResult.first().value3 }
-    val result = easiest.random(debugOptions.random)
+    val sentences = getSentences(queryResult.map { listOf(it.first, it.second) })
+        .map { SentenceAndTranslation(it.first(), it.last()) }
 
-    val sentences = getSentencesFlat(listOf(result.value1, result.value2))
-
-    val learnLanguageSentence = sentences.first()
-    val knownLanguageSentence = sentences.last()
-    return SentenceAndTranslation(learnLanguageSentence, knownLanguageSentence)
+    return sentences
   }
 
   fun getSentences(sqlIds: List<List<Long>>): List<List<SqlSentence>> {

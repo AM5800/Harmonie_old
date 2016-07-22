@@ -1,6 +1,7 @@
-package am5800.harmonie.app.model.services.sentenceSelection
+package am5800.harmonie.app.model.features.parallelSentence
 
 import am5800.common.Language
+import am5800.common.Sentence
 import am5800.common.WithLevel
 import am5800.common.Word
 import am5800.common.utils.EnumerableDistribution
@@ -13,10 +14,15 @@ import am5800.harmonie.app.model.services.sentencesAndWords.SentenceAndTranslati
 import am5800.harmonie.app.model.services.sentencesAndWords.SentenceAndWordsProvider
 import org.joda.time.DateTime
 
-class SentenceSelectionStrategyImpl(private val repetitionService: WordsRepetitionService,
-                                    private val debugOptions: DebugOptions,
-                                    loggerProvider: LoggerProvider,
-                                    private val sentenceAndWordsProvider: SentenceAndWordsProvider) : SentenceSelectionStrategy {
+class ParallelSentenceSelectorImpl(private val repetitionService: WordsRepetitionService,
+                                   private val debugOptions: DebugOptions,
+                                   loggerProvider: LoggerProvider,
+                                   private val sentenceAndWordsProvider: SentenceAndWordsProvider,
+                                   private val sentenceScoreStorage: SentenceScoreStorage,
+                                   private val sentenceSelectionStrategy: SentenceSelectionStrategy) : ParallelSentenceSelector {
+  override fun submitScore(sentence: Sentence, score: SentenceScore) {
+    sentenceScoreStorage.setScore(sentence, score)
+  }
 
   private enum class NextTask {
     RepeatRandomWord, LearnNewWord
@@ -29,11 +35,11 @@ class SentenceSelectionStrategyImpl(private val repetitionService: WordsRepetiti
 
   private val logger = loggerProvider.getLogger(javaClass)
 
-  override fun findBestSentenceByAttempts(learnLanguage: Language, competence: List<LanguageCompetence>): SentenceAndTranslation? {
+  override fun selectSentenceToShow(learnLanguage: Language, languageCompetence: List<LanguageCompetence>): SentenceAndTranslation? {
     val scheduled = repetitionService.getNextScheduledWord(learnLanguage, DateTime.now())
     if (scheduled != null) {
       logger.info("Repeating scheduled word: ${scheduled.lemma}, language: $learnLanguage")
-      return sentenceAndWordsProvider.getEasiestRandomSentenceWith(scheduled, competence)
+      return selectSentence(languageCompetence, scheduled)
     }
 
     val attemptedWords = repetitionService.getAttemptedWords(learnLanguage)
@@ -44,24 +50,33 @@ class SentenceSelectionStrategyImpl(private val repetitionService: WordsRepetiti
     if (canLearnNewWord == false && canRepeatRandomWord) throw Exception("Impossible state. Empty database?")
     if (canLearnNewWord && canRepeatRandomWord) {
       val nextTask = nextTaskDistribution.get(debugOptions.random)
-      if (nextTask == NextTask.LearnNewWord) return learnNewWord(competence, allWords, attemptedWords)
-      else return repeatRandomWord(attemptedWords, competence)
+      if (nextTask == NextTask.LearnNewWord) return learnNewWord(languageCompetence, allWords, attemptedWords)
+      else return repeatRandomWord(attemptedWords, languageCompetence)
     }
 
-    if (canLearnNewWord) return learnNewWord(competence, allWords, attemptedWords)
-    else if (canRepeatRandomWord) return repeatRandomWord(attemptedWords, competence)
+    if (canLearnNewWord) return learnNewWord(languageCompetence, allWords, attemptedWords)
+    else if (canRepeatRandomWord) return repeatRandomWord(attemptedWords, languageCompetence)
     else throw Exception("If this happens - then I am a steamship")
   }
 
   private fun repeatRandomWord(attemptedWords: List<Word>, competence: List<LanguageCompetence>): SentenceAndTranslation? {
     // TODO: user might want to NEVER see some words
     val word = attemptedWords.random(debugOptions.random)
-    return sentenceAndWordsProvider.getEasiestRandomSentenceWith(word, competence)
+    return selectSentence(competence, word)
   }
 
   private fun learnNewWord(competence: List<LanguageCompetence>, allWords: List<WithLevel<Word>>, attemptedWords: List<Word>): SentenceAndTranslation? {
     val attemptedWordsSet = attemptedWords.toHashSet()
     val word = allWords.filter { !attemptedWordsSet.contains(it.value) }.sortedBy { it.level }.first().value
-    return sentenceAndWordsProvider.getEasiestRandomSentenceWith(word, competence)
+    return selectSentence(competence, word)
+  }
+
+  private fun selectSentence(languageCompetence: List<LanguageCompetence>, scheduled: Word): SentenceAndTranslation? {
+    val sentencesAndTranslation = sentenceAndWordsProvider.getEasiestSentencesWith(scheduled, languageCompetence, 50)
+    val sentences = sentencesAndTranslation.map { it.sentence }
+    val scores = sentenceScoreStorage.getScores(sentences)
+    val result = sentenceSelectionStrategy.select(scores) ?: return null
+
+    return sentencesAndTranslation[sentences.indexOf(result)]
   }
 }

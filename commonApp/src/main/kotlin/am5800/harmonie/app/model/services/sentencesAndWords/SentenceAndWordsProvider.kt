@@ -8,8 +8,6 @@ data class SentenceAndTranslation(val sentence: Sentence, val translation: Sente
 interface SentenceAndWordsProvider {
   fun getWordsInSentence(sentence: Sentence): List<Word>
   fun getOccurrences(sentence: Sentence): List<WordOccurrence>
-
-  fun getEasiestRandomSentenceWith(word: Word, competence: List<LanguageCompetence>): SentenceAndTranslation?
-
+  fun getEasiestSentencesWith(word: Word, competence: List<LanguageCompetence>, amount: Int): List<SentenceAndTranslation>
   fun getAllWords(learnLanguage: Language): List<WithLevel<Word>>
 }

@@ -11,7 +11,6 @@ import am5800.harmonie.app.model.services.LanguageCompetenceManager
 import am5800.harmonie.app.model.services.flow.FlowItemProvider
 import am5800.harmonie.app.model.services.flow.FlowItemTag
 import am5800.harmonie.app.model.services.languagePairs.LanguagePairsProvider
-import am5800.harmonie.app.model.services.sentenceSelection.SentenceSelectionStrategy
 import am5800.harmonie.app.model.services.sentencesAndWords.SentenceAndTranslation
 import am5800.harmonie.app.model.services.sentencesAndWords.SentenceAndWordsProvider
 import com.google.common.collect.LinkedHashMultimap
@@ -25,7 +24,7 @@ class ParallelSentenceQuestion(val question: Sentence,
 class ParallelSentenceFlowManager(lifetime: Lifetime,
                                   private val sentenceProvider: SentenceAndWordsProvider,
                                   private val repetitionService: WordsRepetitionService,
-                                  private val sentenceSelector: SentenceSelectionStrategy,
+                                  private val sentenceSelector: ParallelSentenceSelector,
                                   languagePairsProvider: LanguagePairsProvider,
                                   private val languageCompetenceManager: LanguageCompetenceManager) : FlowItemProvider {
   private val availableLanguagePairs = languagePairsProvider.getAvailableLanguagePairs()
@@ -42,7 +41,7 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
 
   override fun tryPresentNextItem(tag: FlowItemTag): Boolean {
     if (tag !is ParallelSentenceTag) throw UnsupportedOperationException("Category is not supported")
-    val findResult = sentenceSelector.findBestSentenceByAttempts(tag.learnLanguage, languageCompetenceManager.languageCompetence)
+    val findResult = sentenceSelector.selectSentenceToShow(tag.learnLanguage, languageCompetenceManager.languageCompetence)
     if (findResult == null) {
       question.value = null
       return false
