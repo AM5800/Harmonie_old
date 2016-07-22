@@ -55,6 +55,7 @@ class JetSqlSentenceWriter(private val db: SqlJetDb) : SentenceWriter {
     db.createTable("CREATE TABLE words (id INTEGER PRIMARY KEY, language TEXT, lemma TEXT, level INTEGER)")
     db.createTable("CREATE TABLE wordOccurrences (id INTEGER PRIMARY KEY, wordId INTEGER, sentenceId INTEGER, startIndex INTEGER, endIndex INTEGER)")
     db.createIndex("CREATE INDEX germanWordOccurrencesIndex ON wordOccurrences (wordId, sentenceId)")
+    db.createIndex("CREATE INDEX sentencesUidIndex ON sentences (uid)")
 
     val sentencesTable = db.getTable("sentences")
     val sentenceTranslationsTable = db.getTable("sentenceMapping")
