@@ -14,7 +14,7 @@ import am5800.harmonie.app.model.services.flow.FlowManager
 import sun.plugin.dom.exception.InvalidStateException
 import java.util.*
 
-open class WordViewModel(val text: String, val needSpaceBefore: Boolean)
+open class WordViewModel(val text: String, val needSpaceAfter: Boolean)
 
 class ToggleableWordViewModel(val word: Word, text: String,
                               val state: Property<LearnScore>,

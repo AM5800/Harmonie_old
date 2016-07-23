@@ -69,7 +69,7 @@ class ParallelSentenceController(lifetime: Lifetime,
     val flowLayout = view.getChild<FlowLayout>(R.id.question)
     vm.question.onChange(bindingLifetime, {
       flowLayout.removeAllViews()
-      for (childVm in it.newValue) {
+      it.newValue.forEach { childVm ->
         val wordView = TextView(view.activity)
         setupWordView(wordView, childVm, bindingLifetime)
         flowLayout.addView(wordView)
@@ -91,7 +91,7 @@ class ParallelSentenceController(lifetime: Lifetime,
 
     val layoutParams = FlowLayout.LayoutParams(FlowLayout.LayoutParams.WRAP_CONTENT, FlowLayout.LayoutParams.WRAP_CONTENT)
     layoutParams.setMargins(0, 8, 0, 8)
-    if (childVm.needSpaceBefore) layoutParams.leftMargin = 16
+    if (childVm.needSpaceAfter) layoutParams.rightMargin = 16
     wordView.layoutParams = layoutParams
 
     wordView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 25.0f)

@@ -32,10 +32,10 @@ class CreateViewModelsForQuestionTests {
       Assert.assertTrue(o !is ToggleableWordViewModel)
       Assert.assertTrue(world !is ToggleableWordViewModel)
 
-      Assert.assertFalse(h.needSpaceBefore)
-      Assert.assertFalse(ell.needSpaceBefore)
-      Assert.assertFalse(o.needSpaceBefore)
-      Assert.assertTrue(world.needSpaceBefore)
+      Assert.assertFalse(h.needSpaceAfter)
+      Assert.assertFalse(ell.needSpaceAfter)
+      Assert.assertTrue(o.needSpaceAfter)
+      Assert.assertFalse(world.needSpaceAfter)
 
       Assert.assertEquals("H", h.text)
       Assert.assertEquals("ell", ell.text)
@@ -63,10 +63,10 @@ class CreateViewModelsForQuestionTests {
       Assert.assertTrue(beautiful !is ToggleableWordViewModel)
       Assert.assertTrue(world !is ToggleableWordViewModel)
 
-      Assert.assertFalse(hello.needSpaceBefore)
-      Assert.assertTrue(my.needSpaceBefore)
-      Assert.assertTrue(beautiful.needSpaceBefore)
-      Assert.assertTrue(world.needSpaceBefore)
+      Assert.assertTrue(hello.needSpaceAfter)
+      Assert.assertTrue(my.needSpaceAfter)
+      Assert.assertTrue(beautiful.needSpaceAfter)
+      Assert.assertFalse(world.needSpaceAfter)
 
       Assert.assertEquals("Hello", hello.text)
       Assert.assertEquals("my", my.text)

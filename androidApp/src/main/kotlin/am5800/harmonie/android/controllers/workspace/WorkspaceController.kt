@@ -23,9 +23,6 @@ class WorkspaceController(private val vm: WorkspaceViewModel,
       if (it is SimpleWorkspaceItemViewModel) SimpleWorkspaceItemController(it, localizationService)
       else throw InvalidParameterException()
     })
-    vm.items.forEachValue(lifetime, { children, valueLifetime ->
-
-    })
   }
 
   init {

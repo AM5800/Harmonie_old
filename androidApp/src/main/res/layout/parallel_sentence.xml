@@ -21,7 +21,8 @@
         <View
                 android:layout_width="100dp"
                 android:layout_height="1dp"
-                android:background="@android:color/darker_gray" android:layout_margin="20dp"
+                android:background="@android:color/darker_gray"
+                android:layout_margin="15dp"
                 android:layout_gravity="center_horizontal"/>
 
         <TextView
@@ -30,6 +31,7 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="Large Text"
                 android:id="@+id/answer"
+                android:layout_marginLeft="5dp"
                 android:layout_gravity="center_horizontal"/>
     </LinearLayout>
 
