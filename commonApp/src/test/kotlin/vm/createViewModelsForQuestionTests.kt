@@ -1,8 +1,6 @@
 package vm
 
-import am5800.common.Language
-import am5800.common.Sentence
-import am5800.common.Word
+import am5800.common.*
 import am5800.common.utils.Lifetime
 import am5800.common.utils.TextRange
 import am5800.harmonie.app.model.features.parallelSentence.ParallelSentenceQuestion
@@ -18,9 +16,13 @@ class CreateViewModelsForQuestionTests {
   fun wordInTheMiddle() {
     Lifetime().use {
       val question = "Hello world!"
-      val lemmas = LinkedHashMultimap.create<Word, TextRange>()
-      lemmas.put(Word(Language.English, "ell"), TextRange(1, 4))
-      val vms = createViewModelsForQuestion(ParallelSentenceQuestion(Sentence(null, Language.English, question), Sentence(null, Language.English, ""), lemmas), it)
+      val lemmas = LinkedHashMultimap.create<Lemma, TextRange>()
+      lemmas.put(CommonLemma("ell", Language.English, PartOfSpeech.Other, 0), TextRange(1, 4))
+      val vms = createViewModelsForQuestion(
+          ParallelSentenceQuestion(
+              Sentence("id", Language.English, question, 0),
+              Sentence("id", Language.English, "", 0), lemmas), it)
+      
       Assert.assertEquals(4, vms.size)
       val h = vms[0]
       val ell = vms[1]
@@ -48,9 +50,13 @@ class CreateViewModelsForQuestionTests {
   fun wordInTheMiddleSurroundedBySpaces() {
     Lifetime().use {
       val question = " Hello  my   beautiful   world!"
-      val lemmas = LinkedHashMultimap.create<Word, TextRange>()
-      lemmas.put(Word(Language.English, "my"), TextRange(8, 10))
-      val vms = createViewModelsForQuestion(ParallelSentenceQuestion(Sentence(null, Language.English, question), Sentence(null, Language.English, ""), lemmas), it)
+      val lemmas = LinkedHashMultimap.create<Lemma, TextRange>()
+      lemmas.put(CommonLemma("my", Language.English, PartOfSpeech.Other, 0), TextRange(8, 10))
+      val vms = createViewModelsForQuestion(
+          ParallelSentenceQuestion(
+              Sentence("id", Language.English, question, null),
+              Sentence("id", Language.English, "", null), lemmas), it)
+
       Assert.assertEquals(4, vms.size)
 
       val hello = vms[0]

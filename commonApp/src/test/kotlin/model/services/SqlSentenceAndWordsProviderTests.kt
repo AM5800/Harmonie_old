@@ -1,11 +1,11 @@
 package model.services
 
 import am5800.common.Language
+import am5800.harmonie.app.model.services.SqlLemma
 import am5800.harmonie.app.model.services.SqlSentence
-import am5800.harmonie.app.model.services.SqlWord
 import am5800.harmonie.app.model.services.flow.Competence
 import am5800.harmonie.app.model.services.flow.LanguageCompetence
-import am5800.harmonie.app.model.services.sentencesAndWords.SqlSentenceAndWordsProvider
+import am5800.harmonie.app.model.services.sentencesAndWords.SqlSentenceAndLemmasProvider
 import org.junit.Assert
 import org.junit.Test
 import testUtils.DbTestBase
@@ -13,14 +13,14 @@ import testUtils.DbTestBase
 
 class SqlSentenceAndWordsProviderTests : DbTestBase() {
   private val key = "aufgabe"
-  val sentenceProvider = SqlSentenceAndWordsProvider(database)
+  val sentenceProvider = SqlSentenceAndLemmasProvider(database)
   val sentences = listOf(
-      SqlSentence(1, Language.German, "", null),
-      SqlSentence(2, Language.Russian, "", null),
-      SqlSentence(3, Language.German, "", null),
-      SqlSentence(4, Language.Russian, "", null),
-      SqlSentence(5, Language.German, "", null),
-      SqlSentence(6, Language.Russian, "", null)
+      SqlSentence(1, Language.German, "", "id", 0),
+      SqlSentence(2, Language.Russian, "", "id", 0),
+      SqlSentence(3, Language.German, "", "id", 0),
+      SqlSentence(4, Language.Russian, "", "id", 0),
+      SqlSentence(5, Language.German, "", "id", 0),
+      SqlSentence(6, Language.Russian, "", "id", 0)
   )
 
   @Test
@@ -37,41 +37,32 @@ class SqlSentenceAndWordsProviderTests : DbTestBase() {
   }
 
   @Test
-  fun testWordsCount() {
-    val sentence1 = sentences.single { it.sqlId == 1L }
-    Assert.assertEquals(9, sentenceProvider.getWordsInSentence(sentence1).size)
-
-    val sentence2 = sentences.single { it.sqlId == 2L }
-    Assert.assertEquals(0, sentenceProvider.getWordsInSentence(sentence2).size)
-  }
-
-  @Test
   fun testKeyOccurrences() {
     val sentence = sentences.single { it.sqlId == 1L }
     val occurrences = sentenceProvider.getOccurrences(sentence)
-    val keyOccurrence = occurrences.single { it.word.lemma == key }
-    Assert.assertEquals(Language.German, keyOccurrence.word.language)
+    val keyOccurrence = occurrences.single { it.lemma.lemma == key }
+    Assert.assertEquals(Language.German, keyOccurrence.lemma.language)
   }
 
   @Test(expected = Exception::class)
   fun testKeyOccurrencesWithWrongLanguage() {
-    val sentence = SqlSentence(1, Language.Japanese, "", null)
+    val sentence = SqlSentence(1, Language.Japanese, "", "id", 0)
     val occurrences = sentenceProvider.getOccurrences(sentence)
-    val keyOccurrence = occurrences.single { it.word.lemma == key }
-    Assert.assertEquals(Language.English, keyOccurrence.word.language)
+    val keyOccurrence = occurrences.single { it.lemma.lemma == key }
+    Assert.assertEquals(Language.English, keyOccurrence.lemma.language)
   }
 
   private fun getCompetence(language: Language): List<LanguageCompetence> = listOf(LanguageCompetence(language, Competence.Native))
 
   @Test()
   fun testGetSentenceWithInconsistentFilter() {
-    val word = getWord("mein")
-    val result = sentenceProvider.getEasiestSentencesWith(word, getCompetence(Language.Japanese), 50)
+    val lemma = getLemma("mein")
+    val result = sentenceProvider.getEasiestSentencesWith(lemma, getCompetence(Language.Japanese), 50)
     Assert.assertEquals(0, result.size)
   }
 
-  private fun getWord(word: String): SqlWord {
-    val allWords = sentenceProvider.getAllWords(Language.German)
-    return allWords.single { it.value.lemma == word }.value as SqlWord
+  private fun getLemma(lemma: String): SqlLemma {
+    val allLemmas = sentenceProvider.getAllLemmas(Language.German)
+    return allLemmas.single { it.lemma == lemma } as SqlLemma
   }
 }

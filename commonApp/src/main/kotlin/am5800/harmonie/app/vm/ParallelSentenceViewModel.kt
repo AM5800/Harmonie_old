@@ -1,6 +1,6 @@
 package am5800.harmonie.app.vm
 
-import am5800.common.Word
+import am5800.common.Lemma
 import am5800.common.utils.Lifetime
 import am5800.common.utils.properties.NullableProperty
 import am5800.common.utils.properties.Property
@@ -16,7 +16,7 @@ import java.util.*
 
 open class WordViewModel(val text: String, val needSpaceAfter: Boolean)
 
-class ToggleableWordViewModel(val word: Word, text: String,
+class ToggleableWordViewModel(val lemma: Lemma, text: String,
                               val state: Property<LearnScore>,
                               needSpaceBefore: Boolean) : WordViewModel(text, needSpaceBefore) {
   fun toggle() {
@@ -63,10 +63,10 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
   fun submit(buttonIndex: Int) {
     if (buttonIndex < 1 || buttonIndex > 3) throw Exception("buttonIndex is out of range: $buttonIndex")
 
-    val scores = LinkedHashMap<Word, LearnScore>()
+    val scores = LinkedHashMap<Lemma, LearnScore>()
     val vms = question.value.filterIsInstance<ToggleableWordViewModel>()
     for (vm in vms) {
-      scores.put(vm.word, vm.state.value)
+      scores.put(vm.lemma, vm.state.value)
     }
 
     val sentenceScore = SentenceScore.values()[buttonIndex - 1 + if (currentScoreIsGood) 1 else 0]

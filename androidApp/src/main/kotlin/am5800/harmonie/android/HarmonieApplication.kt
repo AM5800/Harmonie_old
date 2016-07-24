@@ -19,13 +19,13 @@ import am5800.harmonie.app.model.features.parallelSentence.ParallelSentenceSelec
 import am5800.harmonie.app.model.features.parallelSentence.SentenceSelectionStrategyImpl
 import am5800.harmonie.app.model.features.parallelSentence.sql.SqlSentenceScoreStorage
 import am5800.harmonie.app.model.features.repetition.BucketRepetitionAlgorithm
-import am5800.harmonie.app.model.features.repetition.WordsRepetitionServiceImpl
+import am5800.harmonie.app.model.features.repetition.LemmaRepetitionServiceImpl
 import am5800.harmonie.app.model.features.statistics.LanguageTagStatisticsProvider
 import am5800.harmonie.app.model.services.LanguageCompetenceManagerStub
 import am5800.harmonie.app.model.services.SqlRepetitionService
 import am5800.harmonie.app.model.services.flow.FlowManager
 import am5800.harmonie.app.model.services.languagePairs.SqlLanguagePairsProvider
-import am5800.harmonie.app.model.services.sentencesAndWords.SqlSentenceAndWordsProvider
+import am5800.harmonie.app.model.services.sentencesAndWords.SqlSentenceAndLemmasProvider
 import am5800.harmonie.app.vm.DefaultFlowControllerOwnerViewModel
 import am5800.harmonie.app.vm.FillTheGapViewModel
 import am5800.harmonie.app.vm.ParallelSentenceViewModel
@@ -54,19 +54,19 @@ class HarmonieApplication : Application() {
       val contentDb = AndroidContentDb(this, keyValueDb, loggerProvider, lt)
 
       val repetitionService = SqlRepetitionService(BucketRepetitionAlgorithm(), userDb, debugOptions)
-      val wordsRepetitionService = WordsRepetitionServiceImpl(repetitionService, lt, contentDb)
+      val sentenceAndLemmasProvider = SqlSentenceAndLemmasProvider(contentDb)
+      val wordsRepetitionService = LemmaRepetitionServiceImpl(repetitionService, lt, sentenceAndLemmasProvider)
 
-      val sentenceAndWordsProvider = SqlSentenceAndWordsProvider(contentDb)
       val sentenceSelectionStrategy = ParallelSentenceSelectorImpl(wordsRepetitionService,
           debugOptions,
           loggerProvider,
-          sentenceAndWordsProvider,
+          sentenceAndLemmasProvider,
           SqlSentenceScoreStorage(userDb),
           SentenceSelectionStrategyImpl())
 
       val languageCompetenceManager = LanguageCompetenceManagerStub()
-      val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceAndWordsProvider, wordsRepetitionService, sentenceSelectionStrategy, SqlLanguagePairsProvider(contentDb), languageCompetenceManager)
-      val seinFlowManager = FillTheGapFlowItemManagerImpl(contentDb, lt, debugOptions, languageCompetenceManager, sentenceAndWordsProvider)
+      val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceAndLemmasProvider, wordsRepetitionService, sentenceSelectionStrategy, SqlLanguagePairsProvider(contentDb), languageCompetenceManager)
+      val seinFlowManager = FillTheGapFlowItemManagerImpl(contentDb, lt, debugOptions, languageCompetenceManager, sentenceAndLemmasProvider)
       val flowItemProviders = listOf(parallelSentenceFlowManager, seinFlowManager)
 
       val flowManager = FlowManager(lt, flowItemProviders, debugOptions)
@@ -79,7 +79,7 @@ class HarmonieApplication : Application() {
       val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService, keyValueDb, reportingService)
       val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt)
       val fillTheGapViewModel = FillTheGapViewModel(lt, listOf(seinFlowManager), flowManager, reportingService, localizationService)
-      val workspaceViewModel = WorkspaceViewModel(lt, flowManager, LanguageTagStatisticsProvider(wordsRepetitionService, sentenceAndWordsProvider))
+      val workspaceViewModel = WorkspaceViewModel(lt, flowManager, LanguageTagStatisticsProvider(wordsRepetitionService, sentenceAndLemmasProvider))
 
       // View components
       val controllerStack = ControllerStack()

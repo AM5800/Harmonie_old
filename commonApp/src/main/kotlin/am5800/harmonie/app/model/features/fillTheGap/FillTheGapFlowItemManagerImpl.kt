@@ -12,14 +12,14 @@ import am5800.harmonie.app.model.services.flow.FlowItemProvider
 import am5800.harmonie.app.model.services.flow.FlowItemTag
 import am5800.harmonie.app.model.services.query4
 import am5800.harmonie.app.model.services.query5
-import am5800.harmonie.app.model.services.sentencesAndWords.SqlSentenceAndWordsProvider
+import am5800.harmonie.app.model.services.sentencesAndWords.SqlSentenceAndLemmasProvider
 
 class FillTheGapFlowItemManagerImpl(
     private val contentDb: ContentDb,
     lifetime: Lifetime,
     private val debugOptions: DebugOptions,
     private val languageCompetenceManager: LanguageCompetenceManager,
-    private val sentenceAndWordsProvider: SqlSentenceAndWordsProvider) : FlowItemProvider, FillTheGapFlowItemManager {
+    private val sentenceAndLemmasProvider: SqlSentenceAndLemmasProvider) : FlowItemProvider, FillTheGapFlowItemManager {
   override fun getAvailableDataSetSize(tag: FlowItemTag): Int {
     return 0
   }
@@ -85,7 +85,7 @@ class FillTheGapFlowItemManagerImpl(
 
     val queryResult = contentDb.query4<Long, Long, Int, Int>(query).singleOrNull() ?: return null
 
-    val sentences = sentenceAndWordsProvider.getSentencesFlat(listOf(queryResult.value1, queryResult.value2))
+    val sentences = sentenceAndLemmasProvider.getSentencesFlat(listOf(queryResult.value1, queryResult.value2))
 
     val question = sentences.first()
     val answer = sentences.last()

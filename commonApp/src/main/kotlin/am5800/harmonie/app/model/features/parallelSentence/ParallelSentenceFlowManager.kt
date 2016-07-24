@@ -1,29 +1,29 @@
 package am5800.harmonie.app.model.features.parallelSentence
 
+import am5800.common.Lemma
 import am5800.common.Sentence
-import am5800.common.Word
 import am5800.common.utils.Lifetime
 import am5800.common.utils.TextRange
 import am5800.common.utils.properties.NullableProperty
 import am5800.harmonie.app.model.features.repetition.LearnScore
-import am5800.harmonie.app.model.features.repetition.WordsRepetitionService
+import am5800.harmonie.app.model.features.repetition.LemmaRepetitionService
 import am5800.harmonie.app.model.services.LanguageCompetenceManager
 import am5800.harmonie.app.model.services.flow.FlowItemProvider
 import am5800.harmonie.app.model.services.flow.FlowItemTag
 import am5800.harmonie.app.model.services.languagePairs.LanguagePairsProvider
+import am5800.harmonie.app.model.services.sentencesAndWords.SentenceAndLemmasProvider
 import am5800.harmonie.app.model.services.sentencesAndWords.SentenceAndTranslation
-import am5800.harmonie.app.model.services.sentencesAndWords.SentenceAndWordsProvider
 import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.Multimap
 
 
 class ParallelSentenceQuestion(val question: Sentence,
                                val answer: Sentence,
-                               val occurrences: Multimap<Word, TextRange>)
+                               val occurrences: Multimap<Lemma, TextRange>)
 
 class ParallelSentenceFlowManager(lifetime: Lifetime,
-                                  private val sentenceProvider: SentenceAndWordsProvider,
-                                  private val repetitionService: WordsRepetitionService,
+                                  private val sentenceProvider: SentenceAndLemmasProvider,
+                                  private val repetitionService: LemmaRepetitionService,
                                   private val sentenceSelector: ParallelSentenceSelector,
                                   languagePairsProvider: LanguagePairsProvider,
                                   private val languageCompetenceManager: LanguageCompetenceManager) : FlowItemProvider {
@@ -51,16 +51,16 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
   }
 
   private fun prepareQuestion(findResult: SentenceAndTranslation): ParallelSentenceQuestion {
-    val occurrences = LinkedHashMultimap.create<Word, TextRange>()
+    val occurrences = LinkedHashMultimap.create<Lemma, TextRange>()
     for (occurrence in sentenceProvider.getOccurrences(findResult.sentence)) {
       val range = TextRange(occurrence.startIndex, occurrence.endIndex)
-      occurrences.put(occurrence.word, range)
+      occurrences.put(occurrence.lemma, range)
     }
 
     return ParallelSentenceQuestion(findResult.sentence, findResult.translation, occurrences)
   }
 
-  fun submitScore(scores: Map<Word, LearnScore>, sentenceScore: SentenceScore) {
+  fun submitScore(scores: Map<Lemma, LearnScore>, sentenceScore: SentenceScore) {
     sentenceSelector.submitScore(question.value!!.question, sentenceScore)
     for ((word, score) in scores) {
       repetitionService.submitAttempt(word, score)
