@@ -42,7 +42,7 @@ class LemmaRepetitionServiceImpl(private val repetitionService: RepetitionServic
 
   override fun submitAttempt(lemma: Lemma, score: LearnScore) {
     val category = getCategory(lemma.language)
-    val dueDate = repetitionService.submitAttempt(lemma.lemma, category, score)
+    val dueDate = repetitionService.submitAttempt(lemma.id, category, score)
     attemptResultReceived.fire(LemmaAttemptResult(lemma, dueDate, score))
   }
 
