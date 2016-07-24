@@ -1,6 +1,7 @@
 data/*
-!data/corpus/test
-!data/corpus/test_counts
+!data/corpus/test_ss_de.xml
+!data/corpus/test_ss_ru.xml
+!data/corpus/test_ls_de.xml
 
 #apks
 *.apk

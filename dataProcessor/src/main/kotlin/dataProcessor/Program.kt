@@ -17,7 +17,10 @@ fun main(args: Array<String>) {
   val sentenceFiles = corpusDir.listFiles { file -> file.name.startsWith("ss_", true) }.toList()
 
   run(lemmasFiles, sentenceFiles, File("androidApp/src/main/assets/content.db"))
-  //run(listOf(File(corpusDir, "test")), File("data/test.db"))
+
+  run(listOf(File(corpusDir, "test_ls_de.xml")),
+      listOf(File(corpusDir, "test_ss_de.xml"), File(corpusDir, "test_ss_ru.xml")),
+      File("data/test.db"))
 }
 
 private fun run(lemmasFiles: Collection<File>, sentenceFiles: Collection<File>, outFile: File) {
