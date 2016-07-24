@@ -51,7 +51,7 @@ class JetSqlSentenceWriter(private val db: SqlJetDb) : SentenceWriter {
     if (existingId != null) return existingId
 
     val lemmasTable = ensureTables().lemmasTable
-    val insertedId = lemmasTable.insert(lemma.lemma, lemma.language.code, lemma.partOfSpeech.toString(), lemma.difficultyLevel)
+    val insertedId = lemmasTable.insert(lemma.id, lemma.lemma, lemma.language.code, lemma.partOfSpeech.toString(), lemma.difficultyLevel)
     lemmaIdToSqlId[lemma.id] = insertedId
     return insertedId
   }
@@ -82,10 +82,11 @@ class JetSqlSentenceWriter(private val db: SqlJetDb) : SentenceWriter {
 
     db.createTable("CREATE TABLE sentenceMapping (key INTEGER PRIMARY KEY, value INTEGER)")
     db.createTable("CREATE TABLE sentences (id INTEGER PRIMARY KEY, uid STRING, language STRING, text STRING, level INTEGER)")
-    db.createTable("CREATE TABLE lemmas (id INTEGER PRIMARY KEY, value STRING, language STRING, pos STRING, level INTEGER)")
+    db.createTable("CREATE TABLE lemmas (id INTEGER PRIMARY KEY, lemmaId STRING, value STRING, language STRING, pos STRING, level INTEGER)")
     db.createTable("CREATE TABLE lemmaOccurrences (id INTEGER PRIMARY KEY, lemmaId INTEGER, sentenceId INTEGER, startIndex INTEGER, endIndex INTEGER)")
     db.createIndex("CREATE INDEX lemmaOccurrencesOccurrencesIndex ON lemmaOccurrences (lemmaId, sentenceId)")
     db.createIndex("CREATE INDEX sentencesUidIndex ON sentences (uid)")
+    db.createIndex("CREATE INDEX lemmaIdIndex ON lemmas (lemmaId)")
 
     val sentencesTable = db.getTable("sentences")
     val sentenceTranslationsTable = db.getTable("sentenceMapping")

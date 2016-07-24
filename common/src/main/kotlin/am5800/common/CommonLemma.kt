@@ -1,26 +1,25 @@
 package am5800.common
 
-open class CommonLemma private constructor(override val id: String,
-                                           override val lemma: String,
-                                           override val language: Language,
-                                           override val partOfSpeech: PartOfSpeech,
-                                           override val difficultyLevel: Int) : Lemma {
+open class CommonLemma(override val id: String,
+                       override val difficultyLevel: Int) : Lemma {
+  override val lemma: String
+    get() = getChunks(1)
+  override val language: Language
+    get() = Language.parse(getChunks(0))
+  override val partOfSpeech: PartOfSpeech
+    get() = PartOfSpeech.parse(getChunks(2))
 
-  constructor(lemma: String, language: Language, partOfSpeech: PartOfSpeech, difficultyLevel: Int) : this(mkId(lemma, language, partOfSpeech), lemma, language, partOfSpeech, difficultyLevel)
+  private fun getChunks(index: Int): String {
+    val chunks = id.split(':')
+    if (chunks.size != 3) throw Exception("Unexpected id: " + id)
+    return chunks[index]
+  }
+
+  constructor(lemma: String, language: Language, partOfSpeech: PartOfSpeech, difficultyLevel: Int) : this(mkId(lemma, language, partOfSpeech), difficultyLevel)
 
   companion object {
-    fun fromId(id: String, level: Int): Lemma {
-      val chunks = id.split(':')
-      if (chunks.size != 3) throw Exception("Unexpected id: " + id)
-      val language = Language.parse(chunks[0])
-      val lemma = chunks[1]
-      val pos = PartOfSpeech.parse(chunks[2])
-
-      return CommonLemma(id, lemma, language, pos, level)
-    }
-
     private fun mkId(lemma: String, language: Language, partOfSpeech: PartOfSpeech): String {
-      return "${language.code}:lemma:$partOfSpeech"
+      return "${language.code}:$lemma:$partOfSpeech"
     }
   }
 

@@ -18,7 +18,7 @@ class LemmasXmlParser {
         val id = attributes.getValue("id")!!
         val level = attributes.getValue("level")?.toInt()!!
 
-        val lemma = CommonLemma.fromId(id, level)
+        val lemma = CommonLemma(id, level)
         lemmas.add(lemma)
       }
     }

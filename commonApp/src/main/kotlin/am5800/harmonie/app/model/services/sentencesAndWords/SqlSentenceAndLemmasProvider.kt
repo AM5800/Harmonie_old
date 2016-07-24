@@ -1,22 +1,32 @@
 package am5800.harmonie.app.model.services.sentencesAndWords
 
-import am5800.common.*
+import am5800.common.Language
+import am5800.common.Lemma
+import am5800.common.LemmaOccurrence
+import am5800.common.Sentence
 import am5800.harmonie.app.model.services.*
 import am5800.harmonie.app.model.services.flow.LanguageCompetence
 
 class SqlSentenceAndLemmasProvider(private val contentDb: ContentDb) : SentenceAndLemmasProvider {
   override fun getLemmasByIds(lemmaId: List<String>): List<Lemma> {
-    throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+    val ids = lemmaId.joinToString(", ") { "'$it'" }
+    val query = """
+      SELECT id, lemmaId, level FROM lemmas WHERE lemmaId IN ($ids)
+    """
+
+    val queryResult = contentDb.query3<Long, String, Int>(query)
+
+    return queryResult.map { SqlLemma(it.value1, it.value2, it.value3) }
+
+
   }
 
   override fun getAllLemmas(learnLanguage: Language): List<Lemma> {
     val query = """
-        SELECT id, value, pos, level FROM words WHERE language = '${learnLanguage.code}'
+        SELECT id, lemmaId, level FROM lemmas WHERE language = '${learnLanguage.code}'
     """
-
-    val result = contentDb.query4<Long, String, String, Int>(query)
-
-    return result.map { SqlLemma(it.value1, learnLanguage, it.value2, it.value4, PartOfSpeech.parse(it.value3)) }
+    val result = contentDb.query3<Long, String, Int>(query)
+    return result.map { SqlLemma(it.value1, it.value2, it.value3) }
   }
 
   override fun getEasiestSentencesWith(lemma: Lemma, competence: List<LanguageCompetence>, amount: Int): List<SentenceAndTranslation> {
@@ -29,9 +39,13 @@ class SqlSentenceAndLemmasProvider(private val contentDb: ContentDb) : SentenceA
             ON sentenceMapping.key = s1.id
           JOIN sentences AS s2
             ON sentenceMapping.value = s2.id
-          INNER JOIN wordOccurrences
-            ON wordOccurrences.sentenceId = s1.id
-          WHERE wordId = $lemmaId AND (${competenceToSql("s2.language", competence)}) AND s1.level IS NOT NULL
+          INNER JOIN lemmaOccurrences
+            ON lemmaOccurrences.sentenceId = s1.id
+          INNER JOIN lemmas
+            ON lemmas.id = lemmaOccurrences.lemmaId
+          WHERE lemmas.lemmaId='$lemmaId'
+            AND (${competenceToSql("s2.language", competence)})
+            AND s1.level IS NOT NULL
           ORDER BY s1.level
           LIMIT 100
     """
@@ -64,7 +78,7 @@ class SqlSentenceAndLemmasProvider(private val contentDb: ContentDb) : SentenceA
         WHERE id IN $ids
     """
 
-    val queryResult = contentDb.query5<Long, String, String, String, Int>(query)
+    val queryResult = contentDb.query5<Long, String, String, String, Int?>(query)
 
     return queryResult.map { SqlSentence(it.value1, Language.parse(it.value3), it.value4, it.value2, it.value5) }
   }
@@ -94,7 +108,7 @@ class SqlSentenceAndLemmasProvider(private val contentDb: ContentDb) : SentenceA
       LemmaOccurrence(lemmas[it.value1]!!, sentence, it.value2, it.value3)
     }
 
-    if (result.isNotEmpty() && result.any { it.lemma.language != sentence.language }) throw Exception("Word language differ from sentence language")
+    if (result.isNotEmpty() && result.any { it.lemma.language != sentence.language }) throw Exception("Lemma language differ from sentence language")
     return result
   }
 }

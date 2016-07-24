@@ -22,7 +22,7 @@ class CreateViewModelsForQuestionTests {
           ParallelSentenceQuestion(
               Sentence("id", Language.English, question, 0),
               Sentence("id", Language.English, "", 0), lemmas), it)
-      
+
       Assert.assertEquals(4, vms.size)
       val h = vms[0]
       val ell = vms[1]

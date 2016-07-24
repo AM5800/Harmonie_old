@@ -1,15 +1,11 @@
 package am5800.harmonie.app.model.services
 
 import am5800.common.CommonLemma
-import am5800.common.Language
-import am5800.common.PartOfSpeech
 
 
 class SqlLemma(val sqlId: Long,
-               language: Language,
-               lemma: String,
-               difficultyLevel: Int,
-               partOfSpeech: PartOfSpeech) : CommonLemma(lemma, language, partOfSpeech, difficultyLevel) {
+               lemmaId: String,
+               difficultyLevel: Int) : CommonLemma(lemmaId, difficultyLevel) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other?.javaClass != javaClass) return false

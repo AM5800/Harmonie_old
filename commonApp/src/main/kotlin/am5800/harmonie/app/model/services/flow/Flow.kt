@@ -29,9 +29,7 @@ class Flow(lifetime: Lifetime,
     for (i in 1..10) {
       val tag = distribution.get(random)
 
-      provider = providers
-          .filter { it.supportedTags.contains(tag) }
-          .firstOrNull { it.tryPresentNextItem(tag) }
+      provider = providers.firstOrNull { it.tryPresentNextItem(tag) }
 
       if (provider != null) break
     }

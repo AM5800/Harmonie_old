@@ -4,7 +4,7 @@ import am5800.common.Language
 import am5800.common.Sentence
 
 
-class SqlSentence(val sqlId: Long, language: Language, text: String, uid: String, difficultyLevel: Int) : Sentence(uid, language, text, difficultyLevel) {
+class SqlSentence(val sqlId: Long, language: Language, text: String, uid: String, difficultyLevel: Int?) : Sentence(uid, language, text, difficultyLevel) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other?.javaClass != javaClass) return false

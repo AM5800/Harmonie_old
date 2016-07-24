@@ -4,7 +4,6 @@ import am5800.common.Language
 import am5800.common.utils.Lifetime
 import am5800.common.utils.properties.Property
 import am5800.common.utils.properties.ReadonlyProperty
-import am5800.harmonie.app.model.features.fillTheGap.FillTheGapTag
 import am5800.harmonie.app.model.features.parallelSentence.ParallelSentenceTag
 import am5800.harmonie.app.model.services.flow.FlowManager
 import am5800.harmonie.app.model.services.workspace.TagStatisticsProvider
@@ -19,16 +18,11 @@ class WorkspaceViewModel(lifetime: Lifetime,
 
   private fun createDefaultItems(): Collection<SimpleWorkspaceItemViewModel> {
     val all = SimpleWorkspaceItemViewModel("Learn all",
-        listOf(ParallelSentenceTag(Language.German), FillTheGapTag(Language.German)),
-        tagStatisticsProvider,
-        flowManager)
-
-    val onlySentences = SimpleWorkspaceItemViewModel("Learn all(without exercises)",
         listOf(ParallelSentenceTag(Language.German)),
         tagStatisticsProvider,
         flowManager)
 
 
-    return listOf(all, onlySentences)
+    return listOf(all)
   }
 }

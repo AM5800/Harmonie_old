@@ -10,7 +10,6 @@ import am5800.harmonie.app.model.features.repetition.LemmaRepetitionService
 import am5800.harmonie.app.model.services.LanguageCompetenceManager
 import am5800.harmonie.app.model.services.flow.FlowItemProvider
 import am5800.harmonie.app.model.services.flow.FlowItemTag
-import am5800.harmonie.app.model.services.languagePairs.LanguagePairsProvider
 import am5800.harmonie.app.model.services.sentencesAndWords.SentenceAndLemmasProvider
 import am5800.harmonie.app.model.services.sentencesAndWords.SentenceAndTranslation
 import com.google.common.collect.LinkedHashMultimap
@@ -25,17 +24,7 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
                                   private val sentenceProvider: SentenceAndLemmasProvider,
                                   private val repetitionService: LemmaRepetitionService,
                                   private val sentenceSelector: ParallelSentenceSelector,
-                                  languagePairsProvider: LanguagePairsProvider,
                                   private val languageCompetenceManager: LanguageCompetenceManager) : FlowItemProvider {
-  private val availableLanguagePairs = languagePairsProvider.getAvailableLanguagePairs()
-
-  override fun getAvailableDataSetSize(tag: FlowItemTag): Int {
-    if (tag !is ParallelSentenceTag) return 0
-    val pair = availableLanguagePairs.single { it.entity.learnLanguage == tag.learnLanguage && languageCompetenceManager.isKnown(it.entity.knownLanguage) }
-    return pair.count
-  }
-
-  override val supportedTags = availableLanguagePairs.map { ParallelSentenceTag(it.entity.learnLanguage) }.toSet()
 
   val question = NullableProperty<ParallelSentenceQuestion>(lifetime, null)
 
