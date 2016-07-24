@@ -12,7 +12,7 @@ import am5800.harmonie.app.vm.workspace.WorkspaceViewModel
 import java.security.InvalidParameterException
 
 class WorkspaceController(private val vm: WorkspaceViewModel,
-                          private val lifetime: Lifetime,
+                          lifetime: Lifetime,
                           private val controllerStack: ControllerStack,
                           private val localizationService: LocalizationService) : FragmentController {
   override val id: Int = R.layout.workspace_screen

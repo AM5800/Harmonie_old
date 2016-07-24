@@ -22,7 +22,7 @@ import am5800.harmonie.app.model.features.statistics.LanguageTagStatisticsProvid
 import am5800.harmonie.app.model.services.LanguageCompetenceManagerStub
 import am5800.harmonie.app.model.services.SqlRepetitionService
 import am5800.harmonie.app.model.services.flow.FlowManager
-import am5800.harmonie.app.model.services.sentencesAndWords.SqlSentenceAndLemmasProvider
+import am5800.harmonie.app.model.services.sentencesAndLemmas.SqlSentenceAndLemmasProvider
 import am5800.harmonie.app.vm.DefaultFlowControllerOwnerViewModel
 import am5800.harmonie.app.vm.ParallelSentenceViewModel
 import am5800.harmonie.app.vm.workspace.WorkspaceViewModel
@@ -51,9 +51,9 @@ class HarmonieApplication : Application() {
 
       val repetitionService = SqlRepetitionService(BucketRepetitionAlgorithm(), userDb, debugOptions)
       val sentenceAndLemmasProvider = SqlSentenceAndLemmasProvider(contentDb)
-      val wordsRepetitionService = LemmaRepetitionServiceImpl(repetitionService, lt, sentenceAndLemmasProvider)
+      val lemmasRepetitionService = LemmaRepetitionServiceImpl(repetitionService, lt, sentenceAndLemmasProvider)
 
-      val sentenceSelectionStrategy = ParallelSentenceSelectorImpl(wordsRepetitionService,
+      val sentenceSelectionStrategy = ParallelSentenceSelectorImpl(lemmasRepetitionService,
           debugOptions,
           loggerProvider,
           sentenceAndLemmasProvider,
@@ -61,7 +61,7 @@ class HarmonieApplication : Application() {
           SentenceSelectionStrategyImpl())
 
       val languageCompetenceManager = LanguageCompetenceManagerStub()
-      val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceAndLemmasProvider, wordsRepetitionService, sentenceSelectionStrategy, languageCompetenceManager)
+      val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceAndLemmasProvider, lemmasRepetitionService, sentenceSelectionStrategy, languageCompetenceManager)
       val flowItemProviders = listOf(parallelSentenceFlowManager)
 
       val flowManager = FlowManager(lt, flowItemProviders, debugOptions)
@@ -73,7 +73,7 @@ class HarmonieApplication : Application() {
       // ViewModels
       val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService, keyValueDb, reportingService)
       val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt)
-      val workspaceViewModel = WorkspaceViewModel(lt, flowManager, LanguageTagStatisticsProvider(wordsRepetitionService, sentenceAndLemmasProvider))
+      val workspaceViewModel = WorkspaceViewModel(lt, flowManager, LanguageTagStatisticsProvider(lemmasRepetitionService, sentenceAndLemmasProvider))
 
       // View components
       val controllerStack = ControllerStack()

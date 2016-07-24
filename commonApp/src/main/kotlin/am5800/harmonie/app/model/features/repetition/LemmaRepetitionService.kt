@@ -4,7 +4,7 @@ import am5800.common.Language
 import am5800.common.Lemma
 import am5800.common.utils.Lifetime
 import am5800.common.utils.Signal
-import am5800.harmonie.app.model.services.sentencesAndWords.SqlSentenceAndLemmasProvider
+import am5800.harmonie.app.model.services.sentencesAndLemmas.SqlSentenceAndLemmasProvider
 import org.joda.time.DateTime
 
 class LemmaAttemptResult(val lemma: Lemma, val dueDate: DateTime, val score: LearnScore)

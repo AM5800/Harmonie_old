@@ -10,8 +10,8 @@ import am5800.harmonie.app.model.features.repetition.LemmaRepetitionService
 import am5800.harmonie.app.model.services.LanguageCompetenceManager
 import am5800.harmonie.app.model.services.flow.FlowItemProvider
 import am5800.harmonie.app.model.services.flow.FlowItemTag
-import am5800.harmonie.app.model.services.sentencesAndWords.SentenceAndLemmasProvider
-import am5800.harmonie.app.model.services.sentencesAndWords.SentenceAndTranslation
+import am5800.harmonie.app.model.services.sentencesAndLemmas.SentenceAndLemmasProvider
+import am5800.harmonie.app.model.services.sentencesAndLemmas.SentenceAndTranslation
 import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.Multimap
 
@@ -51,8 +51,8 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
 
   fun submitScore(scores: Map<Lemma, LearnScore>, sentenceScore: SentenceScore) {
     sentenceSelector.submitScore(question.value!!.question, sentenceScore)
-    for ((word, score) in scores) {
-      repetitionService.submitAttempt(word, score)
+    for ((lemma, score) in scores) {
+      repetitionService.submitAttempt(lemma, score)
     }
   }
 }

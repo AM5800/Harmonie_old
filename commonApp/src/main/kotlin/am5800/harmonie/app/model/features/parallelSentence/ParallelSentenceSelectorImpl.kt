@@ -9,8 +9,8 @@ import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.features.repetition.LemmaRepetitionService
 import am5800.harmonie.app.model.services.flow.LanguageCompetence
 import am5800.harmonie.app.model.services.logging.LoggerProvider
-import am5800.harmonie.app.model.services.sentencesAndWords.SentenceAndLemmasProvider
-import am5800.harmonie.app.model.services.sentencesAndWords.SentenceAndTranslation
+import am5800.harmonie.app.model.services.sentencesAndLemmas.SentenceAndLemmasProvider
+import am5800.harmonie.app.model.services.sentencesAndLemmas.SentenceAndTranslation
 import org.joda.time.DateTime
 
 class ParallelSentenceSelectorImpl(private val repetitionService: LemmaRepetitionService,
@@ -24,12 +24,12 @@ class ParallelSentenceSelectorImpl(private val repetitionService: LemmaRepetitio
   }
 
   private enum class NextTask {
-    RepeatRandomWord, LearnNewWord
+    RepeatRandomLemma, LearnNewLemma
   }
 
   private val nextTaskDistribution = EnumerableDistribution.define<NextTask> {
-    add(NextTask.LearnNewWord, 0.7)
-    addRest(NextTask.RepeatRandomWord)
+    add(NextTask.LearnNewLemma, 0.7)
+    addRest(NextTask.RepeatRandomLemma)
   }
 
   private val logger = loggerProvider.getLogger(javaClass)
@@ -45,33 +45,33 @@ class ParallelSentenceSelectorImpl(private val repetitionService: LemmaRepetitio
       repetitionService.remove(scheduled)
     }
 
-    val attemptedWords = repetitionService.getAttemptedLemmas(learnLanguage)
-    val canRepeatRandomWord = attemptedWords.any()
-    val allWords = sentenceAndLemmasProvider.getAllLemmas(learnLanguage)
-    val canLearnNewWord = allWords.map { it }.minus(attemptedWords).any()
+    val attemptedLemmas = repetitionService.getAttemptedLemmas(learnLanguage)
+    val canRepeatRandomLemma = attemptedLemmas.any()
+    val allLemmas = sentenceAndLemmasProvider.getAllLemmas(learnLanguage)
+    val canLearnNewLemma = allLemmas.map { it }.minus(attemptedLemmas).any()
 
-    if (canLearnNewWord == false && canRepeatRandomWord) throw Exception("Impossible state. Empty database?")
-    if (canLearnNewWord && canRepeatRandomWord) {
+    if (canLearnNewLemma == false && canRepeatRandomLemma) throw Exception("Impossible state. Empty database?")
+    if (canLearnNewLemma && canRepeatRandomLemma) {
       val nextTask = nextTaskDistribution.get(debugOptions.random)
-      if (nextTask == NextTask.LearnNewWord) return learnNewWord(languageCompetence, allWords, attemptedWords)
-      else return repeatRandomWord(attemptedWords, languageCompetence)
+      if (nextTask == NextTask.LearnNewLemma) return learnNewLemma(languageCompetence, allLemmas, attemptedLemmas)
+      else return repeatRandomLemma(attemptedLemmas, languageCompetence)
     }
 
-    if (canLearnNewWord) return learnNewWord(languageCompetence, allWords, attemptedWords)
-    else if (canRepeatRandomWord) return repeatRandomWord(attemptedWords, languageCompetence)
+    if (canLearnNewLemma) return learnNewLemma(languageCompetence, allLemmas, attemptedLemmas)
+    else if (canRepeatRandomLemma) return repeatRandomLemma(attemptedLemmas, languageCompetence)
     else throw Exception("If this happens - then I am a steamship")
   }
 
-  private fun repeatRandomWord(attemptedWords: List<Lemma>, competence: List<LanguageCompetence>): SentenceAndTranslation? {
+  private fun repeatRandomLemma(attemptedLemmas: List<Lemma>, competence: List<LanguageCompetence>): SentenceAndTranslation? {
     // TODO: user might want to NEVER see some words
-    val word = attemptedWords.random(debugOptions.random)
-    return selectSentence(competence, word)
+    val lemma = attemptedLemmas.random(debugOptions.random)
+    return selectSentence(competence, lemma)
   }
 
-  private fun learnNewWord(competence: List<LanguageCompetence>, allLemmas: List<Lemma>, attemptedLemmas: List<Lemma>): SentenceAndTranslation? {
+  private fun learnNewLemma(competence: List<LanguageCompetence>, allLemmas: List<Lemma>, attemptedLemmas: List<Lemma>): SentenceAndTranslation? {
     val attemptedLemmasSet = attemptedLemmas.toHashSet()
-    val word = allLemmas.filter { !attemptedLemmasSet.contains(it) }.sortedBy { it.difficultyLevel }.first()
-    return selectSentence(competence, word)
+    val lemma = allLemmas.filter { !attemptedLemmasSet.contains(it) }.sortedBy { it.difficultyLevel }.first()
+    return selectSentence(competence, lemma)
   }
 
   private fun selectSentence(languageCompetence: List<LanguageCompetence>, scheduled: Lemma): SentenceAndTranslation? {

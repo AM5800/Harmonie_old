@@ -1,7 +1,7 @@
 package am5800.common
 
 open class Sentence(val uid: String, val language: Language, val text: String, val difficultyLevel: Int?) {
-  override fun equals(other: Any?): Boolean{
+  override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other?.javaClass != javaClass) return false
 
@@ -15,7 +15,7 @@ open class Sentence(val uid: String, val language: Language, val text: String, v
     return true
   }
 
-  override fun hashCode(): Int{
+  override fun hashCode(): Int {
     var result = uid.hashCode()
     result = 31 * result + language.hashCode()
     result = 31 * result + text.hashCode()

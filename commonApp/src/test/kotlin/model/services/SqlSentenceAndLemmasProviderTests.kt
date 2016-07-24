@@ -6,13 +6,13 @@ import am5800.harmonie.app.model.services.SqlLemma
 import am5800.harmonie.app.model.services.SqlSentence
 import am5800.harmonie.app.model.services.flow.Competence
 import am5800.harmonie.app.model.services.flow.LanguageCompetence
-import am5800.harmonie.app.model.services.sentencesAndWords.SqlSentenceAndLemmasProvider
+import am5800.harmonie.app.model.services.sentencesAndLemmas.SqlSentenceAndLemmasProvider
 import org.junit.Assert
 import org.junit.Test
 import testUtils.DbTestBase
 
 
-class SqlSentenceAndWordsProviderTests : DbTestBase() {
+class SqlSentenceAndLemmasProviderTests : DbTestBase() {
   private val key = "aufgabe"
   val sentenceProvider = SqlSentenceAndLemmasProvider(database)
   val sentences = listOf(

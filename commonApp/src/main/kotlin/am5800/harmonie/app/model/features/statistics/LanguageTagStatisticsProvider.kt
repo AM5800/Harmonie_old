@@ -4,7 +4,7 @@ import am5800.common.Language
 import am5800.harmonie.app.model.features.repetition.LemmaRepetitionService
 import am5800.harmonie.app.model.services.flow.FlowItemTag
 import am5800.harmonie.app.model.services.flow.LanguageTag
-import am5800.harmonie.app.model.services.sentencesAndWords.SentenceAndLemmasProvider
+import am5800.harmonie.app.model.services.sentencesAndLemmas.SentenceAndLemmasProvider
 import am5800.harmonie.app.model.services.workspace.TagStatisticsProvider
 import org.joda.time.DateTime
 

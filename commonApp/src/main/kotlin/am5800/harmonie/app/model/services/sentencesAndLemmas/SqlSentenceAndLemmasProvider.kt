@@ -1,4 +1,4 @@
-package am5800.harmonie.app.model.services.sentencesAndWords
+package am5800.harmonie.app.model.services.sentencesAndLemmas
 
 import am5800.common.Language
 import am5800.common.Lemma

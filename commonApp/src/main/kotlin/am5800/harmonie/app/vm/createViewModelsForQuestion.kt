@@ -14,14 +14,14 @@ fun createViewModelsForQuestion(data: ParallelSentenceQuestion, lifetime: Lifeti
 
   val sentence = data.question.text
   var index = 0
-  for ((word, range) in sortedByStartOccurrences) {
+  for ((lemma, range) in sortedByStartOccurrences) {
     if (index != range.start) {
       createPlainVms(result, sentence, index, range.start)
     }
     val text = sentence.substring(range.start, range.end)
 
     val needSpaceAfter = checkIfSpaceAfterNeeded(sentence, range.end)
-    result.add(ToggleableWordViewModel(word, text, properties[word]!!, needSpaceAfter))
+    result.add(ToggleableWordViewModel(lemma, text, properties[lemma]!!, needSpaceAfter))
 
     index = range.end
   }
