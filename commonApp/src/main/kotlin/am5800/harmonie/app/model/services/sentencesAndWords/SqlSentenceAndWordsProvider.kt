@@ -72,7 +72,7 @@ class SqlSentenceAndWordsProvider(private val contentDb: ContentDb) : SentenceAn
     }.joinToString(" OR ")
   }
 
-  override fun getOccurrences(sentence: Sentence): List<WordOccurrence> {
+  override fun getOccurrences(sentence: Sentence): List<LemmaOccurrence> {
     if (sentence !is SqlSentence) throw Exception("Unsupported type: " + sentence.javaClass.name)
 
     val query = """
@@ -86,7 +86,7 @@ class SqlSentenceAndWordsProvider(private val contentDb: ContentDb) : SentenceAn
     val wordsData = contentDb.query5<Long, String, Int, Int, String>(query)
 
     val result = wordsData.map {
-      WordOccurrence(SqlWord(it.value1, Language.parse(it.value5), it.value2), sentence, it.value3, it.value4)
+      LemmaOccurrence(SqlWord(it.value1, Language.parse(it.value5), it.value2), sentence, it.value3, it.value4)
     }
 
     if (result.isNotEmpty() && result.any { it.word.language != sentence.language }) throw Exception("Word language differ from sentence language")

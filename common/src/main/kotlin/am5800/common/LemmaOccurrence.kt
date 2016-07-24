@@ -1,7 +1,7 @@
 package am5800.common
 
 
-data class WordOccurrence(val word: Word, val sentence: Sentence, val startIndex: Int, val endIndex: Int) {
+data class LemmaOccurrence(val lemma: Lemma, val sentence: Sentence, val startIndex: Int, val endIndex: Int) {
   fun getForm(): String {
     return sentence.text.substring(startIndex, endIndex)
   }
