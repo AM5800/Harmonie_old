@@ -6,12 +6,12 @@ import am5800.harmonie.android.controllers.util.bindText
 import am5800.harmonie.android.viewBinding.BindableController
 import am5800.harmonie.android.viewBinding.BindableView
 import am5800.harmonie.app.model.features.localization.LocalizationService
-import am5800.harmonie.app.vm.workspace.SimpleWorkspaceItemViewModel
+import am5800.harmonie.app.vm.workspace.LanguageWorkspaceItemViewModel
 import android.widget.TextView
 
-class SimpleWorkspaceItemController(private val vm: SimpleWorkspaceItemViewModel,
-                                    private val localizationService: LocalizationService) : BindableController {
-  override val id = R.layout.workspace_item
+class LanguageWorkspaceItemController(private val vm: LanguageWorkspaceItemViewModel,
+                                      private val localizationService: LocalizationService) : BindableController {
+  override val id = R.layout.language_workspace_item
 
   override fun bind(view: BindableView, bindingLifetime: Lifetime) {
     val header = view.getChild<TextView>(R.id.header)
@@ -25,6 +25,6 @@ class SimpleWorkspaceItemController(private val vm: SimpleWorkspaceItemViewModel
   }
 
   override fun onClicked() {
-    vm.onCommand()
+    vm.action()
   }
 }

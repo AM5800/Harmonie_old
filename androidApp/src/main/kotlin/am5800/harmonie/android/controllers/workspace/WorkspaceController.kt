@@ -7,7 +7,8 @@ import am5800.harmonie.android.controllers.util.ListViewController
 import am5800.harmonie.android.viewBinding.BindableView
 import am5800.harmonie.android.viewBinding.FragmentController
 import am5800.harmonie.app.model.features.localization.LocalizationService
-import am5800.harmonie.app.vm.workspace.SimpleWorkspaceItemViewModel
+import am5800.harmonie.app.vm.workspace.FeedbackWorkspaceItemViewModel
+import am5800.harmonie.app.vm.workspace.LanguageWorkspaceItemViewModel
 import am5800.harmonie.app.vm.workspace.WorkspaceViewModel
 import java.security.InvalidParameterException
 
@@ -20,7 +21,8 @@ class WorkspaceController(private val vm: WorkspaceViewModel,
   override fun bind(view: BindableView, bindingLifetime: Lifetime) {
 
     ListViewController.bind(R.id.workspaceListView, bindingLifetime, view, vm.items, {
-      if (it is SimpleWorkspaceItemViewModel) SimpleWorkspaceItemController(it, localizationService)
+      if (it is LanguageWorkspaceItemViewModel) LanguageWorkspaceItemController(it, localizationService)
+      else if (it is FeedbackWorkspaceItemViewModel) FeedbackWorkspaceItemController(it);
       else throw InvalidParameterException()
     })
   }
