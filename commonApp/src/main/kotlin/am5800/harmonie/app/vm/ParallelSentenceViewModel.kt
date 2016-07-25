@@ -41,8 +41,7 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
   val reportCommands = IssueReportingMenuHelper.createMenuItems(reportingService, localizationService, lifetime, { describeState() })
 
   private fun describeState(): String {
-    val pair = parallelSentenceFlowManager.question.value!!
-    return pair.question.text + "/" + pair.answer.text
+    return parallelSentenceFlowManager.question.value!!.question.uid
   }
 
   val continueBtnText = localizationService.createProperty(lifetime, { it.showTranslation })
