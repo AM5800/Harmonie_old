@@ -55,7 +55,6 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
       state.value = State.ShowAnswer
     } else {
       throw InvalidStateException("Already showing answer")
-
     }
   }
 
