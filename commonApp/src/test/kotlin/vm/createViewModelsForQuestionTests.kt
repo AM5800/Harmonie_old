@@ -3,7 +3,7 @@ package vm
 import am5800.common.*
 import am5800.common.utils.Lifetime
 import am5800.common.utils.TextRange
-import am5800.harmonie.app.model.features.parallelSentence.ParallelSentenceQuestion
+import am5800.harmonie.app.model.parallelSentence.ParallelSentenceQuestion
 import am5800.harmonie.app.vm.ToggleableWordViewModel
 import am5800.harmonie.app.vm.createViewModelsForQuestion
 import com.google.common.collect.LinkedHashMultimap

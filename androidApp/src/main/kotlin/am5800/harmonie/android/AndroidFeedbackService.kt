@@ -3,7 +3,7 @@ package am5800.harmonie.android
 import am5800.common.utils.Lifetime
 import am5800.harmonie.android.dbAccess.AndroidUserDb
 import am5800.harmonie.android.viewBinding.ActivityConsumer
-import am5800.harmonie.app.model.features.feedback.FeedbackService
+import am5800.harmonie.app.model.feedback.FeedbackService
 import android.app.Activity
 import android.content.Context
 import android.content.Intent

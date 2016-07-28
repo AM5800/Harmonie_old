@@ -3,7 +3,7 @@ package am5800.harmonie.app.vm
 import am5800.common.utils.Lifetime
 import am5800.common.utils.properties.Property
 import am5800.common.utils.properties.onChange
-import am5800.harmonie.app.model.services.flow.FlowManager
+import am5800.harmonie.app.model.flow.FlowManager
 import org.joda.time.format.PeriodFormatterBuilder
 
 class DefaultFlowControllerOwnerViewModel(private val flowManager: FlowManager, lifetime: Lifetime) : ViewModelBase(lifetime) {

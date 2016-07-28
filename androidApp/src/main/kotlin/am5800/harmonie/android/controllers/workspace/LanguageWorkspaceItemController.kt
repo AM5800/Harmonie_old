@@ -5,7 +5,7 @@ import am5800.harmonie.android.R
 import am5800.harmonie.android.controllers.util.bindText
 import am5800.harmonie.android.viewBinding.BindableController
 import am5800.harmonie.android.viewBinding.BindableView
-import am5800.harmonie.app.model.features.localization.LocalizationService
+import am5800.harmonie.app.model.localization.LocalizationService
 import am5800.harmonie.app.vm.workspace.LanguageWorkspaceItemViewModel
 import android.widget.TextView
 

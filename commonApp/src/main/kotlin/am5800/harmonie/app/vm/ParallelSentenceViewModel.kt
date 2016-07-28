@@ -4,13 +4,13 @@ import am5800.common.Lemma
 import am5800.common.utils.Lifetime
 import am5800.common.utils.properties.NullableProperty
 import am5800.common.utils.properties.Property
-import am5800.harmonie.app.model.features.feedback.ErrorReportingService
-import am5800.harmonie.app.model.features.localization.LocalizationService
-import am5800.harmonie.app.model.features.parallelSentence.ParallelSentenceFlowManager
-import am5800.harmonie.app.model.features.parallelSentence.SentenceScore
-import am5800.harmonie.app.model.features.repetition.LearnScore
-import am5800.harmonie.app.model.services.KeyValueDatabase
-import am5800.harmonie.app.model.services.flow.FlowManager
+import am5800.harmonie.app.model.KeyValueDatabase
+import am5800.harmonie.app.model.feedback.ErrorReportingService
+import am5800.harmonie.app.model.flow.FlowManager
+import am5800.harmonie.app.model.localization.LocalizationService
+import am5800.harmonie.app.model.parallelSentence.ParallelSentenceFlowManager
+import am5800.harmonie.app.model.parallelSentence.SentenceScore
+import am5800.harmonie.app.model.repetition.LearnScore
 import sun.plugin.dom.exception.InvalidStateException
 import java.util.*
 

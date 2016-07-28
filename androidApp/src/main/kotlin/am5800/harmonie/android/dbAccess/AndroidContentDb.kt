@@ -1,10 +1,10 @@
 package am5800.harmonie.android.dbAccess
 
 import am5800.common.utils.Lifetime
-import am5800.harmonie.app.model.services.ContentDb
-import am5800.harmonie.app.model.services.Cursor
-import am5800.harmonie.app.model.services.logging.Logger
-import am5800.harmonie.app.model.services.logging.LoggerProvider
+import am5800.harmonie.app.model.ContentDb
+import am5800.harmonie.app.model.Cursor
+import am5800.harmonie.app.model.logging.Logger
+import am5800.harmonie.app.model.logging.LoggerProvider
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper

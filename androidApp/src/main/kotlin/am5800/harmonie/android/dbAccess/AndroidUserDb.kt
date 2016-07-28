@@ -1,8 +1,8 @@
 package am5800.harmonie.android.dbAccess
 
 import am5800.common.utils.Lifetime
-import am5800.harmonie.app.model.services.Cursor
-import am5800.harmonie.app.model.services.UserDb
+import am5800.harmonie.app.model.Cursor
+import am5800.harmonie.app.model.UserDb
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper

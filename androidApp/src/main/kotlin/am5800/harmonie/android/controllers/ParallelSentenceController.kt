@@ -11,7 +11,7 @@ import am5800.harmonie.android.controllers.util.bindText
 import am5800.harmonie.android.controllers.util.bindVisibility
 import am5800.harmonie.android.controllers.util.bindVisibilityInverted
 import am5800.harmonie.android.viewBinding.*
-import am5800.harmonie.app.model.features.repetition.LearnScore
+import am5800.harmonie.app.model.repetition.LearnScore
 import am5800.harmonie.app.vm.ParallelSentenceViewModel
 import am5800.harmonie.app.vm.ToggleableWordViewModel
 import am5800.harmonie.app.vm.WordViewModel

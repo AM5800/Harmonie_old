@@ -1,8 +1,8 @@
 package am5800.harmonie.app.vm
 
 import am5800.common.utils.Lifetime
-import am5800.harmonie.app.model.features.feedback.ErrorReportingService
-import am5800.harmonie.app.model.features.localization.LocalizationService
+import am5800.harmonie.app.model.feedback.ErrorReportingService
+import am5800.harmonie.app.model.localization.LocalizationService
 
 class IssueReportingMenuHelper {
   companion object {
