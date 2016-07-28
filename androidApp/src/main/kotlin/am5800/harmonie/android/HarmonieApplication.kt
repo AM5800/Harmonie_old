@@ -5,26 +5,29 @@ import am5800.common.utils.Lifetime
 import am5800.harmonie.android.controllers.DefaultFlowControllerOwner
 import am5800.harmonie.android.controllers.EmptyFlowContentController
 import am5800.harmonie.android.controllers.ParallelSentenceController
+import am5800.harmonie.android.controllers.wordsList.WordsListController
 import am5800.harmonie.android.controllers.workspace.WorkspaceController
 import am5800.harmonie.android.dbAccess.AndroidContentDb
 import am5800.harmonie.android.dbAccess.AndroidUserDb
 import am5800.harmonie.android.dbAccess.KeyValueDatabaseImpl
 import am5800.harmonie.android.logging.AndroidLoggerProvider
 import am5800.harmonie.app.model.DebugOptions
-import am5800.harmonie.app.model.features.feedback.impl.ErrorReportingServiceImpl
-import am5800.harmonie.app.model.features.parallelSentence.ParallelSentenceFlowManager
-import am5800.harmonie.app.model.features.parallelSentence.ParallelSentenceSelectorImpl
-import am5800.harmonie.app.model.features.parallelSentence.SentenceSelectionStrategyImpl
-import am5800.harmonie.app.model.features.parallelSentence.sql.SqlSentenceScoreStorage
-import am5800.harmonie.app.model.features.repetition.BucketRepetitionAlgorithm
-import am5800.harmonie.app.model.features.repetition.LemmaRepetitionServiceImpl
-import am5800.harmonie.app.model.features.statistics.LanguageTagStatisticsProvider
-import am5800.harmonie.app.model.services.LanguageCompetenceManagerStub
-import am5800.harmonie.app.model.services.SqlRepetitionService
-import am5800.harmonie.app.model.services.flow.FlowManager
-import am5800.harmonie.app.model.services.sentencesAndLemmas.SqlSentenceAndLemmasProvider
+import am5800.harmonie.app.model.LanguageCompetenceManagerStub
+import am5800.harmonie.app.model.SqlRepetitionService
+import am5800.harmonie.app.model.feedback.impl.ErrorReportingServiceImpl
+import am5800.harmonie.app.model.flow.FlowManager
+import am5800.harmonie.app.model.flow.LemmasLearnOrdererImpl
+import am5800.harmonie.app.model.parallelSentence.ParallelSentenceFlowManager
+import am5800.harmonie.app.model.parallelSentence.ParallelSentenceSelectorImpl
+import am5800.harmonie.app.model.parallelSentence.SentenceSelectionStrategyImpl
+import am5800.harmonie.app.model.parallelSentence.sql.SqlSentenceScoreStorage
+import am5800.harmonie.app.model.repetition.BucketRepetitionAlgorithm
+import am5800.harmonie.app.model.repetition.LemmaRepetitionServiceImpl
+import am5800.harmonie.app.model.sentencesAndLemmas.SqlSentenceAndLemmasProvider
+import am5800.harmonie.app.model.statistics.LanguageTagStatisticsProvider
 import am5800.harmonie.app.vm.DefaultFlowControllerOwnerViewModel
 import am5800.harmonie.app.vm.ParallelSentenceViewModel
+import am5800.harmonie.app.vm.wordsList.WordsListViewModel
 import am5800.harmonie.app.vm.workspace.WorkspaceViewModel
 import android.app.Application
 
@@ -69,11 +72,13 @@ class HarmonieApplication : Application() {
       val localizationService = AndroidLocalizationService.create(resources, keyValueDb, lt)
       val feedbackService = AndroidFeedbackService(userDb)
       val reportingService = ErrorReportingServiceImpl(userDb)
+      val orderer = LemmasLearnOrdererImpl()
 
       // ViewModels
       val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService, keyValueDb, reportingService)
       val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt)
-      val workspaceViewModel = WorkspaceViewModel(lt, flowManager, LanguageTagStatisticsProvider(lemmasRepetitionService, sentenceAndLemmasProvider), feedbackService)
+      val wordsListViewModel = WordsListViewModel(lt, sentenceAndLemmasProvider, lemmasRepetitionService, orderer)
+      val workspaceViewModel = WorkspaceViewModel(lt, flowManager, LanguageTagStatisticsProvider(lemmasRepetitionService, sentenceAndLemmasProvider), feedbackService, wordsListViewModel)
 
       // View components
       val controllerStack = ControllerStack()
@@ -81,6 +86,7 @@ class HarmonieApplication : Application() {
       WorkspaceController(workspaceViewModel, lt, controllerStack, localizationService)
       EmptyFlowContentController(defaultFlowController, flowManager, lt, localizationService)
       val parallelSentenceController = ParallelSentenceController(lt, defaultFlowController, parallelSentenceViewModel)
+      WordsListController(wordsListViewModel, controllerStack, lt)
 
       container.register(controllerStack)
       container.register(loggerProvider)
