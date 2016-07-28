@@ -1,4 +1,4 @@
-package am5800.harmonie.app.model.flow
+package am5800.harmonie.app.model.languageCompetence
 
 import am5800.common.Language
 

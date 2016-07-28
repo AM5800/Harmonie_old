@@ -1,4 +1,4 @@
-package am5800.harmonie.app.model
+package am5800.harmonie.app.model.sql
 
 import java.io.Closeable
 

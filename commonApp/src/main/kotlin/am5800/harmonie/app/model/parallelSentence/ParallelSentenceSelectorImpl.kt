@@ -6,7 +6,7 @@ import am5800.common.Sentence
 import am5800.common.utils.EnumerableDistribution
 import am5800.common.utils.functions.random
 import am5800.harmonie.app.model.DebugOptions
-import am5800.harmonie.app.model.flow.LanguageCompetence
+import am5800.harmonie.app.model.languageCompetence.LanguageCompetence
 import am5800.harmonie.app.model.logging.LoggerProvider
 import am5800.harmonie.app.model.repetition.LemmaRepetitionService
 import am5800.harmonie.app.model.sentencesAndLemmas.SentenceAndLemmasProvider

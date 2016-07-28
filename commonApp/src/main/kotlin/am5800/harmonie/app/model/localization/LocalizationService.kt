@@ -5,9 +5,9 @@ import am5800.common.utils.Lifetime
 import am5800.common.utils.properties.Property
 import am5800.common.utils.properties.ReadonlyProperty
 import am5800.common.utils.properties.convert
-import am5800.harmonie.app.model.KeyValueDatabase
 import am5800.harmonie.app.model.localization.languages.EnglishLocalizationTable
 import am5800.harmonie.app.model.localization.languages.RussianLocalizationTable
+import am5800.harmonie.app.model.sql.KeyValueDatabase
 
 interface LocalizationService {
   fun createProperty(lifetime: Lifetime, valueGetter: (LocalizationTable) -> String): ReadonlyProperty<String>

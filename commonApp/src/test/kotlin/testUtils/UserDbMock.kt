@@ -2,7 +2,7 @@ package testUtils
 
 import am5800.common.utils.Lifetime
 import am5800.common.utils.properties.Property
-import am5800.harmonie.app.model.KeyValueDatabase
+import am5800.harmonie.app.model.sql.KeyValueDatabase
 
 
 class KeyValueDatabaseMock : KeyValueDatabase {

@@ -2,7 +2,7 @@ package am5800.harmonie.app.model.parallelSentence
 
 import am5800.common.Language
 import am5800.common.Sentence
-import am5800.harmonie.app.model.flow.LanguageCompetence
+import am5800.harmonie.app.model.languageCompetence.LanguageCompetence
 import am5800.harmonie.app.model.sentencesAndLemmas.SentenceAndTranslation
 
 enum class SentenceScore {

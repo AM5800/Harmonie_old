@@ -10,7 +10,7 @@ import am5800.harmonie.app.model.sentencesAndLemmas.SentenceAndLemmasProvider
 import am5800.harmonie.app.vm.ViewModelBase
 
 class WordsListViewModel(lifetime: Lifetime,
-                         private val sentenceAndLemmasProvider: SentenceAndLemmasProvider,
+                         sentenceAndLemmasProvider: SentenceAndLemmasProvider,
                          private val lemmaRepetitionService: LemmaRepetitionService,
                          private val orderer: LemmasLearnOrderer) : ViewModelBase(lifetime) {
   val items = Property<List<WordsListItemViewModel>>(lifetime, emptyList())

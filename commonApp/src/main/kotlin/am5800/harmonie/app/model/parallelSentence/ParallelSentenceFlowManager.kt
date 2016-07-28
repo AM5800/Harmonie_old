@@ -5,9 +5,9 @@ import am5800.common.Sentence
 import am5800.common.utils.Lifetime
 import am5800.common.utils.TextRange
 import am5800.common.utils.properties.NullableProperty
-import am5800.harmonie.app.model.LanguageCompetenceManager
 import am5800.harmonie.app.model.flow.FlowItemProvider
 import am5800.harmonie.app.model.flow.FlowItemTag
+import am5800.harmonie.app.model.languageCompetence.LanguageCompetenceManager
 import am5800.harmonie.app.model.repetition.LearnScore
 import am5800.harmonie.app.model.repetition.LemmaRepetitionService
 import am5800.harmonie.app.model.sentencesAndLemmas.SentenceAndLemmasProvider

@@ -1,7 +1,7 @@
 package am5800.harmonie.app.model.feedback.impl
 
-import am5800.harmonie.app.model.UserDb
 import am5800.harmonie.app.model.feedback.ErrorReportingService
+import am5800.harmonie.app.model.sql.UserDb
 
 
 class ErrorReportingServiceImpl(private val userDb: UserDb) : ErrorReportingService {

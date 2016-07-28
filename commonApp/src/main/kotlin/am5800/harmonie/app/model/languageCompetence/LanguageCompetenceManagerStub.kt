@@ -1,8 +1,6 @@
-package am5800.harmonie.app.model
+package am5800.harmonie.app.model.languageCompetence
 
 import am5800.common.Language
-import am5800.harmonie.app.model.flow.Competence
-import am5800.harmonie.app.model.flow.LanguageCompetence
 
 class LanguageCompetenceManagerStub : LanguageCompetenceManager {
   override fun isKnown(language: Language): Boolean {

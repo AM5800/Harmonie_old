@@ -2,8 +2,8 @@ package am5800.harmonie.android.dbAccess
 
 import am5800.common.utils.Lifetime
 import am5800.common.utils.properties.Property
-import am5800.harmonie.app.model.KeyValueDatabase
-import am5800.harmonie.app.model.query1
+import am5800.harmonie.app.model.sql.KeyValueDatabase
+import am5800.harmonie.app.model.sql.query1
 
 class KeyValueDatabaseImpl(private val db: AndroidUserDb) : KeyValueDatabase {
   override fun createProperty(lifetime: Lifetime, key: String, defaultValue: String): Property<String> {

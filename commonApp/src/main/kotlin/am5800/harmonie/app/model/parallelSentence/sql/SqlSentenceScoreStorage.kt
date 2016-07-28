@@ -1,10 +1,10 @@
 package am5800.harmonie.app.model.parallelSentence.sql
 
 import am5800.common.Sentence
-import am5800.harmonie.app.model.UserDb
 import am5800.harmonie.app.model.parallelSentence.SentenceScore
 import am5800.harmonie.app.model.parallelSentence.SentenceScoreStorage
-import am5800.harmonie.app.model.query2
+import am5800.harmonie.app.model.sql.UserDb
+import am5800.harmonie.app.model.sql.query2
 
 
 class SqlSentenceScoreStorage(val userDb: UserDb) : SentenceScoreStorage {

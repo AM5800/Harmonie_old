@@ -4,8 +4,8 @@ import am5800.common.Language
 import am5800.common.Lemma
 import am5800.common.LemmaOccurrence
 import am5800.common.Sentence
-import am5800.harmonie.app.model.*
-import am5800.harmonie.app.model.flow.LanguageCompetence
+import am5800.harmonie.app.model.languageCompetence.LanguageCompetence
+import am5800.harmonie.app.model.sql.*
 
 class SqlSentenceAndLemmasProvider(private val contentDb: ContentDb) : SentenceAndLemmasProvider {
   override fun getLemmasByIds(lemmaId: List<String>): List<Lemma> {
@@ -78,7 +78,7 @@ class SqlSentenceAndLemmasProvider(private val contentDb: ContentDb) : SentenceA
 
     val queryResult = contentDb.query5<Long, String, String, String, Int?>(query)
 
-    return queryResult.map { SqlSentence(it.value1, Language.Companion.parse(it.value3), it.value4, it.value2, it.value5) }
+    return queryResult.map { SqlSentence(it.value1, Language.parse(it.value3), it.value4, it.value2, it.value5) }
   }
 
   private fun competenceToSql(fieldName: String, competence: List<LanguageCompetence>): String {

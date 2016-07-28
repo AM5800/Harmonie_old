@@ -22,7 +22,7 @@ class WorkspaceController(private val vm: WorkspaceViewModel,
 
     ListViewController.bind(R.id.workspaceListView, bindingLifetime, view, vm.items, {
       if (it is LanguageWorkspaceItemViewModel) LanguageWorkspaceItemController(it, localizationService)
-      else if (it is SimpleWorkspaceItemViewModel) SimpleWorkspaceItemController(it);
+      else if (it is SimpleWorkspaceItemViewModel) SimpleWorkspaceItemController(it)
       else throw InvalidParameterException()
     })
   }

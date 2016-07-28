@@ -1,8 +1,8 @@
 package testUtils
 
 import am5800.common.utils.Lifetime
-import am5800.harmonie.app.model.ContentDb
-import am5800.harmonie.app.model.Cursor
+import am5800.harmonie.app.model.sql.ContentDb
+import am5800.harmonie.app.model.sql.Cursor
 import java.io.File
 import java.sql.DriverManager
 import java.sql.ResultSet

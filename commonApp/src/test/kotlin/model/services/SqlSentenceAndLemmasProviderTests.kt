@@ -2,11 +2,11 @@ package model.services
 
 import am5800.common.Language
 import am5800.common.PartOfSpeech
-import am5800.harmonie.app.model.SqlLemma
-import am5800.harmonie.app.model.SqlSentence
-import am5800.harmonie.app.model.flow.Competence
-import am5800.harmonie.app.model.flow.LanguageCompetence
+import am5800.harmonie.app.model.languageCompetence.Competence
+import am5800.harmonie.app.model.languageCompetence.LanguageCompetence
 import am5800.harmonie.app.model.sentencesAndLemmas.SqlSentenceAndLemmasProvider
+import am5800.harmonie.app.model.sql.SqlLemma
+import am5800.harmonie.app.model.sql.SqlSentence
 import org.junit.Assert
 import org.junit.Test
 import testUtils.DbTestBase

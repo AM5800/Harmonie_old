@@ -4,7 +4,7 @@ import am5800.common.Language
 import am5800.common.Lemma
 import am5800.common.LemmaOccurrence
 import am5800.common.Sentence
-import am5800.harmonie.app.model.flow.LanguageCompetence
+import am5800.harmonie.app.model.languageCompetence.LanguageCompetence
 
 data class SentenceAndTranslation(val sentence: Sentence, val translation: Sentence)
 

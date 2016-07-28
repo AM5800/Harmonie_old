@@ -2,9 +2,9 @@ package am5800.harmonie.android
 
 import am5800.common.Language
 import am5800.common.utils.Lifetime
-import am5800.harmonie.app.model.KeyValueDatabase
 import am5800.harmonie.app.model.localization.LocalizationService
 import am5800.harmonie.app.model.localization.LocalizationServiceImpl
+import am5800.harmonie.app.model.sql.KeyValueDatabase
 import android.content.res.Resources
 import java.util.*
 
