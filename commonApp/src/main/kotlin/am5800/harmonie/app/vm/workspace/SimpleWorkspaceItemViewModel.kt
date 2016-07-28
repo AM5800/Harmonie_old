@@ -1,10 +1,10 @@
 package am5800.harmonie.app.vm.workspace
 
-import am5800.harmonie.app.model.localization.LocalizationTable
+import am5800.common.utils.properties.ReadonlyProperty
 
 
 class SimpleWorkspaceItemViewModel(
-    val header: (LocalizationTable) -> String,
-    val description: (LocalizationTable) -> String,
+    val title: ReadonlyProperty<String>,
+    val description: ReadonlyProperty<String>,
     override val action: () -> Unit) : WorkspaceItemViewModel {
 }

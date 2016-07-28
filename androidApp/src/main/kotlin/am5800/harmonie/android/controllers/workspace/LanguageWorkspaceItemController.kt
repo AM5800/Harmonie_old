@@ -14,11 +14,11 @@ class LanguageWorkspaceItemController(private val vm: LanguageWorkspaceItemViewM
   override val id = R.layout.language_workspace_item
 
   override fun bind(view: BindableView, bindingLifetime: Lifetime) {
-    val header = view.getChild<TextView>(R.id.header)
+    val title = view.getChild<TextView>(R.id.title)
     val onDue = view.getChild<TextView>(R.id.onDue)
     val onLearning = view.getChild<TextView>(R.id.onLearning)
 
-    header.text = vm.header
+    title.text = vm.title
     val stats = vm.computeBriefStats()
     onDue.bindText(bindingLifetime, view, localizationService.createFormatProperty({ it.onDue }, bindingLifetime, stats.onDue.toString()))
     onLearning.bindText(bindingLifetime, view, localizationService.createFormatProperty({ it.onLearning }, bindingLifetime, stats.onLearning.toString(), stats.total.toString()))

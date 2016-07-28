@@ -78,7 +78,7 @@ class HarmonieApplication : Application() {
       val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService, keyValueDb, reportingService)
       val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt)
       val wordsListViewModel = WordsListViewModel(lt, sentenceAndLemmasProvider, lemmasRepetitionService, orderer)
-      val workspaceViewModel = WorkspaceViewModel(lt, flowManager, LanguageTagStatisticsProvider(lemmasRepetitionService, sentenceAndLemmasProvider), feedbackService, wordsListViewModel)
+      val workspaceViewModel = WorkspaceViewModel(lt, flowManager, LanguageTagStatisticsProvider(lemmasRepetitionService, sentenceAndLemmasProvider), feedbackService, wordsListViewModel, localizationService)
 
       // View components
       val controllerStack = ControllerStack()

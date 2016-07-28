@@ -5,7 +5,7 @@ import am5800.harmonie.app.model.flow.FlowItemTag
 import am5800.harmonie.app.model.flow.FlowManager
 import am5800.harmonie.app.model.workspace.TagStatisticsProvider
 
-class LanguageWorkspaceItemViewModel(val header: String,
+class LanguageWorkspaceItemViewModel(val title: String,
                                      private val tags: Collection<FlowItemTag>,
                                      private val tagStatisticsProvider: TagStatisticsProvider,
                                      private val flowManager: FlowManager) : WorkspaceItemViewModel {

@@ -10,7 +10,7 @@
               android:layout_margin="5dp"
               android:textSize="@dimen/panelHeaderFontSize"
               android:textColor="@color/panelForeground"
-              android:id="@+id/header"
+              android:id="@+id/title"
               android:text="Learn all"/>
 
     <TextView android:layout_width="wrap_content"
