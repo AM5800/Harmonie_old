@@ -10,6 +10,6 @@
             android:id="@+id/workspaceListView"
             android:dividerHeight="10dp"
             android:divider="@android:color/transparent"
-            android:layout_margin="10dp"
+            android:layout_margin="@dimen/fragment_outer_margin"
             android:layout_gravity="center_horizontal"/>
 </LinearLayout>

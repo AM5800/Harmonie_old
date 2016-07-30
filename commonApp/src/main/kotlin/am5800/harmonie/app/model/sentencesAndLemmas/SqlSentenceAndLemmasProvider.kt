@@ -8,6 +8,14 @@ import am5800.harmonie.app.model.languageCompetence.LanguageCompetence
 import am5800.harmonie.app.model.sql.*
 
 class SqlSentenceAndLemmasProvider(private val contentDb: ContentDb) : SentenceAndLemmasProvider {
+  override fun searchLemmas(query: String, language: Language): List<Lemma> {
+    val sql = """
+      SELECT lemmaId FROM lemmas WHERE language='${language.code}' AND value LIKE '%${query.toLowerCase()}%'
+    """
+    val ids = contentDb.query1<String>(sql)
+    return getLemmasByIds(ids)
+  }
+
   override fun getLemmasByIds(lemmaIds: List<String>): List<Lemma> {
     val ids = lemmaIds.joinToString(", ") { "'$it'" }
     val query = """

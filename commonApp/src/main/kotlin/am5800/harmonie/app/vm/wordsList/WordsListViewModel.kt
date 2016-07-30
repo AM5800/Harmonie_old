@@ -39,15 +39,11 @@ class WordsListViewModel(lifetime: Lifetime,
   }
 
   fun search(query: String) {
-
+    update(sentenceAndLemmasProvider.searchLemmas(query, hardcodedLanguage), hardcodedLanguage)
   }
 
   fun pullUp(lemma: Lemma) {
     orderer.pullUp(lemma)
     update(sentenceAndLemmasProvider.getAllLemmas(hardcodedLanguage), hardcodedLanguage)
-  }
-
-  fun markKnown(lemma: Lemma) {
-
   }
 }

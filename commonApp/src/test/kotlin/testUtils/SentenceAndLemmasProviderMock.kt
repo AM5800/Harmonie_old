@@ -9,6 +9,9 @@ import am5800.harmonie.app.model.sentencesAndLemmas.SentenceAndLemmasProvider
 import am5800.harmonie.app.model.sentencesAndLemmas.SentenceAndTranslation
 
 class SentenceAndLemmasProviderMock : SentenceAndLemmasProvider {
+  override fun searchLemmas(query: String, language: Language): List<Lemma> {
+    throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+  }
 
   val lemmas = mutableListOf<Lemma>()
 

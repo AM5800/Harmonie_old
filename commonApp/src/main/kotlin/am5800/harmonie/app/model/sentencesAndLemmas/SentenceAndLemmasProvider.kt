@@ -13,4 +13,5 @@ interface SentenceAndLemmasProvider {
   fun getEasiestSentencesWith(lemma: Lemma, competence: List<LanguageCompetence>, amount: Int): List<SentenceAndTranslation>
   fun getAllLemmas(learnLanguage: Language): List<Lemma>
   fun getLemmasByIds(lemmaIds: List<String>): List<Lemma>
+  fun searchLemmas(query: String, language: Language): List<Lemma>
 }

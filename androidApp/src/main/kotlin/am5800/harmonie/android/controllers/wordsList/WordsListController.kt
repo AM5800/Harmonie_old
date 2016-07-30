@@ -11,6 +11,7 @@ import am5800.harmonie.app.vm.wordsList.NotStartedWordsListItemViewModel
 import am5800.harmonie.app.vm.wordsList.OnLearningWordsListItemViewModel
 import am5800.harmonie.app.vm.wordsList.SeparatorWordsListItemViewModel
 import am5800.harmonie.app.vm.wordsList.WordsListViewModel
+import android.widget.SearchView
 
 
 class WordsListController(private val vm: WordsListViewModel,
@@ -28,5 +29,19 @@ class WordsListController(private val vm: WordsListViewModel,
       else if (it is OnLearningWordsListItemViewModel) WordsListItemController(it.title)
       else throw Exception("Unsupported ViewModel: " + it.javaClass.name)
     })
+
+    val searchView = view.getChild<SearchView>(R.id.searchView)
+    searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
+      override fun onQueryTextSubmit(query: String): Boolean {
+        vm.search(query)
+        return false
+      }
+
+      override fun onQueryTextChange(newText: String): Boolean {
+        vm.search(newText)
+        return false
+      }
+    })
+
   }
 }
