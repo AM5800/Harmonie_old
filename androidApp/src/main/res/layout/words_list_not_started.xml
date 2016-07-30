@@ -15,9 +15,9 @@
                   android:layout_height="wrap_content"
                   android:layout_centerVertical="true"
                   android:layout_alignParentRight="true" android:id="@+id/linearLayout">
-        <Button android:layout_width="48dp"
-                android:layout_height="40dp"
-                android:id="@+id/pullUp"
-                android:text="^"/>
+        <ImageButton android:layout_width="48dp"
+                     android:layout_height="40dp"
+                     android:id="@+id/pullUp"
+                     android:src="@drawable/arrows_up"/>
     </LinearLayout>
 </RelativeLayout>

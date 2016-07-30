@@ -5,7 +5,7 @@ import am5800.harmonie.android.R
 import am5800.harmonie.android.viewBinding.BindableController
 import am5800.harmonie.android.viewBinding.BindableView
 import am5800.harmonie.app.vm.wordsList.NotStartedWordsListItemViewModel
-import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 
 
@@ -15,7 +15,7 @@ class NotStartedWordsListItemController(private val vm: NotStartedWordsListItemV
     val titleView = view.getChild<TextView>(R.id.title)
     titleView.text = vm.title
 
-    val pullUpBtn = view.getChild<Button>(R.id.pullUp)
+    val pullUpBtn = view.getChild<ImageButton>(R.id.pullUp)
     pullUpBtn.setOnClickListener { vm.pullUp() }
   }
 }
