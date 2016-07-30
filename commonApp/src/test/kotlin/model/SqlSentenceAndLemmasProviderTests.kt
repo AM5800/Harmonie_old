@@ -1,4 +1,4 @@
-package model.services
+package model
 
 import am5800.common.Language
 import am5800.common.PartOfSpeech
@@ -9,10 +9,12 @@ import am5800.harmonie.app.model.sql.SqlLemma
 import am5800.harmonie.app.model.sql.SqlSentence
 import org.junit.Assert
 import org.junit.Test
-import testUtils.DbTestBase
+import testUtils.BaseTestWithLifetime
+import testUtils.TestContentSqlDatabase
 
 
-class SqlSentenceAndLemmasProviderTests : DbTestBase() {
+class SqlSentenceAndLemmasProviderTests : BaseTestWithLifetime() {
+  val database = TestContentSqlDatabase(testClassLifetime)
   private val key = "aufgabe"
   val sentenceProvider = SqlSentenceAndLemmasProvider(database)
   val sentences = listOf(

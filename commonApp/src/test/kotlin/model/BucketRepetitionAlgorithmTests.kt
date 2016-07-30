@@ -1,4 +1,4 @@
-package model.features
+package model
 
 import am5800.harmonie.app.model.repetition.Attempt
 import am5800.harmonie.app.model.repetition.BucketRepetitionAlgorithm

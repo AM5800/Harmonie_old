@@ -22,7 +22,7 @@ class TestCursor(private val rs: ResultSet) : Cursor {
   }
 }
 
-class TestSqlDatabase(lifetime: Lifetime) : ContentDb {
+class TestContentSqlDatabase(lifetime: Lifetime) : ContentDb {
   private val connection = DriverManager.getConnection("jdbc:sqlite:${findDb().absolutePath}")
   private val stmt = connection.createStatement()
 
@@ -45,5 +45,5 @@ class TestSqlDatabase(lifetime: Lifetime) : ContentDb {
 
     throw Exception("Database not found. Tried locations: " + locations.joinToString(", ") { it.absolutePath })
   }
-
 }
+

@@ -14,7 +14,7 @@ import am5800.harmonie.android.logging.AndroidLoggerProvider
 import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.feedback.impl.ErrorReportingServiceImpl
 import am5800.harmonie.app.model.flow.FlowManager
-import am5800.harmonie.app.model.flow.LemmasLearnOrdererImpl
+import am5800.harmonie.app.model.flow.SqlLemmasOrderer
 import am5800.harmonie.app.model.languageCompetence.LanguageCompetenceManagerStub
 import am5800.harmonie.app.model.parallelSentence.ParallelSentenceFlowManager
 import am5800.harmonie.app.model.parallelSentence.ParallelSentenceSelectorImpl
@@ -72,7 +72,7 @@ class HarmonieApplication : Application() {
       val localizationService = AndroidLocalizationService.create(resources, keyValueDb, lt)
       val feedbackService = AndroidFeedbackService(userDb)
       val reportingService = ErrorReportingServiceImpl(userDb)
-      val orderer = LemmasLearnOrdererImpl()
+      val orderer = SqlLemmasOrderer(userDb, sentenceAndLemmasProvider)
 
       // ViewModels
       val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService, keyValueDb, reportingService)
