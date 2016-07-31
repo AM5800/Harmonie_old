@@ -16,6 +16,7 @@ import am5800.harmonie.app.model.feedback.impl.ErrorReportingServiceImpl
 import am5800.harmonie.app.model.flow.FlowManager
 import am5800.harmonie.app.model.flow.SqlLemmasOrderer
 import am5800.harmonie.app.model.languageCompetence.LanguageCompetenceManagerStub
+import am5800.harmonie.app.model.lemmasMeaning.SqlLemmaMeaningsProvider
 import am5800.harmonie.app.model.parallelSentence.ParallelSentenceFlowManager
 import am5800.harmonie.app.model.parallelSentence.ParallelSentenceSelectorImpl
 import am5800.harmonie.app.model.parallelSentence.SentenceSelectionStrategyImpl
@@ -75,7 +76,7 @@ class HarmonieApplication : Application() {
       val orderer = SqlLemmasOrderer(userDb, sentenceAndLemmasProvider)
 
       // ViewModels
-      val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService, keyValueDb, reportingService)
+      val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService, SqlLemmaMeaningsProvider(), keyValueDb, reportingService)
       val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt)
       val wordsListViewModel = WordsListViewModel(lt, sentenceAndLemmasProvider, lemmasRepetitionService, orderer)
       val workspaceViewModel = WorkspaceViewModel(lt, flowManager, LanguageTagStatisticsProvider(lemmasRepetitionService, sentenceAndLemmasProvider), feedbackService, wordsListViewModel, localizationService)

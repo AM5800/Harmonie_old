@@ -6,6 +6,7 @@ import am5800.common.utils.properties.NullableProperty
 import am5800.common.utils.properties.Property
 import am5800.harmonie.app.model.feedback.ErrorReportingService
 import am5800.harmonie.app.model.flow.FlowManager
+import am5800.harmonie.app.model.lemmasMeaning.LemmaMeaningsProvider
 import am5800.harmonie.app.model.localization.LocalizationService
 import am5800.harmonie.app.model.parallelSentence.ParallelSentenceFlowManager
 import am5800.harmonie.app.model.parallelSentence.SentenceScore
@@ -29,6 +30,7 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
                                 private val parallelSentenceFlowManager: ParallelSentenceFlowManager,
                                 private val flowManager: FlowManager,
                                 private val localizationService: LocalizationService,
+                                private val lemmasMeaningsProvider: LemmaMeaningsProvider,
                                 keyValueDatabase: KeyValueDatabase,
                                 reportingService: ErrorReportingService) : ViewModelBase(lifetime) {
   enum class State {
@@ -37,6 +39,8 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
   }
 
   val help = NullableProperty<String>(lifetime, null)
+
+  val problemWords = Property<List<String>>(lifetime, emptyList())
 
   val reportCommands = IssueReportingMenuHelper.createMenuItems(reportingService, localizationService, lifetime, { describeState() })
 
@@ -107,16 +111,23 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
     })
   }
 
-  private fun updateScore(vms: List<ToggleableWordViewModel>) {
+  private fun updateVms(vms: List<ToggleableWordViewModel>) {
     val good = vms.count { it.state.value == LearnScore.Good }
     if (good.toDouble() / vms.size > 0.8) onGoodScore()
     else onBadScore()
+
+    val problems = vms.filter { it.state.value == LearnScore.Bad }
+
+    problemWords.value = problems.map {
+      val meanings = lemmasMeaningsProvider.getMeanings(it.lemma)
+      "${it.text}(${it.lemma.lemma}): ${meanings.joinToString(", ")}"
+    }
   }
 
   private fun subscribeToVms(vms: List<WordViewModel>, lt: Lifetime) {
     val tvms = vms.filterIsInstance<ToggleableWordViewModel>()
     for (tvm in tvms) {
-      tvm.state.onChange(lt, { updateScore(tvms) })
+      tvm.state.onChange(lt, { updateVms(tvms) })
     }
   }
 
