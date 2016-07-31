@@ -4,36 +4,6 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:paddingBottom="30dp">
-    <LinearLayout android:layout_width="fill_parent"
-                  android:layout_height="wrap_content"
-                  android:orientation="vertical"
-                  android:layout_alignParentTop="true"
-                  android:layout_centerHorizontal="true"
-                  android:layout_margin="15dp"
-                  android:gravity="center_horizontal">
-
-        <org.apmem.tools.layouts.FlowLayout android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:id="@+id/question"
-                                            android:layout_gravity="start">
-        </org.apmem.tools.layouts.FlowLayout>
-
-        <View
-                android:layout_width="200dp"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray"
-                android:layout_margin="15dp"
-                android:layout_gravity="center"/>
-
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Large Text"
-                android:id="@+id/answer"
-                android:layout_gravity="start"/>
-    </LinearLayout>
-
 
     <LinearLayout
             android:orientation="vertical"
@@ -41,6 +11,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:gravity="center_horizontal"
+            android:id="@+id/actionBar"
             android:layout_alignParentBottom="true">
 
         <Button
@@ -71,4 +42,47 @@
                     android:id="@+id/score3Btn"/>
         </LinearLayout>
     </LinearLayout>
+
+
+    <RelativeLayout android:layout_width="match_parent"
+                    android:layout_above="@+id/actionBar"
+                    android:layout_height="match_parent">
+        <LinearLayout android:layout_width="fill_parent"
+                      android:layout_height="wrap_content"
+                      android:orientation="vertical"
+                      android:layout_alignParentTop="true"
+                      android:id="@+id/sentences"
+                      android:layout_centerHorizontal="true"
+                      android:layout_margin="@dimen/fragment_outer_margin"
+                      android:gravity="center_horizontal">
+
+            <org.apmem.tools.layouts.FlowLayout android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:id="@+id/question"
+                                                android:layout_gravity="start">
+            </org.apmem.tools.layouts.FlowLayout>
+
+            <View
+                    android:layout_width="200dp"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray"
+                    android:layout_margin="15dp"
+                    android:layout_gravity="center"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="Large Text"
+                    android:id="@+id/answer"
+                    android:layout_gravity="start"/>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent"
+                      android:id="@+id/words"
+                      android:orientation="vertical"
+                      android:layout_below="@id/sentences"
+                      android:layout_height="match_parent" android:background="#c55b5b"></LinearLayout>
+
+    </RelativeLayout>
 </RelativeLayout>
