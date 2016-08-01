@@ -82,7 +82,7 @@
                   android:id="@+id/meanings"
                   android:layout_below="@id/sentences"
                   android:dividerHeight="0dp"
-                  android:layout_height="match_parent" android:background="#c55b5b"></ListView>
+                  android:layout_height="match_parent"></ListView>
 
     </RelativeLayout>
 </RelativeLayout>

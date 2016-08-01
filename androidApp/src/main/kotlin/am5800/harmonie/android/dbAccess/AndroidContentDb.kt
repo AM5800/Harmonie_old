@@ -44,6 +44,7 @@ class AndroidContentDb(context: Context,
     }
 
     private fun checkDbUpdateNeeded(): Boolean {
+      return true
       if (!File(DbLocation).exists()) return true
       val dbKey = "ContentDbChecksum"
       val previousChecksum = keyValueDb.getValue(dbKey, "0")

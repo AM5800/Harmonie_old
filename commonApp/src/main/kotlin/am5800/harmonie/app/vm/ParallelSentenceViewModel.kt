@@ -1,5 +1,6 @@
 package am5800.harmonie.app.vm
 
+import am5800.common.Language
 import am5800.common.Lemma
 import am5800.common.utils.Lifetime
 import am5800.common.utils.properties.NullableProperty
@@ -12,6 +13,7 @@ import am5800.harmonie.app.model.parallelSentence.ParallelSentenceFlowManager
 import am5800.harmonie.app.model.parallelSentence.SentenceScore
 import am5800.harmonie.app.model.repetition.LearnScore
 import am5800.harmonie.app.model.sql.KeyValueDatabase
+import com.google.common.collect.LinkedHashMultimap
 import sun.plugin.dom.exception.InvalidStateException
 import java.util.*
 
@@ -116,11 +118,37 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
     if (good.toDouble() / vms.size > 0.8) onGoodScore()
     else onBadScore()
 
-    val problems = vms.filter { it.state.value == LearnScore.Bad }
+    val problems = vms.filter { it.state.value == LearnScore.Bad }.map { Pair(it.lemma, it.text) }
 
-    problemWords.value = problems.map {
-      val meanings = lemmasMeaningsProvider.getMeanings(it.lemma)
-      "${it.text}(${it.lemma.lemma}): ${meanings.joinToString(", ")}"
+    val learnLanguage = parallelSentenceFlowManager.question.value!!.answer.language
+
+    problemWords.value = presentProblems(learnLanguage, problems)
+  }
+
+  private fun presentProblems(knownLanguage: Language, problems: List<Pair<Lemma, String>>): List<String> {
+    val lemmasPresentations = LinkedHashMultimap.create<Lemma, String>()
+    for ((lemma, text) in problems) {
+      lemmasPresentations.put(lemma, text)
+    }
+
+    return lemmasPresentations.asMap().map {
+      val lemma = it.key
+      val presentations = it.value
+      val sb = StringBuilder()
+      if (presentations.size == 1 && lemma.lemma.equals(presentations.first(), true)) {
+        sb.append(presentations.first())
+      }
+      else {
+        sb.append(presentations.joinToString(", "))
+        sb.append("(${lemma.lemma})")
+      }
+      sb.append(": ")
+
+      val meanings = lemmasMeaningsProvider.getMeaningsAsSingleString(lemma, knownLanguage)
+      if (meanings == null) sb.append("<${localizationService.getCurrentTable().noTranslation}>")
+      else sb.append(meanings)
+
+      sb.toString()
     }
   }
 

@@ -76,7 +76,7 @@ class HarmonieApplication : Application() {
       val orderer = SqlLemmasOrderer(userDb, sentenceAndLemmasProvider)
 
       // ViewModels
-      val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService, SqlLemmaMeaningsProvider(), keyValueDb, reportingService)
+      val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService, SqlLemmaMeaningsProvider(contentDb), keyValueDb, reportingService)
       val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt)
       val wordsListViewModel = WordsListViewModel(lt, sentenceAndLemmasProvider, lemmasRepetitionService, orderer)
       val workspaceViewModel = WorkspaceViewModel(lt, flowManager, LanguageTagStatisticsProvider(lemmasRepetitionService, sentenceAndLemmasProvider), feedbackService, wordsListViewModel, localizationService)

@@ -31,4 +31,5 @@ interface LocalizationTable {
   val sendDbDescription: String
   val wordsList: String
   val wordsListDescription: String
+  val noTranslation: String
 }

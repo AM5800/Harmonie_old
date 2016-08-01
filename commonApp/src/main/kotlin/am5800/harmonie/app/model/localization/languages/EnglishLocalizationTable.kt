@@ -6,6 +6,7 @@ import am5800.harmonie.app.model.localization.LocalizationTable
 
 
 class EnglishLocalizationTable : LocalizationTable {
+  override val noTranslation = "Translation not available"
   override val sendDb = "Send DB"
   override val sendDbDescription = "Send internal database to the author"
   override val wordsList = "Words list"
