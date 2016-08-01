@@ -97,4 +97,8 @@ class JetSqlSentenceWriter(private val db: SqlJetDb) : SentenceWriter {
     tables = result
     return result
   }
+
+  fun getLemmaSqlId(lemma: Lemma): Long? {
+    return lemmaIdToSqlId[lemma.id]
+  }
 }
