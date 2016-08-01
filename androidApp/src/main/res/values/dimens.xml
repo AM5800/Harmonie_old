@@ -3,6 +3,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fragment_outer_margin">10dp</dimen>
+    <dimen name="fragment_outer_margin_x2">20dp</dimen>
     <dimen name="panelHeaderFontSize">25sp</dimen>
 
 </resources>

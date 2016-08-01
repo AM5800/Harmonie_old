@@ -17,6 +17,7 @@ import android.app.AlertDialog
 import android.graphics.Color
 import android.util.TypedValue
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
 import org.apmem.tools.layouts.FlowLayout
 
@@ -40,7 +41,9 @@ class ParallelSentenceController(lifetime: Lifetime,
 
     val answer = view.getChild<TextView>(R.id.answer)
     answer.bindText(bindingLifetime, view, vm.answer)
-    answer.bindVisibility(bindingLifetime, view, vm.answerGroupVisibility, Visibility.Collapsed)
+
+    val answerGroup = view.getChild<LinearLayout>(R.id.answerGroup)
+    answerGroup.bindVisibility(bindingLifetime, view, vm.answerGroupVisibility, Visibility.Collapsed)
 
     val showTranslationBtn = view.getChild<Button>(R.id.showTranslationBtn)
     showTranslationBtn.bindOnClick(bindingLifetime, { vm.next() })
