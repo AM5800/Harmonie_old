@@ -94,7 +94,7 @@ class ParallelSentenceController(lifetime: Lifetime,
     }
 
     val layoutParams = FlowLayout.LayoutParams(FlowLayout.LayoutParams.WRAP_CONTENT, FlowLayout.LayoutParams.WRAP_CONTENT)
-    layoutParams.setMargins(0, 8, 0, 8)
+    layoutParams.setMargins(0, 0, 0, 16)
     if (childVm.needSpaceAfter) layoutParams.rightMargin = 16
     wordView.layoutParams = layoutParams
 
