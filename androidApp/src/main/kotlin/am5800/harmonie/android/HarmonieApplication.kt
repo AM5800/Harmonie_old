@@ -57,12 +57,15 @@ class HarmonieApplication : Application() {
       val sentenceAndLemmasProvider = SqlSentenceAndLemmasProvider(contentDb)
       val lemmasRepetitionService = LemmaRepetitionServiceImpl(repetitionService, lt, sentenceAndLemmasProvider)
 
+      val orderer = SqlLemmasOrderer(userDb, sentenceAndLemmasProvider)
+
       val sentenceSelectionStrategy = ParallelSentenceSelectorImpl(lemmasRepetitionService,
           debugOptions,
           loggerProvider,
           sentenceAndLemmasProvider,
           SqlSentenceScoreStorage(userDb),
-          SentenceSelectionStrategyImpl())
+          SentenceSelectionStrategyImpl(),
+          orderer)
 
       val languageCompetenceManager = LanguageCompetenceManagerStub()
       val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceAndLemmasProvider, lemmasRepetitionService, sentenceSelectionStrategy, languageCompetenceManager)
@@ -73,7 +76,6 @@ class HarmonieApplication : Application() {
       val localizationService = AndroidLocalizationService.create(resources, keyValueDb, lt)
       val feedbackService = AndroidFeedbackService(userDb)
       val reportingService = ErrorReportingServiceImpl(userDb)
-      val orderer = SqlLemmasOrderer(userDb, sentenceAndLemmasProvider)
 
       // ViewModels
       val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService, SqlLemmaMeaningsProvider(contentDb), keyValueDb, reportingService)

@@ -6,6 +6,7 @@ import am5800.common.Sentence
 import am5800.common.utils.EnumerableDistribution
 import am5800.common.utils.functions.random
 import am5800.harmonie.app.model.DebugOptions
+import am5800.harmonie.app.model.flow.LemmasOrderer
 import am5800.harmonie.app.model.languageCompetence.LanguageCompetence
 import am5800.harmonie.app.model.logging.LoggerProvider
 import am5800.harmonie.app.model.repetition.LemmaRepetitionService
@@ -18,7 +19,8 @@ class ParallelSentenceSelectorImpl(private val repetitionService: LemmaRepetitio
                                    loggerProvider: LoggerProvider,
                                    private val sentenceAndLemmasProvider: SentenceAndLemmasProvider,
                                    private val sentenceScoreStorage: SentenceScoreStorage,
-                                   private val sentenceSelectionStrategy: SentenceSelectionStrategy) : ParallelSentenceSelector {
+                                   private val sentenceSelectionStrategy: SentenceSelectionStrategy,
+                                   private val lemmasOrderer: LemmasOrderer) : ParallelSentenceSelector {
   override fun submitScore(sentence: Sentence, score: SentenceScore) {
     sentenceScoreStorage.setScore(sentence, score)
   }
@@ -70,7 +72,7 @@ class ParallelSentenceSelectorImpl(private val repetitionService: LemmaRepetitio
 
   private fun learnNewLemma(competence: List<LanguageCompetence>, allLemmas: List<Lemma>, attemptedLemmas: List<Lemma>): SentenceAndTranslation? {
     val attemptedLemmasSet = attemptedLemmas.toHashSet()
-    val lemma = allLemmas.filter { !attemptedLemmasSet.contains(it) }.sortedBy { it.difficultyLevel }.first()
+    val lemma = lemmasOrderer.reorder(allLemmas.filter { !attemptedLemmasSet.contains(it) }).first()
     return selectSentence(competence, lemma)
   }
 
