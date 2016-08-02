@@ -117,7 +117,7 @@ class BucketRepetitionAlgorithmTests {
       ok(Seconds.ONE)
       ok(Seconds.ONE)
       ok(Seconds.ONE)
-      ok(Minutes.ONE)
+      ok(Seconds.THREE)
       ok(Seconds.ONE)
     }
 

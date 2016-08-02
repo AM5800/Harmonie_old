@@ -12,7 +12,7 @@ class BucketRepetitionAlgorithm() : RepetitionAlgorithm {
     return LearnScore.Bad
   }
 
-  val buckets: List<Period> = listOf(Minutes.TWO.toPeriod(), Days.ONE.toPeriod(), Weeks.TWO.toPeriod(), Months.TWO.toPeriod(), Months.SIX.toPeriod())
+  val buckets: List<Period> = listOf(Seconds.seconds(30).toPeriod(), Days.ONE.toPeriod(), Weeks.TWO.toPeriod(), Months.TWO.toPeriod(), Months.SIX.toPeriod())
 
   override fun getNextDueDate(attempts: List<Attempt>): DateTime {
     if (attempts.isEmpty()) throw Exception("No attempts")
