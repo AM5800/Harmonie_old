@@ -23,7 +23,7 @@ class SentenceAndLemmasProviderMock : SentenceAndLemmasProvider {
     throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
   }
 
-  override fun getAllLemmas(learnLanguage: Language): List<Lemma> {
+  override fun getAllLemmasSorted(learnLanguage: Language): List<Lemma> {
     throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
   }
 

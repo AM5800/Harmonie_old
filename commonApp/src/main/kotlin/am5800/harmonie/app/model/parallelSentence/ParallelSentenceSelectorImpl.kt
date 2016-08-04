@@ -49,7 +49,7 @@ class ParallelSentenceSelectorImpl(private val repetitionService: LemmaRepetitio
 
     val attemptedLemmas = repetitionService.getAttemptedLemmas(learnLanguage)
     val canRepeatRandomLemma = attemptedLemmas.any()
-    val allLemmas = sentenceAndLemmasProvider.getAllLemmas(learnLanguage)
+    val allLemmas = sentenceAndLemmasProvider.getAllLemmasSorted(learnLanguage)
     val canLearnNewLemma = allLemmas.map { it }.minus(attemptedLemmas).any()
 
     if (canLearnNewLemma == false && canRepeatRandomLemma) throw Exception("Impossible state. Empty database?")

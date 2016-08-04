@@ -18,7 +18,7 @@ class WordsListViewModel(lifetime: Lifetime,
   private val hardcodedLanguage = Language.German // TODO
 
   init {
-    update(sentenceAndLemmasProvider.getAllLemmas(hardcodedLanguage), hardcodedLanguage)
+    update(sentenceAndLemmasProvider.getAllLemmasSorted(hardcodedLanguage), hardcodedLanguage)
   }
 
   private fun update(lemmas: List<Lemma>, language: Language) {
@@ -28,7 +28,7 @@ class WordsListViewModel(lifetime: Lifetime,
     val notStarted = orderer.reorder(lemmas.minus(onLearning))
 
     val onLearningVms = onLearning.map { OnLearningWordsListItemViewModel(it) }.toList<WordsListItemViewModel>()
-    val nonStartedVms = notStarted.map { NotStartedWordsListItemViewModel(it, this) }.toList<WordsListItemViewModel>()
+    val nonStartedVms = notStarted.mapIndexed { i, lemma -> NotStartedWordsListItemViewModel(lemma, this, i + 1) }.toList<WordsListItemViewModel>()
     val separator: WordsListItemViewModel = SeparatorWordsListItemViewModel("not started:")
 
     val result = onLearningVms
@@ -44,6 +44,6 @@ class WordsListViewModel(lifetime: Lifetime,
 
   fun pullUp(lemma: Lemma) {
     orderer.pullUp(lemma)
-    update(sentenceAndLemmasProvider.getAllLemmas(hardcodedLanguage), hardcodedLanguage)
+    update(sentenceAndLemmasProvider.getAllLemmasSorted(hardcodedLanguage), hardcodedLanguage)
   }
 }

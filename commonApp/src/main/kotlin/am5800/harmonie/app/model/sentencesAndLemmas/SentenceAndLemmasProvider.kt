@@ -11,7 +11,7 @@ data class SentenceAndTranslation(val sentence: Sentence, val translation: Sente
 interface SentenceAndLemmasProvider {
   fun getOccurrences(sentence: Sentence): List<LemmaOccurrence>
   fun getEasiestSentencesWith(lemma: Lemma, competence: List<LanguageCompetence>, amount: Int): List<SentenceAndTranslation>
-  fun getAllLemmas(learnLanguage: Language): List<Lemma>
+  fun getAllLemmasSorted(learnLanguage: Language): List<Lemma>
   fun getLemmasByIds(lemmaIds: List<String>): List<Lemma>
   fun searchLemmas(query: String, language: Language): List<Lemma>
 }

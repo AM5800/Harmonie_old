@@ -13,7 +13,7 @@ class LanguageTagStatisticsProvider(private val lemmaRepetitionService: LemmaRep
                                     private val sentenceAndLemmasProvider: SentenceAndLemmasProvider) : TagStatisticsProvider {
   override fun getTotalCount(tags: Collection<FlowItemTag>): Int {
     return count(tags, {
-      sentenceAndLemmasProvider.getAllLemmas(it).size
+      sentenceAndLemmasProvider.getAllLemmasSorted(it).size
     })
   }
 

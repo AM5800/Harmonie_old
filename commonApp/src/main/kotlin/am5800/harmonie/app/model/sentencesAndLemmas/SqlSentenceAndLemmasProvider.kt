@@ -27,9 +27,9 @@ class SqlSentenceAndLemmasProvider(private val contentDb: ContentDb) : SentenceA
     return queryResult.map { SqlLemma(it.value1, it.value2, it.value3) }
   }
 
-  override fun getAllLemmas(learnLanguage: Language): List<Lemma> {
+  override fun getAllLemmasSorted(learnLanguage: Language): List<Lemma> {
     val query = """
-        SELECT id, lemmaId, level FROM lemmas WHERE language = '${learnLanguage.code}'
+        SELECT id, lemmaId, level FROM lemmas WHERE language = '${learnLanguage.code}' ORDER BY level
     """
     val result = contentDb.query3<Long, String, Int>(query)
     return result.map { SqlLemma(it.value1, it.value2, it.value3) }
