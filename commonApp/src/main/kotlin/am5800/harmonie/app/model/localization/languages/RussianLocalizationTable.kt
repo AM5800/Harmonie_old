@@ -5,6 +5,7 @@ import am5800.harmonie.app.model.localization.FormatStringImpl
 import am5800.harmonie.app.model.localization.LocalizationTable
 
 class RussianLocalizationTable : LocalizationTable {
+  override val lessThanMinute = "меньше минуты"
   override val daysLeft = EnglishQuantityString("%i day left", "%i days left")
   override val hoursLeft = EnglishQuantityString("%i hour left", "%i hours left")
   override val onDueStatus = "On due"

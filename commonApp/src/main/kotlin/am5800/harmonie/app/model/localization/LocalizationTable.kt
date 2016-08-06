@@ -35,4 +35,5 @@ interface LocalizationTable {
   val daysLeft: QuantityString
   val hoursLeft: QuantityString
   val onDueStatus: String
+  val lessThanMinute: String
 }
