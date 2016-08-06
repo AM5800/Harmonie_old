@@ -14,14 +14,12 @@ class WordsListViewModel(lifetime: Lifetime,
                          private val lemmaRepetitionService: LemmaRepetitionService,
                          private val orderer: LemmasOrderer) : ViewModelBase(lifetime) {
   val items = Property<List<WordsListItemViewModel>>(lifetime, emptyList())
+  private var allItems = emptyList<WordsListItemViewModel>()
+  private var filter: String = ""
 
   private val hardcodedLanguage = Language.German // TODO
 
-  init {
-    update(sentenceAndLemmasProvider.getAllLemmasSorted(hardcodedLanguage), hardcodedLanguage)
-  }
-
-  private fun update(lemmas: List<Lemma>, language: Language) {
+  private fun reorder(lemmas: List<Lemma>, language: Language) {
     val attemptedLemmas = lemmaRepetitionService.getAttemptedLemmas(language)
 
     val onLearning = lemmas.intersect(attemptedLemmas)
@@ -35,15 +33,33 @@ class WordsListViewModel(lifetime: Lifetime,
         .plus(separator)
         .plus(nonStartedVms)
 
-    items.value = result
+    allItems = result
   }
 
   fun search(query: String) {
-    update(sentenceAndLemmasProvider.searchLemmas(query, hardcodedLanguage), hardcodedLanguage)
+    filter = query
+    applyFilter()
+  }
+
+  private fun applyFilter() {
+    if (filter.isNullOrEmpty()) items.value = allItems
+    else items.value = allItems.filter {
+      if (it is SeparatorWordsListItemViewModel) true
+      else if (it is NotStartedWordsListItemViewModel) it.lemma.lemma.contains(filter, true)
+      else if (it is OnLearningWordsListItemViewModel) it.lemma.lemma.contains(filter, true)
+      else throw Exception("Unknown type: " + it.javaClass.name)
+    }
   }
 
   fun pullUp(lemma: Lemma) {
     orderer.pullUp(lemma)
-    update(sentenceAndLemmasProvider.getAllLemmasSorted(hardcodedLanguage), hardcodedLanguage)
+    reorder(sentenceAndLemmasProvider.getAllLemmasSorted(hardcodedLanguage), hardcodedLanguage)
+    applyFilter()
+  }
+
+  fun onActivated() {
+    filter = ""
+    reorder(sentenceAndLemmasProvider.getAllLemmasSorted(hardcodedLanguage), hardcodedLanguage)
+    applyFilter()
   }
 }

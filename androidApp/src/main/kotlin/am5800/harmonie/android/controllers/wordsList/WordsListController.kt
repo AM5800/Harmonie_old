@@ -21,6 +21,10 @@ class WordsListController(private val vm: WordsListViewModel,
     vm.activationRequested.subscribe(lifetime, { controllerStack.push(this, javaClass.name) })
   }
 
+  override fun onActivated() {
+    vm.onActivated()
+  }
+
   override val id = R.layout.words_list
   override fun bind(view: BindableView, bindingLifetime: Lifetime) {
     ListViewController.bind(R.id.wordsList, bindingLifetime, view, vm.items, {
@@ -31,7 +35,7 @@ class WordsListController(private val vm: WordsListViewModel,
     })
 
     val searchView = view.getChild<SearchView>(R.id.searchView)
-    searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
+    searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
       override fun onQueryTextSubmit(query: String): Boolean {
         vm.search(query)
         return false
@@ -42,6 +46,5 @@ class WordsListController(private val vm: WordsListViewModel,
         return false
       }
     })
-
   }
 }

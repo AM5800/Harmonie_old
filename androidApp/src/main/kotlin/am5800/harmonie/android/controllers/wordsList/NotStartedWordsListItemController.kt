@@ -10,7 +10,7 @@ import android.widget.TextView
 
 
 class NotStartedWordsListItemController(private val vm: NotStartedWordsListItemViewModel) : BindableController {
-  override val id = R.layout.words_list_not_started
+  override val id = R.layout.words_list_item_not_started
   override fun bind(view: BindableView, bindingLifetime: Lifetime) {
     val titleView = view.getChild<TextView>(R.id.title)
     titleView.text = vm.title

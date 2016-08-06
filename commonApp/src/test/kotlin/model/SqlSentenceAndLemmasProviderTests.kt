@@ -74,22 +74,4 @@ class SqlSentenceAndLemmasProviderTests : BaseTestWithLifetime() {
     Assert.assertEquals(Language.German, keyed.language)
     Assert.assertEquals(PartOfSpeech.Other, keyed.partOfSpeech)
   }
-
-  @Test
-  fun testLemmasSearch1() {
-    val lemmas = sentenceProvider.searchLemmas("i", Language.German)
-    Assert.assertEquals(3, lemmas.size)
-  }
-
-  @Test
-  fun testLemmasSearchAll() {
-    val lemmas = sentenceProvider.searchLemmas("", Language.German)
-    Assert.assertEquals(9, lemmas.size)
-  }
-
-  @Test
-  fun testLemmasSearchZ() {
-    val lemmas = sentenceProvider.searchLemmas("z", Language.German)
-    Assert.assertEquals(0, lemmas.size)
-  }
 }
