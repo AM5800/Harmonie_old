@@ -17,6 +17,7 @@ class NotStartedWordsListItemController(private val vm: NotStartedWordsListItemV
 
     val pullUpBtn = view.getChild<ImageButton>(R.id.pullUp)
     pullUpBtn.setOnClickListener { vm.pullUp() }
+    pullUpBtn.isEnabled = vm.canPullUp
 
     val orderTxt = view.getChild<TextView>(R.id.order)
     orderTxt.text = "${vm.order}."

@@ -1,3 +1,7 @@
 package am5800.harmonie.app.vm.wordsList
 
-interface WordsListItemViewModel
+import am5800.common.Lemma
+
+interface WordsListItemViewModel {
+  val lemma: Lemma
+}

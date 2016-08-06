@@ -6,7 +6,7 @@ import org.joda.time.DateTime
 import org.joda.time.Seconds
 
 
-class OnLearningWordsListItemViewModel(val lemma: Lemma,
+class OnLearningWordsListItemViewModel(override val lemma: Lemma,
                                        dueDate: DateTime,
                                        localizationService: LocalizationService) : WordsListItemViewModel {
   val title = lemma.lemma

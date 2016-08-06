@@ -30,10 +30,8 @@ class WordsListViewModel(lifetime: Lifetime,
 
     val onLearningVms = onLearning.map { OnLearningWordsListItemViewModel(it.first, it.second!!, localizationService) }.toList<WordsListItemViewModel>()
     val nonStartedVms = notStarted.mapIndexed { i, lemma -> NotStartedWordsListItemViewModel(lemma, this, i + 1) }.toList<WordsListItemViewModel>()
-    val separator: WordsListItemViewModel = SeparatorWordsListItemViewModel("not started:")
 
     val result = onLearningVms
-        .plus(separator)
         .plus(nonStartedVms)
 
     allItems = result
@@ -47,14 +45,12 @@ class WordsListViewModel(lifetime: Lifetime,
   private fun applyFilter() {
     if (filter.isNullOrEmpty()) items.value = allItems
     else items.value = allItems.filter {
-      if (it is SeparatorWordsListItemViewModel) true
-      else if (it is NotStartedWordsListItemViewModel) it.lemma.lemma.contains(filter, true)
-      else if (it is OnLearningWordsListItemViewModel) it.lemma.lemma.contains(filter, true)
-      else throw Exception("Unknown type: " + it.javaClass.name)
+      it.lemma.lemma.contains(filter, true)
     }
 
-    val indexOfFirst = items.value.indexOfFirst { it is SeparatorWordsListItemViewModel }
-    scrollPosition.value = indexOfFirst
+    val firstNotStarted = items.value.indexOfFirst { it is NotStartedWordsListItemViewModel }
+    val lastOnLearning = items.value.indexOfLast { it is OnLearningWordsListItemViewModel }
+    scrollPosition.value = Math.max(firstNotStarted, lastOnLearning)
   }
 
   fun pullUp(lemma: Lemma) {
