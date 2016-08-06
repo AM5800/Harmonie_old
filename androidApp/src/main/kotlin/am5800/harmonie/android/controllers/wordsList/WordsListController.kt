@@ -39,7 +39,11 @@ class WordsListController(private val vm: WordsListViewModel,
     })
 
     vm.scrollPosition.onChange(bindingLifetime, {
-      listView.setSelection(vm.scrollPosition.value - 3)
+      listView.setSelection(getSelection())
+    })
+
+    vm.items.onChange(bindingLifetime, {
+      listView.setSelection(getSelection())
     })
 
     val searchView = view.getChild<SearchView>(R.id.searchView)
@@ -55,4 +59,6 @@ class WordsListController(private val vm: WordsListViewModel,
       }
     })
   }
+
+  private fun getSelection() = vm.scrollPosition.value - 3
 }

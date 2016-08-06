@@ -53,7 +53,8 @@ class WordsListViewModel(lifetime: Lifetime,
       else throw Exception("Unknown type: " + it.javaClass.name)
     }
 
-    scrollPosition.value = items.value.indexOfFirst { it is SeparatorWordsListItemViewModel }
+    val indexOfFirst = items.value.indexOfFirst { it is SeparatorWordsListItemViewModel }
+    scrollPosition.value = indexOfFirst
   }
 
   fun pullUp(lemma: Lemma) {
