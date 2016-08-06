@@ -34,7 +34,7 @@ class WordsListController(private val vm: WordsListViewModel,
     ListViewController.bind(listView, bindingLifetime, view, vm.items, {
       if (it is NotStartedWordsListItemViewModel) NotStartedWordsListItemController(it)
       else if (it is SeparatorWordsListItemViewModel) WordsListItemController(it.title)
-      else if (it is OnLearningWordsListItemViewModel) WordsListItemController(it.title)
+      else if (it is OnLearningWordsListItemViewModel) OnLearningWordsListItemController(it)
       else throw Exception("Unsupported ViewModel: " + it.javaClass.name)
     })
 

@@ -6,6 +6,9 @@ import am5800.harmonie.app.model.localization.LocalizationTable
 
 
 class EnglishLocalizationTable : LocalizationTable {
+  override val daysLeft = EnglishQuantityString("%i day left", "%i days left")
+  override val hoursLeft = EnglishQuantityString("%i hour left", "%i hours left")
+  override val onDueStatus = "On due"
   override val noTranslation = "Translation not available"
   override val sendDb = "Send DB"
   override val sendDbDescription = "Send internal database to the author"

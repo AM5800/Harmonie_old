@@ -32,4 +32,7 @@ interface LocalizationTable {
   val wordsList: String
   val wordsListDescription: String
   val noTranslation: String
+  val daysLeft: QuantityString
+  val hoursLeft: QuantityString
+  val onDueStatus: String
 }

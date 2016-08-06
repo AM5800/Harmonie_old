@@ -12,10 +12,12 @@ class BucketRepetitionAlgorithm() : RepetitionAlgorithm {
     return LearnScore.Bad
   }
 
-  val buckets: List<Period> = listOf(Seconds.seconds(30).toPeriod(), Days.ONE.toPeriod(), Weeks.TWO.toPeriod(), Months.TWO.toPeriod(), Months.SIX.toPeriod())
+  val buckets: List<Period> = listOf(Seconds.seconds(30).toPeriod(), Hours.ONE.toPeriod(), Days.ONE.toPeriod(), Weeks.TWO.toPeriod(), Months.TWO.toPeriod(), Months.SIX.toPeriod())
 
   override fun getNextDueDate(attempts: List<Attempt>): DateTime {
-    if (attempts.isEmpty()) throw Exception("No attempts")
+    if (attempts.isEmpty()) {
+      throw Exception("No attempts")
+    }
 
     val sortedAttempts = attempts.sortedBy { it.dateTime }
     val newBucket = compute(sortedAttempts)
@@ -25,7 +27,7 @@ class BucketRepetitionAlgorithm() : RepetitionAlgorithm {
 
   private fun compute(sortedAttempts: List<Attempt>): Pair<Int, DateTime> {
     if (sortedAttempts.isEmpty()) return Pair(-1, DateTime())
-    var bucket = if (isSuccessful(sortedAttempts.first())) 2 else 0
+    var bucket = if (isSuccessful(sortedAttempts.first())) 3 else 0
     var base = sortedAttempts.first()
     for (attempt in sortedAttempts.drop(1)) {
       if (!isSuccessful(attempt)) {

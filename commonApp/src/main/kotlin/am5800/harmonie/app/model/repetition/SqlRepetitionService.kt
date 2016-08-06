@@ -10,6 +10,12 @@ import org.joda.time.DateTime
 class SqlRepetitionService(private val repetitionAlgorithm: RepetitionAlgorithm,
                            private val db: UserDb,
                            debugOptions: DebugOptions) : RepetitionService {
+  override fun tryGetDueDate(entityId: String, entityCategory: String): DateTime? {
+    val attempts = getAttempts(entityCategory, entityId)
+    if (attempts.size == 0) return null
+    return repetitionAlgorithm.getNextDueDate(attempts)
+  }
+
   override fun remove(entityId: String, entityCategory: String) {
     db.execute("DELETE FROM attempts WHERE entityId='$entityId' AND entityCategory='$entityCategory'")
   }

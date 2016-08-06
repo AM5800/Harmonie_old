@@ -10,16 +10,16 @@ import android.widget.BaseAdapter
 import android.widget.ListView
 
 class ListViewController {
-  private class ListViewAdapter(private val controllers: List<BindableController>,
+  private class ListViewAdapter(private val vms: List<BindableController>,
                                 private val rootView: BindableView,
                                 private val valueLifetime: Lifetime) : BaseAdapter() {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
-      val controller = controllers[position]
+      val controller = vms[position]
       return rootView.createChildViewAndBind(controller, valueLifetime, null)
     }
 
     override fun getItem(position: Int): BindableController {
-      return controllers[position]
+      return vms[position]
     }
 
     override fun getItemId(position: Int): Long {
@@ -27,7 +27,7 @@ class ListViewController {
     }
 
     override fun getCount(): Int {
-      return controllers.size
+      return vms.size
     }
   }
 

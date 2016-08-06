@@ -19,11 +19,18 @@ interface LemmaRepetitionService {
   fun countAllScheduledLemmas(language: Language, dateTime: DateTime): Int
 
   fun remove(lemma: Lemma)
+
+  fun tryGetDueDate(lemma: Lemma): DateTime?
 }
 
 class LemmaRepetitionServiceImpl(private val repetitionService: RepetitionService,
                                  lifetime: Lifetime,
                                  private val sentenceAndLemmasProvider: SqlSentenceAndLemmasProvider) : LemmaRepetitionService {
+  override fun tryGetDueDate(lemma: Lemma): DateTime? {
+    val category = getCategory(lemma.language)
+    return repetitionService.tryGetDueDate(lemma.id, category)
+  }
+
   override fun remove(lemma: Lemma) {
     val category = getCategory(lemma.language)
     repetitionService.remove(lemma.id, category)

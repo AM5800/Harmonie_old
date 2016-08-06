@@ -5,8 +5,11 @@
     <color name="colorAccent">#40acff</color>
     <color name="panelBackground">#e4e4e4</color>
     <color name="panelForeground">#646464</color>
-    <color name="panelForegroundError">#d60000</color>
-    <color name="panelForegroundWarning">#ffab40</color>
+    <color name="blackFont">#282828</color>
+    <color name="greyFont">#8f8f8f</color>
+    <color name="errorColor">#d60000</color>
+    <color name="warningColor">#ffab40</color>
+    <color name="okColor">#5acc49</color>
     <color name="separator">#a1a1a1</color>
 
 </resources>

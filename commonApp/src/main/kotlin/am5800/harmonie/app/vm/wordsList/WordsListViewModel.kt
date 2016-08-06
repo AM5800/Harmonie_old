@@ -5,6 +5,7 @@ import am5800.common.Lemma
 import am5800.common.utils.Lifetime
 import am5800.common.utils.properties.Property
 import am5800.harmonie.app.model.flow.LemmasOrderer
+import am5800.harmonie.app.model.localization.LocalizationService
 import am5800.harmonie.app.model.repetition.LemmaRepetitionService
 import am5800.harmonie.app.model.sentencesAndLemmas.SentenceAndLemmasProvider
 import am5800.harmonie.app.vm.ViewModelBase
@@ -12,7 +13,8 @@ import am5800.harmonie.app.vm.ViewModelBase
 class WordsListViewModel(lifetime: Lifetime,
                          private val sentenceAndLemmasProvider: SentenceAndLemmasProvider,
                          private val lemmaRepetitionService: LemmaRepetitionService,
-                         private val orderer: LemmasOrderer) : ViewModelBase(lifetime) {
+                         private val orderer: LemmasOrderer,
+                         private val localizationService: LocalizationService) : ViewModelBase(lifetime) {
   val items = Property<List<WordsListItemViewModel>>(lifetime, emptyList())
   private var allItems = emptyList<WordsListItemViewModel>()
   private var filter: String = ""
@@ -20,13 +22,13 @@ class WordsListViewModel(lifetime: Lifetime,
 
   private val hardcodedLanguage = Language.German // TODO
 
-  private fun reorder(lemmas: List<Lemma>, language: Language) {
-    val attemptedLemmas = lemmaRepetitionService.getAttemptedLemmas(language)
+  private fun reorder(lemmas: List<Lemma>) {
 
-    val onLearning = lemmas.intersect(attemptedLemmas)
-    val notStarted = orderer.reorder(lemmas.minus(onLearning))
+    val lemmasWithDueDate = lemmas.map { Pair(it, lemmaRepetitionService.tryGetDueDate(it)) }
+    val onLearning = lemmasWithDueDate.filter { it.second != null }.sortedByDescending { it.second }
+    val notStarted = orderer.reorder(lemmasWithDueDate.filter { it.second == null }.map { it.first })
 
-    val onLearningVms = onLearning.map { OnLearningWordsListItemViewModel(it) }.toList<WordsListItemViewModel>()
+    val onLearningVms = onLearning.map { OnLearningWordsListItemViewModel(it.first, it.second!!, localizationService) }.toList<WordsListItemViewModel>()
     val nonStartedVms = notStarted.mapIndexed { i, lemma -> NotStartedWordsListItemViewModel(lemma, this, i + 1) }.toList<WordsListItemViewModel>()
     val separator: WordsListItemViewModel = SeparatorWordsListItemViewModel("not started:")
 
@@ -56,13 +58,13 @@ class WordsListViewModel(lifetime: Lifetime,
 
   fun pullUp(lemma: Lemma) {
     orderer.pullUp(lemma)
-    reorder(sentenceAndLemmasProvider.getAllLemmasSorted(hardcodedLanguage), hardcodedLanguage)
+    reorder(sentenceAndLemmasProvider.getAllLemmasSorted(hardcodedLanguage))
     applyFilter()
   }
 
   fun onActivated() {
     filter = ""
-    reorder(sentenceAndLemmasProvider.getAllLemmasSorted(hardcodedLanguage), hardcodedLanguage)
+    reorder(sentenceAndLemmasProvider.getAllLemmasSorted(hardcodedLanguage))
     applyFilter()
   }
 }

@@ -18,7 +18,7 @@
               android:layout_marginBottom="5dp"
               android:layout_marginLeft="5dp"
               android:id="@+id/onDue"
-              android:textColor="@color/panelForegroundError"
+              android:textColor="@color/errorColor"
               android:text="On due: 25"/>
     <TextView android:layout_width="wrap_content"
               android:layout_height="wrap_content"
