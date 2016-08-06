@@ -11,6 +11,7 @@ import am5800.harmonie.app.vm.wordsList.NotStartedWordsListItemViewModel
 import am5800.harmonie.app.vm.wordsList.OnLearningWordsListItemViewModel
 import am5800.harmonie.app.vm.wordsList.SeparatorWordsListItemViewModel
 import am5800.harmonie.app.vm.wordsList.WordsListViewModel
+import android.widget.ListView
 import android.widget.SearchView
 
 
@@ -27,11 +28,18 @@ class WordsListController(private val vm: WordsListViewModel,
 
   override val id = R.layout.words_list
   override fun bind(view: BindableView, bindingLifetime: Lifetime) {
-    ListViewController.bind(R.id.wordsList, bindingLifetime, view, vm.items, {
+
+    val listView = view.getChild<ListView>(R.id.wordsList)
+
+    ListViewController.bind(listView, bindingLifetime, view, vm.items, {
       if (it is NotStartedWordsListItemViewModel) NotStartedWordsListItemController(it)
       else if (it is SeparatorWordsListItemViewModel) WordsListItemController(it.title)
       else if (it is OnLearningWordsListItemViewModel) WordsListItemController(it.title)
       else throw Exception("Unsupported ViewModel: " + it.javaClass.name)
+    })
+
+    vm.scrollPosition.onChange(bindingLifetime, {
+      listView.setSelection(vm.scrollPosition.value - 3)
     })
 
     val searchView = view.getChild<SearchView>(R.id.searchView)

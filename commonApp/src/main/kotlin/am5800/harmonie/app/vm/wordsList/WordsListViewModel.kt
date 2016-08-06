@@ -16,6 +16,7 @@ class WordsListViewModel(lifetime: Lifetime,
   val items = Property<List<WordsListItemViewModel>>(lifetime, emptyList())
   private var allItems = emptyList<WordsListItemViewModel>()
   private var filter: String = ""
+  val scrollPosition = Property<Int>(lifetime, 0)
 
   private val hardcodedLanguage = Language.German // TODO
 
@@ -49,6 +50,8 @@ class WordsListViewModel(lifetime: Lifetime,
       else if (it is OnLearningWordsListItemViewModel) it.lemma.lemma.contains(filter, true)
       else throw Exception("Unknown type: " + it.javaClass.name)
     }
+
+    scrollPosition.value = items.value.indexOfFirst { it is SeparatorWordsListItemViewModel }
   }
 
   fun pullUp(lemma: Lemma) {

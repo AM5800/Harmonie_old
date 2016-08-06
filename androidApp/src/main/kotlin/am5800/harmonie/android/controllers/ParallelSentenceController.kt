@@ -18,6 +18,7 @@ import android.graphics.Color
 import android.util.TypedValue
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.ListView
 import android.widget.TextView
 import org.apmem.tools.layouts.FlowLayout
 
@@ -76,7 +77,7 @@ class ParallelSentenceController(lifetime: Lifetime,
       }
     })
 
-    ListViewController.bind(R.id.meanings, bindingLifetime, view, vm.problemWords, {
+    ListViewController.bind(view.getChild<ListView>(R.id.meanings), bindingLifetime, view, vm.problemWords, {
       ProblemWordController(it)
     })
   }

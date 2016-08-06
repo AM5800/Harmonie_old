@@ -32,12 +32,11 @@ class ListViewController {
   }
 
   companion object {
-    fun <T : Any> bind(listViewId: Int,
+    fun <T : Any> bind(listView: ListView,
                        lifetime: Lifetime,
                        view: BindableView,
                        items: ReadonlyProperty<Collection<T>>,
                        controllerFactory: (T) -> BindableController) {
-      val listView = view.getChild<ListView>(listViewId)
       items.forEachValue(lifetime, { vms, valueLifetime ->
         val controllers = vms.map { controllerFactory(it) }
         listView.adapter = ListViewAdapter(controllers, view, valueLifetime)
