@@ -18,8 +18,9 @@ class SqlLemmasOrderer(private val userDb: UserDb, sentenceAndLemmasProvider: Se
 
     val queryResult = userDb.query1<String>(query)
     val result = mutableMapOf<Lemma, Int>()
+    autoincrement = 0
     for (lemma in sentenceAndLemmasProvider.getLemmasByIds(queryResult)) {
-      result[lemma] = result.size
+      result[lemma] = autoincrement++
     }
     return result
   }
@@ -28,10 +29,10 @@ class SqlLemmasOrderer(private val userDb: UserDb, sentenceAndLemmasProvider: Se
     userDb.execute("CREATE TABLE IF NOT EXISTS lemmasOrder (id INTEGER PRIMARY KEY AUTOINCREMENT, lemmaId STRING)")
   }
 
+  private var autoincrement = 0
+
   override fun pullUp(lemma: Lemma) {
-    val size = lemmasOrder.size
-    lemmasOrder.remove(lemma)
-    lemmasOrder[lemma] = size
+    lemmasOrder[lemma] = autoincrement++
     save()
   }
 
