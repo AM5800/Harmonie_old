@@ -29,7 +29,7 @@ class SqlRepetitionService(private val repetitionAlgorithm: RepetitionAlgorithm,
   }
 
   init {
-    if (debugOptions.resetProgressOnLaunch) db.execute("DROP TABLE IF EXISTS attempts")
+    if (debugOptions.dropAttemptsOnStart) db.execute("DROP TABLE IF EXISTS attempts")
     db.execute("CREATE TABLE IF NOT EXISTS attempts (entityId STRING, entityCategory STRING, dateTime INTEGER, score TEXT)")
   }
 

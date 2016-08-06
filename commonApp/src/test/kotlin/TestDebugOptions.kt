@@ -2,6 +2,6 @@ import am5800.harmonie.app.model.DebugOptions
 
 class TestDebugOptions {
   companion object {
-    val instance = DebugOptions(false, false, 42)
+    val instance = DebugOptions(false, 42)
   }
 }

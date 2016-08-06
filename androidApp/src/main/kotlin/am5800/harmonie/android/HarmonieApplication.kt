@@ -46,7 +46,7 @@ class HarmonieApplication : Application() {
     try {
       val lt = Lifetime()
       val container = ComponentContainer(lt, null)
-      val debugOptions = DebugOptions(true, false, null)
+      val debugOptions = DebugOptions(false, null)
       modelContainer = container
 
       val userDb = AndroidUserDb(this, lt)
