@@ -20,15 +20,20 @@ interface LemmaRepetitionService {
 
   fun remove(lemma: Lemma)
 
-  fun tryGetDueDate(lemma: Lemma): DateTime?
+  fun getDueDates(lemmas: List<Lemma>): List<Pair<Lemma, DateTime?>>
 }
 
 class LemmaRepetitionServiceImpl(private val repetitionService: RepetitionService,
                                  lifetime: Lifetime,
                                  private val sentenceAndLemmasProvider: SqlSentenceAndLemmasProvider) : LemmaRepetitionService {
-  override fun tryGetDueDate(lemma: Lemma): DateTime? {
-    val category = getCategory(lemma.language)
-    return repetitionService.tryGetDueDate(lemma.id, category)
+  override fun getDueDates(lemmas: List<Lemma>): List<Pair<Lemma, DateTime?>> {
+    if (lemmas.isEmpty()) return emptyList()
+    val language = lemmas.first().language
+    assert(lemmas.all { it.language == language })
+    val category = getCategory(language)
+    val dueDates = repetitionService.getDueDates(lemmas.map { it.id }, category)
+
+    return lemmas.map { Pair(it, dueDates[it.id]) }
   }
 
   override fun remove(lemma: Lemma) {

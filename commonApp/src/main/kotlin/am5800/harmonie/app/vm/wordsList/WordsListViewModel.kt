@@ -24,7 +24,7 @@ class WordsListViewModel(lifetime: Lifetime,
 
   private fun reorder(lemmas: List<Lemma>) {
 
-    val lemmasWithDueDate = lemmas.map { Pair(it, lemmaRepetitionService.tryGetDueDate(it)) }
+    val lemmasWithDueDate = lemmaRepetitionService.getDueDates(lemmas)
     val onLearning = lemmasWithDueDate.filter { it.second != null }.sortedByDescending { it.second }
     val notStarted = orderer.reorder(lemmasWithDueDate.filter { it.second == null }.map { it.first })
 

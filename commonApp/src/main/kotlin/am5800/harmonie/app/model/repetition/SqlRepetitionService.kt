@@ -4,16 +4,18 @@ import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.sql.UserDb
 import am5800.harmonie.app.model.sql.query1
 import am5800.harmonie.app.model.sql.query2
-import am5800.harmonie.app.model.sql.query3
 import org.joda.time.DateTime
 
 class SqlRepetitionService(private val repetitionAlgorithm: RepetitionAlgorithm,
                            private val db: UserDb,
                            debugOptions: DebugOptions) : RepetitionService {
-  override fun tryGetDueDate(entityId: String, entityCategory: String): DateTime? {
-    val attempts = getAttempts(entityCategory, entityId)
-    if (attempts.size == 0) return null
-    return repetitionAlgorithm.getNextDueDate(attempts)
+  override fun getDueDates(entityIds: List<String>, entityCategory: String): Map<String, DateTime> {
+    val ids = entityIds.map { "'$it'" }.joinToString(", ")
+    val query = """
+      SELECT entityId, dueDate FROM dueDatesCache WHERE entityId IN ($ids)
+    """
+
+    return db.query2<String, Long>(query).map { Pair(it.first, DateTime(it.second)) }.toMap()
   }
 
   override fun remove(entityId: String, entityCategory: String) {
@@ -31,12 +33,14 @@ class SqlRepetitionService(private val repetitionAlgorithm: RepetitionAlgorithm,
   init {
     if (debugOptions.dropAttemptsOnStart) db.execute("DROP TABLE IF EXISTS attempts")
     db.execute("CREATE TABLE IF NOT EXISTS attempts (entityId STRING, entityCategory STRING, dateTime INTEGER, score TEXT)")
+    db.execute("CREATE TABLE IF NOT EXISTS dueDatesCache (entityId STRING, entityCategory STRING, dueDate INTEGER, PRIMARY KEY(entityId, entityCategory))")
   }
 
   override fun submitAttempt(entityId: String, entityCategory: String, score: LearnScore): DateTime {
     val dueDate = computeDueDate(entityId, entityCategory, score)
     val dateTime = DateTime.now().millis
     db.execute("INSERT INTO attempts VALUES('$entityId', '$entityCategory', $dateTime, '${score.toString()}')")
+    db.execute("INSERT OR REPLACE INTO dueDatesCache VALUES('$entityId', '$entityCategory', '$dueDate')")
     return dueDate
   }
 
@@ -55,13 +59,11 @@ class SqlRepetitionService(private val repetitionAlgorithm: RepetitionAlgorithm,
   }
 
   override fun getScheduledEntities(entityCategory: String, dateTime: DateTime): List<String> {
-    val query = "SELECT entityId, dateTime, score FROM attempts WHERE entityCategory='$entityCategory'"
 
-    val dueDates = db.query3<String, Long, String>(query)
-        .groupBy { it.value1 }
-        .mapValues { pair -> pair.value.map { Attempt(LearnScore.valueOf(it.value3), DateTime(it.value2)) } }
-        .mapValues { repetitionAlgorithm.getNextDueDate(it.value) }
+    val query = """
+      SELECT entityId FROM dueDatesCache WHERE entityCategory='$entityCategory' AND dueDate <= ${dateTime.millis}
+    """
 
-    return dueDates.filter { it.value < DateTime.now() }.map { it.key }
+    return db.query1<String>(query)
   }
 }

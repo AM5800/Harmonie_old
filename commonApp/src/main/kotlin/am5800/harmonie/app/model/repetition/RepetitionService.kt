@@ -13,6 +13,6 @@ interface RepetitionService {
   fun getAttemptedItems(entityCategory: String): List<String>
   fun getBinaryScore(entityId: String, entityCategory: String): LearnScore?
   fun remove(entityId: String, entityCategory: String)
-  fun tryGetDueDate(entityId: String, entityCategory: String): DateTime?
+  fun getDueDates(entityIds: List<String>, entityCategory: String): Map<String, DateTime>
 }
 
