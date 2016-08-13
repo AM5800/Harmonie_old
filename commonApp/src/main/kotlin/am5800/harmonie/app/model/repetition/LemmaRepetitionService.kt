@@ -11,7 +11,6 @@ class LemmaAttemptResult(val lemma: Lemma, val dueDate: DateTime, val score: Lea
 
 interface LemmaRepetitionService {
   fun submitAttempt(lemma: Lemma, score: LearnScore)
-  fun computeDueDate(lemma: Lemma, score: LearnScore): DateTime
   fun getNextScheduledLemma(language: Language, dateTime: DateTime): Lemma?
   fun getAttemptedLemmas(language: Language): List<Lemma>
   val attemptResultReceived: Signal<LemmaAttemptResult>
@@ -56,11 +55,6 @@ class LemmaRepetitionServiceImpl(private val repetitionService: RepetitionServic
     val category = getCategory(lemma.language)
     val dueDate = repetitionService.submitAttempt(lemma.id, category, score)
     attemptResultReceived.fire(LemmaAttemptResult(lemma, dueDate, score))
-  }
-
-  override fun computeDueDate(lemma: Lemma, score: LearnScore): DateTime {
-    val category = getCategory(lemma.language)
-    return repetitionService.computeDueDate(lemma.lemma, category, score)
   }
 
   override fun getNextScheduledLemma(language: Language, dateTime: DateTime): Lemma? {

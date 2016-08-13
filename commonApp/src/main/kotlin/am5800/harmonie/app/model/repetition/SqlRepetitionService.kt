@@ -37,16 +37,11 @@ class SqlRepetitionService(private val repetitionAlgorithm: RepetitionAlgorithm,
   }
 
   override fun submitAttempt(entityId: String, entityCategory: String, score: LearnScore): DateTime {
-    val dueDate = computeDueDate(entityId, entityCategory, score)
-    val dateTime = DateTime.now().millis
-    db.execute("INSERT INTO attempts VALUES('$entityId', '$entityCategory', $dateTime, '${score.toString()}')")
-    db.execute("INSERT OR REPLACE INTO dueDatesCache VALUES('$entityId', '$entityCategory', '$dueDate')")
-    return dueDate
-  }
-
-  override fun computeDueDate(entityId: String, entityCategory: String, score: LearnScore): DateTime {
+    db.execute("INSERT INTO attempts VALUES('$entityId', '$entityCategory', ${DateTime.now().millis}, '${score.toString()}')")
     val attempts = getAttempts(entityCategory, entityId)
-    return repetitionAlgorithm.getNextDueDate(attempts.plus(Attempt(score, DateTime.now())))
+    val dueDate = repetitionAlgorithm.getNextDueDate(attempts.plus(Attempt(score, DateTime.now())))
+    db.execute("INSERT OR REPLACE INTO dueDatesCache VALUES('$entityId', '$entityCategory', ${dueDate.millis})")
+    return dueDate
   }
 
   private fun getAttempts(entityCategory: String, entityId: String): List<Attempt> {
