@@ -61,7 +61,6 @@ class HarmonieApplication : Application() {
 
       val sentenceSelectionStrategy = ParallelSentenceSelectorImpl(lemmasRepetitionService,
           debugOptions,
-          loggerProvider,
           sentenceAndLemmasProvider,
           SqlSentenceScoreStorage(userDb),
           SentenceSelectionStrategyImpl(),

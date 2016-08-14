@@ -49,7 +49,7 @@ class LemmaRepetitionServiceImpl(private val repetitionService: RepetitionServic
 
   override fun getNextScheduledLemma(language: Language, dateTime: DateTime): Lemma? {
     val category = getCategory(language)
-    var scheduled = repetitionService.getNextScheduledEntity(category, dateTime) ?: return null
+    val scheduled = repetitionService.getNextScheduledEntity(category, dateTime) ?: return null
     return sentenceAndLemmasProvider.getLemmasByIds(listOf(scheduled)).single()
   }
 

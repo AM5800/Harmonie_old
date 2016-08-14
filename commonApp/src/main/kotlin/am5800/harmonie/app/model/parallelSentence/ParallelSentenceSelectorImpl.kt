@@ -8,7 +8,6 @@ import am5800.common.utils.functions.random
 import am5800.harmonie.app.model.DebugOptions
 import am5800.harmonie.app.model.flow.LemmasOrderer
 import am5800.harmonie.app.model.languageCompetence.LanguageCompetence
-import am5800.harmonie.app.model.logging.LoggerProvider
 import am5800.harmonie.app.model.repetition.LemmaRepetitionService
 import am5800.harmonie.app.model.sentencesAndLemmas.SentenceAndLemmasProvider
 import am5800.harmonie.app.model.sentencesAndLemmas.SentenceAndTranslation
@@ -16,7 +15,6 @@ import org.joda.time.DateTime
 
 class ParallelSentenceSelectorImpl(private val repetitionService: LemmaRepetitionService,
                                    private val debugOptions: DebugOptions,
-                                   loggerProvider: LoggerProvider,
                                    private val sentenceAndLemmasProvider: SentenceAndLemmasProvider,
                                    private val sentenceScoreStorage: SentenceScoreStorage,
                                    private val sentenceSelectionStrategy: SentenceSelectionStrategy,
@@ -26,45 +24,40 @@ class ParallelSentenceSelectorImpl(private val repetitionService: LemmaRepetitio
   }
 
   private enum class NextTask {
-    RepeatRandomLemma, LearnNewLemma
+    LearnNewLemma, Repeat, RepeatRandom
   }
 
   private val nextTaskDistribution = EnumerableDistribution.define<NextTask> {
-    add(NextTask.LearnNewLemma, 0.7)
-    addRest(NextTask.RepeatRandomLemma)
+    add(NextTask.Repeat, 0.7)
+    addRest(NextTask.LearnNewLemma)
   }
 
-  private val logger = loggerProvider.getLogger(javaClass)
-
   override fun selectSentenceToShow(learnLanguage: Language, languageCompetence: List<LanguageCompetence>): SentenceAndTranslation? {
-    while (true) {
-      val scheduled = repetitionService.getNextScheduledLemma(learnLanguage, DateTime.now()) ?: break
-      logger.info("Repeating scheduled lemma: ${scheduled.lemma}, language: $learnLanguage")
-      val result = selectSentence(languageCompetence, scheduled)
-      if (result != null) return result
-
-      logger.info("Can't find sentence with lemma: ${scheduled.lemma}, language: $learnLanguage")
-    }
+    val now = DateTime.now()
+    val scheduledLemma = repetitionService.getNextScheduledLemma(learnLanguage, now)
 
     val attemptedLemmas = repetitionService.getAttemptedLemmas(learnLanguage)
-    val canRepeatRandomLemma = attemptedLemmas.any()
     val allLemmas = sentenceAndLemmasProvider.getAllLemmasSorted(learnLanguage)
+
     val canLearnNewLemma = allLemmas.map { it }.minus(attemptedLemmas).any()
+    val canRepeatRandomLemma = attemptedLemmas.any()
+    val canRepeatScheduledLemma = scheduledLemma != null
 
-    if (canLearnNewLemma == false && canRepeatRandomLemma) throw Exception("Impossible state. Empty database?")
-    if (canLearnNewLemma && canRepeatRandomLemma) {
-      val nextTask = nextTaskDistribution.get(debugOptions.random)
-      if (nextTask == NextTask.LearnNewLemma) return learnNewLemma(languageCompetence, allLemmas, attemptedLemmas)
-      else return repeatRandomLemma(attemptedLemmas, languageCompetence)
+    val task =
+        if (canRepeatScheduledLemma && canLearnNewLemma) nextTaskDistribution.get(debugOptions.random)
+        else if (!canRepeatScheduledLemma && canLearnNewLemma) NextTask.LearnNewLemma
+        else if (!canRepeatScheduledLemma && !canLearnNewLemma && canRepeatRandomLemma) NextTask.RepeatRandom
+        else throw Exception("Unsupported state")
+
+
+    when (task) {
+      NextTask.LearnNewLemma -> return learnNewLemma(languageCompetence, allLemmas, attemptedLemmas)
+      NextTask.Repeat -> return selectSentence(languageCompetence, scheduledLemma!!)
+      NextTask.RepeatRandom -> return repeatRandomLemma(attemptedLemmas, languageCompetence)
     }
-
-    if (canLearnNewLemma) return learnNewLemma(languageCompetence, allLemmas, attemptedLemmas)
-    else if (canRepeatRandomLemma) return repeatRandomLemma(attemptedLemmas, languageCompetence)
-    else throw Exception("If this happens - then I am a steamship")
   }
 
   private fun repeatRandomLemma(attemptedLemmas: List<Lemma>, competence: List<LanguageCompetence>): SentenceAndTranslation? {
-    // TODO: user might want to NEVER see some words
     val lemma = attemptedLemmas.random(debugOptions.random)
     return selectSentence(competence, lemma)
   }
@@ -75,8 +68,8 @@ class ParallelSentenceSelectorImpl(private val repetitionService: LemmaRepetitio
     return selectSentence(competence, lemma)
   }
 
-  private fun selectSentence(languageCompetence: List<LanguageCompetence>, scheduled: Lemma): SentenceAndTranslation? {
-    val sentencesAndTranslation = sentenceAndLemmasProvider.getEasiestSentencesWith(scheduled, languageCompetence, 50)
+  private fun selectSentence(languageCompetence: List<LanguageCompetence>, lemma: Lemma): SentenceAndTranslation? {
+    val sentencesAndTranslation = sentenceAndLemmasProvider.getEasiestSentencesWith(lemma, languageCompetence, 50)
     val sentences = sentencesAndTranslation.map { it.sentence }
     val scores = sentenceScoreStorage.getScores(sentences)
     val result = sentenceSelectionStrategy.select(scores) ?: return null
