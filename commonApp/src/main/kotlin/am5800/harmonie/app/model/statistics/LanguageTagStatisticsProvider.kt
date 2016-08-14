@@ -19,7 +19,7 @@ class LanguageTagStatisticsProvider(private val lemmaRepetitionService: LemmaRep
 
   override fun getOnDueCount(tags: Collection<FlowItemTag>): Int {
     return count(tags, {
-      lemmaRepetitionService.countAllScheduledLemmas(it, DateTime.now())
+      lemmaRepetitionService.countOnDueLemmas(it, DateTime.now())
     })
   }
 

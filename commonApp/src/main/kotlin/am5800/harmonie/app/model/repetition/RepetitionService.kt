@@ -8,10 +8,9 @@ enum class LearnScore {
 
 interface RepetitionService {
   fun submitAttempt(entityId: String, entityCategory: String, score: LearnScore): DateTime
-  fun getScheduledEntities(entityCategory: String, dateTime: DateTime): List<String>
   fun getAttemptedItems(entityCategory: String): List<String>
-  fun getBinaryScore(entityId: String, entityCategory: String): LearnScore?
-  fun remove(entityId: String, entityCategory: String)
   fun getDueDates(entityIds: List<String>, entityCategory: String): Map<String, DateTime>
+  fun countOnDueItems(category: String, dateTime: DateTime): Int
+  fun getNextScheduledEntity(category: String, dateTime: DateTime): String?
 }
 

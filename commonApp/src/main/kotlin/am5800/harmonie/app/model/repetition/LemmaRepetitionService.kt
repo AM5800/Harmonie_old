@@ -14,11 +14,7 @@ interface LemmaRepetitionService {
   fun getNextScheduledLemma(language: Language, dateTime: DateTime): Lemma?
   fun getAttemptedLemmas(language: Language): List<Lemma>
   val attemptResultReceived: Signal<LemmaAttemptResult>
-
-  fun countAllScheduledLemmas(language: Language, dateTime: DateTime): Int
-
-  fun remove(lemma: Lemma)
-
+  fun countOnDueLemmas(language: Language, dateTime: DateTime): Int
   fun getDueDates(lemmas: List<Lemma>): List<Pair<Lemma, DateTime?>>
 }
 
@@ -35,15 +31,9 @@ class LemmaRepetitionServiceImpl(private val repetitionService: RepetitionServic
     return lemmas.map { Pair(it, dueDates[it.id]) }
   }
 
-  override fun remove(lemma: Lemma) {
-    val category = getCategory(lemma.language)
-    repetitionService.remove(lemma.id, category)
-  }
-
-  override fun countAllScheduledLemmas(language: Language, dateTime: DateTime): Int {
+  override fun countOnDueLemmas(language: Language, dateTime: DateTime): Int {
     val category = getCategory(language)
-    val scheduled = repetitionService.getScheduledEntities(category, dateTime)
-    return scheduled.size
+    return repetitionService.countOnDueItems(category, dateTime)
   }
 
   override val attemptResultReceived = Signal<LemmaAttemptResult>(lifetime)
@@ -59,7 +49,7 @@ class LemmaRepetitionServiceImpl(private val repetitionService: RepetitionServic
 
   override fun getNextScheduledLemma(language: Language, dateTime: DateTime): Lemma? {
     val category = getCategory(language)
-    val scheduled = repetitionService.getScheduledEntities(category, dateTime).firstOrNull() ?: return null
+    var scheduled = repetitionService.getNextScheduledEntity(category, dateTime) ?: return null
     return sentenceAndLemmasProvider.getLemmasByIds(listOf(scheduled)).single()
   }
 

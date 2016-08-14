@@ -44,7 +44,6 @@ class ParallelSentenceSelectorImpl(private val repetitionService: LemmaRepetitio
       if (result != null) return result
 
       logger.info("Can't find sentence with lemma: ${scheduled.lemma}, language: $learnLanguage")
-      repetitionService.remove(scheduled)
     }
 
     val attemptedLemmas = repetitionService.getAttemptedLemmas(learnLanguage)

@@ -9,6 +9,23 @@ import org.joda.time.DateTime
 class SqlRepetitionService(private val repetitionAlgorithm: RepetitionAlgorithm,
                            private val db: UserDb,
                            debugOptions: DebugOptions) : RepetitionService {
+  override fun countOnDueItems(category: String, dateTime: DateTime): Int {
+    val query = "SELECT COUNT(*) FROM dueDatesCache WHERE dueDate < ${dateTime.millis} AND entityCategory = '$category'"
+    return db.query1<Int>(query).single()
+  }
+
+  override fun getNextScheduledEntity(category: String, dateTime: DateTime): String? {
+    val millis = dateTime.millis
+    val query = """
+      SELECT entityId FROM dueDatesCache
+        WHERE dueDate < $millis
+        ORDER BY $millis-dueDate
+        LIMIT 1
+    """
+
+    return db.query1<String>(query).singleOrNull()
+  }
+
   override fun getDueDates(entityIds: List<String>, entityCategory: String): Map<String, DateTime> {
     val ids = entityIds.map { "'$it'" }.joinToString(", ")
     val query = """
@@ -16,14 +33,6 @@ class SqlRepetitionService(private val repetitionAlgorithm: RepetitionAlgorithm,
     """
 
     return db.query2<String, Long>(query).map { Pair(it.first, DateTime(it.second)) }.toMap()
-  }
-
-  override fun remove(entityId: String, entityCategory: String) {
-    db.execute("DELETE FROM attempts WHERE entityId='$entityId' AND entityCategory='$entityCategory'")
-  }
-
-  override fun getBinaryScore(entityId: String, entityCategory: String): LearnScore? {
-    return repetitionAlgorithm.getBinaryScore(getAttempts(entityCategory, entityId))
   }
 
   override fun getAttemptedItems(entityCategory: String): List<String> {
@@ -51,14 +60,5 @@ class SqlRepetitionService(private val repetitionAlgorithm: RepetitionAlgorithm,
     } catch(e: Exception) {
       throw e
     }
-  }
-
-  override fun getScheduledEntities(entityCategory: String, dateTime: DateTime): List<String> {
-
-    val query = """
-      SELECT entityId FROM dueDatesCache WHERE entityCategory='$entityCategory' AND dueDate <= ${dateTime.millis}
-    """
-
-    return db.query1<String>(query)
   }
 }

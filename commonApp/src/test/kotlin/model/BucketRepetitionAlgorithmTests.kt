@@ -98,7 +98,7 @@ class BucketRepetitionAlgorithmTests {
   fun testFirstSuccessfulAttempt() {
     val attempts = buildAttempts { ok() }
     val dueDate = alg.getNextDueDate(attempts)
-    val expectedDueDate = attempts.last().dateTime.plus(alg.buckets[2])
+    val expectedDueDate = attempts.last().dateTime.plus(alg.buckets[3])
     Assert.assertEquals(expectedDueDate, dueDate)
   }
 
