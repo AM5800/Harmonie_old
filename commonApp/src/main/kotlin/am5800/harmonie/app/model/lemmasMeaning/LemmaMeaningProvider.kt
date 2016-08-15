@@ -4,6 +4,6 @@ import am5800.common.Language
 import am5800.common.Lemma
 
 
-interface LemmaMeaningsProvider {
-  fun getMeaningsAsSingleString(lemma: Lemma, meaningsLanguage: Language): String?
+interface LemmaTranslationsProvider {
+  fun getTranslations(lemma: Lemma, translationsLanguage: Language): List<String>
 }

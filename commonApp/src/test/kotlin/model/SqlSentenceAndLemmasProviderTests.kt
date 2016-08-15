@@ -67,7 +67,7 @@ class SqlSentenceAndLemmasProviderTests : BaseTestWithLifetime() {
   @Test()
   fun testLemmasReading() {
     val allLemmas = sentenceProvider.getAllLemmasSorted(Language.German)
-    Assert.assertEquals(9, allLemmas.size)
+    Assert.assertEquals(20, allLemmas.size)
 
     val keyed = allLemmas.single { it.lemma == key }
     Assert.assertEquals(0, keyed.difficultyLevel)

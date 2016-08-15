@@ -52,3 +52,12 @@ dependencies {
   compile project(':commonApp')
   compile 'org.apmem.tools:layouts:1.10@aar'
 }
+
+task copyDb(type: Copy) {
+  from '../data/corpus/content.db'
+  into 'src/main/assets'
+}
+
+project.afterEvaluate {
+  preBuild.dependsOn copyDb
+}

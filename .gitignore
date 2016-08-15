@@ -1,7 +1,4 @@
 data/*
-!data/corpus/test_ss_de.xml
-!data/corpus/test_ss_ru.xml
-!data/corpus/test_ls_de.xml
 
 #apks
 *.apk
@@ -42,4 +39,5 @@ proguard/
 *.db
 *db-journal
 
+!data/corpus/test.db
 

@@ -39,7 +39,7 @@ class TestContentSqlDatabase(lifetime: Lifetime) : ContentDb {
   }
 
   private fun findDb(): File {
-    val locations = listOf(File("data\\test.db"), File("..\\data\\test.db"))
+    val locations = listOf(File("data\\corpus\\test.db"), File("..\\data\\corpus\\test.db"))
     val selectedLocation = locations.firstOrNull { it.exists() }
     if (selectedLocation != null) return selectedLocation
 

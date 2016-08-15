@@ -7,7 +7,7 @@ import am5800.common.utils.properties.NullableProperty
 import am5800.common.utils.properties.Property
 import am5800.harmonie.app.model.feedback.ErrorReportingService
 import am5800.harmonie.app.model.flow.FlowManager
-import am5800.harmonie.app.model.lemmasMeaning.LemmaMeaningsProvider
+import am5800.harmonie.app.model.lemmasMeaning.LemmaTranslationsProvider
 import am5800.harmonie.app.model.localization.LocalizationService
 import am5800.harmonie.app.model.parallelSentence.ParallelSentenceFlowManager
 import am5800.harmonie.app.model.parallelSentence.SentenceScore
@@ -32,7 +32,7 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
                                 private val parallelSentenceFlowManager: ParallelSentenceFlowManager,
                                 private val flowManager: FlowManager,
                                 private val localizationService: LocalizationService,
-                                private val lemmasMeaningsProvider: LemmaMeaningsProvider,
+                                private val lemmasTranslationsProvider: LemmaTranslationsProvider,
                                 keyValueDatabase: KeyValueDatabase,
                                 reportingService: ErrorReportingService) : ViewModelBase(lifetime) {
   enum class State {
@@ -144,9 +144,9 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
       }
       sb.append(": ")
 
-      val meanings = lemmasMeaningsProvider.getMeaningsAsSingleString(lemma, knownLanguage)
-      if (meanings == null) sb.append("<${localizationService.getCurrentTable().noTranslation}>")
-      else sb.append(meanings)
+      val meanings = lemmasTranslationsProvider.getTranslations(lemma, knownLanguage)
+      if (meanings.isEmpty()) sb.append("<${localizationService.getCurrentTable().noTranslation}>")
+      else sb.append(meanings.joinToString("; "))
 
       sb.toString()
     }
