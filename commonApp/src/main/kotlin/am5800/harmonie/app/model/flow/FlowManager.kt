@@ -6,9 +6,13 @@ import am5800.common.utils.SequentialLifetime
 import am5800.common.utils.properties.NullableProperty
 import am5800.common.utils.properties.NullableReadonlyProperty
 import am5800.harmonie.app.model.DebugOptions
+import am5800.harmonie.app.model.workspace.TagStatisticsProvider
 
 
-class FlowManager(lifetime: Lifetime, val providers: Collection<FlowItemProvider>, val debugOptions: DebugOptions) {
+class FlowManager(lifetime: Lifetime,
+                  private val providers: Collection<FlowItemProvider>,
+                  private val debugOptions: DebugOptions,
+                  private val tagStatisticsProvider: TagStatisticsProvider) {
   private val flowLifetime = SequentialLifetime(lifetime)
   private val _currentFlow = NullableProperty<Flow>(lifetime, null)
   val currentFlow: NullableReadonlyProperty<Flow>
@@ -17,7 +21,7 @@ class FlowManager(lifetime: Lifetime, val providers: Collection<FlowItemProvider
   fun start(distribution: EnumerableDistribution<FlowItemTag>) {
     val lt = flowLifetime.current
     lt.addAction { _currentFlow.value = null }
-    val flow = Flow(lt, providers, debugOptions, distribution)
+    val flow = Flow(lt, providers, debugOptions, distribution, tagStatisticsProvider)
     _currentFlow.value = flow
     flow.next(0, 0)
   }

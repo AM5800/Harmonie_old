@@ -69,8 +69,8 @@ class HarmonieApplication : Application() {
       val languageCompetenceManager = LanguageCompetenceManagerStub()
       val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceAndLemmasProvider, lemmasRepetitionService, sentenceSelectionStrategy, languageCompetenceManager)
       val flowItemProviders = listOf(parallelSentenceFlowManager)
-
-      val flowManager = FlowManager(lt, flowItemProviders, debugOptions)
+      val tagStatisticsProvider = LanguageTagStatisticsProvider(lemmasRepetitionService, sentenceAndLemmasProvider)
+      val flowManager = FlowManager(lt, flowItemProviders, debugOptions, tagStatisticsProvider)
 
       val localizationService = AndroidLocalizationService.create(resources, keyValueDb, lt)
       val feedbackService = AndroidFeedbackService(userDb)
@@ -80,7 +80,7 @@ class HarmonieApplication : Application() {
       val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService, SqlLemmaTranslationsProvider(contentDb), keyValueDb, reportingService)
       val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt)
       val wordsListViewModel = WordsListViewModel(lt, sentenceAndLemmasProvider, lemmasRepetitionService, orderer, localizationService)
-      val workspaceViewModel = WorkspaceViewModel(lt, flowManager, LanguageTagStatisticsProvider(lemmasRepetitionService, sentenceAndLemmasProvider), feedbackService, wordsListViewModel, localizationService)
+      val workspaceViewModel = WorkspaceViewModel(lt, flowManager, tagStatisticsProvider, feedbackService, wordsListViewModel, localizationService)
 
       // View components
       val controllerStack = ControllerStack()

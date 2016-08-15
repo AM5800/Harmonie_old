@@ -5,6 +5,9 @@ import java.util.*
 class EnumerableDistribution<out T>(distribution: Map<T, Double>) {
   private val summedDistribution = mutableListOf<Pair<Double, T>>()
 
+  val items : List<T>
+    get() = summedDistribution.map { it.second }
+
   init {
     var sum = 0.0
     for ((category, p) in distribution) {

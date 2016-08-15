@@ -42,9 +42,11 @@ class DefaultFlowControllerOwner(private val stack: ControllerStack,
   override fun bind(view: BindableView, bindingLifetime: Lifetime) {
     val statusGroup = view.getChild<View>(R.id.statusGroup)
     val statusMessage = view.getChild<TextView>(R.id.statusTextView)
+    val onDueLeft = view.getChild<TextView>(R.id.onDueLeft)
 
     statusGroup.bindVisibility(bindingLifetime, view, vm.statusVisibility, Visibility.Collapsed)
     statusMessage.bindText(bindingLifetime, view, vm.timeString)
+    onDueLeft.bindText(bindingLifetime, view, vm.onDueLeft)
 
     val placeholder = view.getChild<LinearLayout>(R.id.placeholder)
     content.onChangeNotNull(bindingLifetime, {
