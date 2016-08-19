@@ -11,15 +11,19 @@ import testUtils.TestContentSqlDatabase
 
 class SqlTranslationsProviderTests : BaseTestWithLifetime() {
   val database = TestContentSqlDatabase(testClassLifetime)
+  val translationsProvider = SqlLemmaTranslationsProvider(database)
+  val lemmasProvider = SqlSentenceAndLemmasProvider(database)
+  val aufgabe = lemmasProvider.getAllLemmasSorted(Language.German).single { it.lemma == "aufgabe" }
 
   @Test
-  fun test() {
-    val translationsProvider = SqlLemmaTranslationsProvider(database)
-    val lemmasProvider = SqlSentenceAndLemmasProvider(database)
-
-    val aufgabe = lemmasProvider.getAllLemmasSorted(Language.German).single { it.lemma == "aufgabe" }
-
+  fun testAufgabe() {
     val translations = translationsProvider.getTranslations(aufgabe, Language.Russian)
     Assert.assertArrayEquals(arrayOf("задача", "проблема"), translations.toTypedArray())
+  }
+
+  @Test
+  fun testEmpty() {
+    val translations = translationsProvider.getTranslations(aufgabe, Language.Japanese)
+    Assert.assertEquals(0, translations.count())
   }
 }
