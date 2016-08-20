@@ -29,7 +29,7 @@ class ParallelSentenceFlowManager(lifetime: Lifetime,
   val question = NullableProperty<ParallelSentenceQuestion>(lifetime, null)
 
   override fun tryPresentNextItem(tag: FlowItemTag): Boolean {
-    if (tag !is ParallelSentenceTag) throw UnsupportedOperationException("Category is not supported")
+    if (tag !is ParallelSentenceTag) return false
     val findResult = sentenceSelector.selectSentenceToShow(tag.learnLanguage, languageCompetenceManager.languageCompetence)
     if (findResult == null) {
       question.value = null

@@ -5,6 +5,7 @@ import am5800.common.utils.Lifetime
 import am5800.harmonie.android.controllers.DefaultFlowControllerOwner
 import am5800.harmonie.android.controllers.EmptyFlowContentController
 import am5800.harmonie.android.controllers.ParallelSentenceController
+import am5800.harmonie.android.controllers.VPlusPController
 import am5800.harmonie.android.controllers.wordsList.WordsListController
 import am5800.harmonie.android.controllers.workspace.WorkspaceController
 import am5800.harmonie.android.dbAccess.AndroidContentDb
@@ -12,6 +13,8 @@ import am5800.harmonie.android.dbAccess.AndroidUserDb
 import am5800.harmonie.android.dbAccess.KeyValueDatabaseImpl
 import am5800.harmonie.android.logging.AndroidLoggerProvider
 import am5800.harmonie.app.model.DebugOptions
+import am5800.harmonie.app.model.exercises.vplusp.SqlVPlusPDataProvider
+import am5800.harmonie.app.model.exercises.vplusp.VPlusPFlowManager
 import am5800.harmonie.app.model.feedback.impl.ErrorReportingServiceImpl
 import am5800.harmonie.app.model.flow.FlowManager
 import am5800.harmonie.app.model.flow.SqlLemmasOrderer
@@ -26,8 +29,11 @@ import am5800.harmonie.app.model.repetition.LemmaRepetitionServiceImpl
 import am5800.harmonie.app.model.repetition.SqlRepetitionService
 import am5800.harmonie.app.model.sentencesAndLemmas.SqlSentenceAndLemmasProvider
 import am5800.harmonie.app.model.statistics.LanguageTagStatisticsProvider
+import am5800.harmonie.app.model.workspace.MultipleTagStatisticsProvider
+import am5800.harmonie.app.model.workspace.TagStatisticsProvider
 import am5800.harmonie.app.vm.DefaultFlowControllerOwnerViewModel
 import am5800.harmonie.app.vm.ParallelSentenceViewModel
+import am5800.harmonie.app.vm.VPlusPViewModel
 import am5800.harmonie.app.vm.wordsList.WordsListViewModel
 import am5800.harmonie.app.vm.workspace.WorkspaceViewModel
 import android.app.Application
@@ -68,8 +74,11 @@ class HarmonieApplication : Application() {
 
       val languageCompetenceManager = LanguageCompetenceManagerStub()
       val parallelSentenceFlowManager = ParallelSentenceFlowManager(lt, sentenceAndLemmasProvider, lemmasRepetitionService, sentenceSelectionStrategy, languageCompetenceManager)
-      val flowItemProviders = listOf(parallelSentenceFlowManager)
-      val tagStatisticsProvider = LanguageTagStatisticsProvider(lemmasRepetitionService, sentenceAndLemmasProvider)
+      val vPlusPDataProvider = SqlVPlusPDataProvider(contentDb, sentenceAndLemmasProvider)
+      val vPlusPFlowManager = VPlusPFlowManager(lt, repetitionService, vPlusPDataProvider, debugOptions)
+      val tagStatisticsProviders = listOf<TagStatisticsProvider>(LanguageTagStatisticsProvider(lemmasRepetitionService, sentenceAndLemmasProvider), vPlusPFlowManager)
+      val tagStatisticsProvider = MultipleTagStatisticsProvider(tagStatisticsProviders)
+      val flowItemProviders = listOf(parallelSentenceFlowManager, vPlusPFlowManager)
       val flowManager = FlowManager(lt, flowItemProviders, debugOptions, tagStatisticsProvider)
 
       val localizationService = AndroidLocalizationService.create(resources, keyValueDb, lt)
@@ -81,6 +90,8 @@ class HarmonieApplication : Application() {
       val defaultFlowControllerOwnerViewModel = DefaultFlowControllerOwnerViewModel(flowManager, lt)
       val wordsListViewModel = WordsListViewModel(lt, sentenceAndLemmasProvider, lemmasRepetitionService, orderer, localizationService)
       val workspaceViewModel = WorkspaceViewModel(lt, flowManager, tagStatisticsProvider, feedbackService, wordsListViewModel, localizationService)
+      val vPlusPViewModel = VPlusPViewModel(vPlusPFlowManager, flowManager, debugOptions, lt)
+
 
       // View components
       val controllerStack = ControllerStack()
@@ -89,6 +100,7 @@ class HarmonieApplication : Application() {
       EmptyFlowContentController(defaultFlowController, flowManager, lt, localizationService)
       val parallelSentenceController = ParallelSentenceController(lt, defaultFlowController, parallelSentenceViewModel)
       WordsListController(wordsListViewModel, controllerStack, lt)
+      VPlusPController(vPlusPViewModel, defaultFlowController, lt)
 
       container.register(controllerStack)
       container.register(loggerProvider)

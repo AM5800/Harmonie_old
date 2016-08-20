@@ -14,11 +14,11 @@ class SqlRepetitionService(private val repetitionAlgorithm: RepetitionAlgorithm,
     return db.query1<Int>(query).single()
   }
 
-  override fun getNextScheduledEntity(category: String, dateTime: DateTime): String? {
+  override fun getNextScheduledEntity(entityCategory: String, dateTime: DateTime): String? {
     val millis = dateTime.millis
     val query = """
       SELECT entityId FROM dueDatesCache
-        WHERE dueDate < $millis
+        WHERE dueDate < $millis AND entityCategory = '$entityCategory'
         ORDER BY $millis-dueDate
         LIMIT 1
     """
@@ -29,7 +29,7 @@ class SqlRepetitionService(private val repetitionAlgorithm: RepetitionAlgorithm,
   override fun getDueDates(entityIds: List<String>, entityCategory: String): Map<String, DateTime> {
     val ids = entityIds.map { "'$it'" }.joinToString(", ")
     val query = """
-      SELECT entityId, dueDate FROM dueDatesCache WHERE entityId IN ($ids)
+      SELECT entityId, dueDate FROM dueDatesCache WHERE entityCategory = '$entityCategory' entityId IN ($ids)
     """
 
     return db.query2<String, Long>(query).map { Pair(it.first, DateTime(it.second)) }.toMap()

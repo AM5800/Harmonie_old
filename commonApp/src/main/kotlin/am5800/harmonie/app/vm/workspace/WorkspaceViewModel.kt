@@ -5,6 +5,7 @@ import am5800.common.utils.Lifetime
 import am5800.common.utils.fire
 import am5800.common.utils.properties.Property
 import am5800.common.utils.properties.ReadonlyProperty
+import am5800.harmonie.app.model.exercises.vplusp.VPlusPFlowItemTag
 import am5800.harmonie.app.model.feedback.FeedbackService
 import am5800.harmonie.app.model.flow.FlowManager
 import am5800.harmonie.app.model.localization.LocalizationService
@@ -29,6 +30,11 @@ class WorkspaceViewModel(private val lifetime: Lifetime,
         tagStatisticsProvider,
         flowManager)
 
+    val vplusp = LanguageWorkspaceItemViewModel("V+P",
+        listOf(VPlusPFlowItemTag()),
+        tagStatisticsProvider,
+        flowManager)
+
     val wordsTitle = localizationService.createProperty(lifetime, { it.wordsList })
     val wordsDescription = localizationService.createProperty(lifetime, { it.wordsListDescription })
     val words = SimpleWorkspaceItemViewModel(wordsTitle, wordsDescription, { wordsListViewModel.activationRequested.fire() })
@@ -37,6 +43,6 @@ class WorkspaceViewModel(private val lifetime: Lifetime,
     val feedbackDescription = localizationService.createProperty(lifetime, { it.sendDbDescription })
     val feedback = SimpleWorkspaceItemViewModel(feedbackTitle, feedbackDescription, { feedbackService.collectAndSendData() })
 
-    return listOf(all, feedback, words)
+    return listOf(all, feedback, words, vplusp)
   }
 }

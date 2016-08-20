@@ -11,6 +11,6 @@ interface RepetitionService {
   fun getAttemptedItems(entityCategory: String): List<String>
   fun getDueDates(entityIds: List<String>, entityCategory: String): Map<String, DateTime>
   fun countOnDueItems(category: String, dateTime: DateTime): Int
-  fun getNextScheduledEntity(category: String, dateTime: DateTime): String?
+  fun getNextScheduledEntity(entityCategory: String, dateTime: DateTime): String?
 }
 

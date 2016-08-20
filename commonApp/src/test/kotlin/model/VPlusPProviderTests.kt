@@ -26,6 +26,12 @@ class VPlusPProviderTests : BaseTestWithLifetime() {
     Assert.assertEquals(18, item.occurrenceStart)
     Assert.assertEquals(21, item.occurrenceEnd)
     Assert.assertEquals("test#2", item.sentence.uid)
+    Assert.assertEquals("auf", item.preposition)
+  }
 
+  @Test
+  fun testKnownPrepositions() {
+    val knownPrepositions = provider.getKnownPrepositions()
+    Assert.assertArrayEquals(arrayOf("auf"), knownPrepositions.toTypedArray())
   }
 }

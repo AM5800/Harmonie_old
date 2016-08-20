@@ -7,6 +7,10 @@ import am5800.harmonie.app.model.sql.query3
 
 class SqlVPlusPDataProvider(private val contentDb: ContentDb,
                             private val sentenceAndLemmasProvider: SqlSentenceAndLemmasProvider) : VPlusPDataProvider {
+  override fun getKnownPrepositions(): List<String> {
+    return getAllTopics().map { getPrepositionFromTopic(it) }.distinct()
+  }
+
   override fun getAllTopics(): List<String> {
     val query = "SELECT DISTINCT(topic) FROM vplusp"
 
@@ -24,7 +28,10 @@ class SqlVPlusPDataProvider(private val contentDb: ContentDb,
     val queryResult = contentDb.query3<Long, Int, Int>(query)
 
     val sentences = sentenceAndLemmasProvider.getSentencesFlat(queryResult.map { it.value1 }).map { Pair(it.sqlId, it) }.toMap()
+    val preposition = getPrepositionFromTopic(topic)
 
-    return queryResult.map { VPlusPData(sentences[it.value1]!!, it.value2, it.value3, topic) }
+    return queryResult.map { VPlusPData(sentences[it.value1]!!, preposition, it.value2, it.value3, topic) }
   }
+
+  private fun getPrepositionFromTopic(topic: String) = topic.split(' ').last().trim()
 }
