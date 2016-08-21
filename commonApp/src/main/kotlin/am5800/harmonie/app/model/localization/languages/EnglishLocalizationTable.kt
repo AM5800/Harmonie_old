@@ -16,7 +16,6 @@ class EnglishLocalizationTable : LocalizationTable {
   override val wordsList = "Words list"
   override val wordsListDescription = "View and edit words status"
   override val unclear = "Unclear"
-  override val blackout = "Blackout"
   override val uncertain = "Uncertain"
   override val clear = "Clear"
   override val onDue = FormatStringImpl("On due: %0")

@@ -6,7 +6,7 @@ import am5800.harmonie.app.model.languageCompetence.LanguageCompetence
 import am5800.harmonie.app.model.sentencesAndLemmas.SentenceAndTranslation
 
 enum class SentenceScore {
-  TotalBlackout, Unclear, Uncertain, Clear
+  Unclear, Uncertain, Clear
 }
 
 interface ParallelSentenceSelector {

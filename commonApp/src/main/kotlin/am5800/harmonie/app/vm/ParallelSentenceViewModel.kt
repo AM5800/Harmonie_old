@@ -53,8 +53,6 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
   val continueBtnText = localizationService.createProperty(lifetime, { it.showTranslation })
 
   private val state = Property(lifetime, State.ShowQuestion)
-  private var currentScoreIsGood = true
-
 
   fun next() {
     if (state.value == State.ShowQuestion) {
@@ -65,7 +63,7 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
   }
 
   fun submit(buttonIndex: Int) {
-    if (buttonIndex < 1 || buttonIndex > 3) throw Exception("buttonIndex is out of range: $buttonIndex")
+    if (buttonIndex < 0 || buttonIndex > 2) throw Exception("buttonIndex is out of range: $buttonIndex")
 
     val scores = LinkedHashMap<Lemma, LearnScore>()
     val vms = question.value.filterIsInstance<ToggleableWordViewModel>()
@@ -73,7 +71,7 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
       scores.put(vm.lemma, vm.state.value)
     }
 
-    val sentenceScore = SentenceScore.values()[buttonIndex - 1 + if (currentScoreIsGood) 1 else 0]
+    val sentenceScore = SentenceScore.values()[buttonIndex]
 
     parallelSentenceFlowManager.submitScore(scores, sentenceScore)
     flowManager.next(scores.count { it.value == LearnScore.Good }, scores.count { it.value == LearnScore.Bad })
@@ -82,9 +80,9 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
   val answerGroupVisibility = Property(lifetime, false)
   val question = Property(lifetime, emptyList<WordViewModel>())
   val answer = Property(lifetime, "")
-  val score1Text = Property(lifetime, "")
-  val score2Text = Property(lifetime, "")
-  val score3Text = Property(lifetime, "")
+  val btn0Text = localizationService.createProperty(lifetime, { it.unclear })
+  val btn1Text = localizationService.createProperty(lifetime, { it.unclear })
+  val btn2Text = localizationService.createProperty(lifetime, { it.clear })
 
   init {
     state.forEachValue(lifetime, { state, lt ->
@@ -102,7 +100,6 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
       subscribeToVms(vms, lt)
       question.value = vms
       answer.value = data.answer.text
-      onGoodScore()
       activationRequested.fire(Unit)
       if (keyValueDatabase.getValue("ParallelSentenceQuizHelpShowed", "no") == "no") {
         help.value = localizationService.getCurrentTable().parallelSentencesQuizHelp
@@ -114,10 +111,6 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
   }
 
   private fun updateVms(vms: List<ToggleableWordViewModel>) {
-    val good = vms.count { it.state.value == LearnScore.Good }
-    if (good.toDouble() / vms.size > 0.8) onGoodScore()
-    else onBadScore()
-
     val problems = vms.filter { it.state.value == LearnScore.Bad }.map { Pair(it.lemma, it.text) }
 
     val learnLanguage = parallelSentenceFlowManager.question.value!!.answer.language
@@ -137,8 +130,7 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
       val sb = StringBuilder()
       if (presentations.size == 1 && lemma.lemma.equals(presentations.first(), true)) {
         sb.append(presentations.first())
-      }
-      else {
+      } else {
         sb.append(presentations.joinToString(", "))
         sb.append("(${lemma.lemma})")
       }
@@ -157,21 +149,5 @@ class ParallelSentenceViewModel(lifetime: Lifetime,
     for (tvm in tvms) {
       tvm.state.onChange(lt, { updateVms(tvms) })
     }
-  }
-
-  private fun onGoodScore() {
-    currentScoreIsGood = true
-    val table = localizationService.getCurrentTable()
-    score1Text.value = table.unclear
-    score2Text.value = table.uncertain
-    score3Text.value = table.clear
-  }
-
-  private fun onBadScore() {
-    currentScoreIsGood = false
-    val table = localizationService.getCurrentTable()
-    score1Text.value = table.blackout
-    score2Text.value = table.unclear
-    score3Text.value = table.uncertain
   }
 }

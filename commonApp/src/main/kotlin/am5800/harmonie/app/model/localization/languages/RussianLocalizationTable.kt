@@ -15,7 +15,6 @@ class RussianLocalizationTable : LocalizationTable {
   override val wordsList = "Words list"
   override val wordsListDescription = "View and edit words status"
   override val unclear = "Не понятно"
-  override val blackout = "По нулям"
   override val uncertain = "Не уверен"
   override val clear = "Понятно"
   override val onDue = FormatStringImpl("Повторить: %0")

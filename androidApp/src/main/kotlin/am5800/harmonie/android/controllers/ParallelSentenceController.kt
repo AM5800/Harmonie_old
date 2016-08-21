@@ -51,21 +51,21 @@ class ParallelSentenceController(lifetime: Lifetime,
     showTranslationBtn.bindText(bindingLifetime, view, vm.continueBtnText)
     showTranslationBtn.bindVisibilityInverted(bindingLifetime, view, vm.answerGroupVisibility, Visibility.Collapsed)
 
-    val score1 = view.getChild<Button>(R.id.score1Btn)
-    val score2 = view.getChild<Button>(R.id.score2Btn)
-    val score3 = view.getChild<Button>(R.id.score3Btn)
+    val btn0 = view.getChild<Button>(R.id.btn0)
+    val btn1 = view.getChild<Button>(R.id.btn1)
+    val btn2 = view.getChild<Button>(R.id.btn2)
 
-    score1.bindVisibility(bindingLifetime, view, vm.answerGroupVisibility, Visibility.Collapsed)
-    score2.bindVisibility(bindingLifetime, view, vm.answerGroupVisibility, Visibility.Collapsed)
-    score3.bindVisibility(bindingLifetime, view, vm.answerGroupVisibility, Visibility.Collapsed)
+    btn0.bindVisibility(bindingLifetime, view, vm.answerGroupVisibility, Visibility.Collapsed)
+    btn1.bindVisibility(bindingLifetime, view, vm.answerGroupVisibility, Visibility.Collapsed)
+    btn2.bindVisibility(bindingLifetime, view, vm.answerGroupVisibility, Visibility.Collapsed)
 
-    score1.bindText(bindingLifetime, view, vm.score1Text)
-    score2.bindText(bindingLifetime, view, vm.score2Text)
-    score3.bindText(bindingLifetime, view, vm.score3Text)
+    btn0.bindText(bindingLifetime, view, vm.btn0Text)
+    btn1.bindText(bindingLifetime, view, vm.btn1Text)
+    btn2.bindText(bindingLifetime, view, vm.btn2Text)
 
-    score1.bindOnClick(bindingLifetime, { vm.submit(1) })
-    score2.bindOnClick(bindingLifetime, { vm.submit(2) })
-    score3.bindOnClick(bindingLifetime, { vm.submit(3) })
+    btn0.bindOnClick(bindingLifetime, { vm.submit(0) })
+    btn1.bindOnClick(bindingLifetime, { vm.submit(1) })
+    btn2.bindOnClick(bindingLifetime, { vm.submit(2) })
 
     val flowLayout = view.getChild<FlowLayout>(R.id.question)
     vm.question.onChange(bindingLifetime, {

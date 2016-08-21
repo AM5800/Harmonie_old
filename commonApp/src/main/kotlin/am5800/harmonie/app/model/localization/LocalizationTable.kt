@@ -24,7 +24,6 @@ interface LocalizationTable {
   val onLearning: FormatString
   val showTranslation: String
   val unclear: String
-  val blackout: String
   val uncertain: String
   val clear: String
   val sendDb: String

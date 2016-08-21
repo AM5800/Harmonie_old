@@ -32,17 +32,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Score 1"
-                    android:id="@+id/score1Btn"/>
+                    android:id="@+id/btn0"/>
             <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Score 2"
-                    android:id="@+id/score2Btn"/>
+                    android:id="@+id/btn1"/>
             <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Score 3"
-                    android:id="@+id/score3Btn"/>
+                    android:id="@+id/btn2"/>
         </LinearLayout>
     </LinearLayout>
 

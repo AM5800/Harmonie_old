@@ -82,7 +82,7 @@ class ParallelSentenceSelectorImpl(private val repetitionService: LemmaRepetitio
     val firstUnknown = sentences.firstOrNull { it.second == null }
     if (firstUnknown != null) return firstUnknown.first
 
-    val firstNonBlackout = sentences.firstOrNull { it.second != SentenceScore.TotalBlackout } ?: return sentences.first().first
+    val firstNonBlackout = sentences.firstOrNull { it.second != SentenceScore.Unclear } ?: return sentences.first().first
 
     return firstNonBlackout.first
   }
