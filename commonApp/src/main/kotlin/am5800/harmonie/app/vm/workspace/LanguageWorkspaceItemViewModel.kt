@@ -6,20 +6,18 @@ import am5800.harmonie.app.model.flow.FlowManager
 import am5800.harmonie.app.model.workspace.TagStatisticsProvider
 
 class LanguageWorkspaceItemViewModel(val title: String,
-                                     private val tags: Collection<FlowItemTag>,
+                                     private val tags: EnumerableDistribution<FlowItemTag>,
                                      private val tagStatisticsProvider: TagStatisticsProvider,
                                      private val flowManager: FlowManager) : WorkspaceItemViewModel {
   override val action: () -> Unit
     get() = {
-      flowManager.start(EnumerableDistribution.define {
-        equal(tags)
-      })
+      flowManager.start(tags)
     }
 
   fun computeBriefStats(): LanguageWorkspaceItemBriefStats {
-    val onDue = tagStatisticsProvider.getOnDueCount(tags)
-    val onLearning = tagStatisticsProvider.getOnLearningCount(tags)
-    val total = tagStatisticsProvider.getTotalCount(tags)
+    val onDue = tagStatisticsProvider.getOnDueCount(tags.items)
+    val onLearning = tagStatisticsProvider.getOnLearningCount(tags.items)
+    val total = tagStatisticsProvider.getTotalCount(tags.items)
     return LanguageWorkspaceItemBriefStats(onDue, onLearning, total)
   }
 }

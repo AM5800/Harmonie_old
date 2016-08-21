@@ -1,12 +1,14 @@
 package am5800.harmonie.app.vm.workspace
 
 import am5800.common.Language
+import am5800.common.utils.EnumerableDistribution
 import am5800.common.utils.Lifetime
 import am5800.common.utils.fire
 import am5800.common.utils.properties.Property
 import am5800.common.utils.properties.ReadonlyProperty
 import am5800.harmonie.app.model.exercises.vplusp.VPlusPFlowItemTag
 import am5800.harmonie.app.model.feedback.FeedbackService
+import am5800.harmonie.app.model.flow.FlowItemTag
 import am5800.harmonie.app.model.flow.FlowManager
 import am5800.harmonie.app.model.localization.LocalizationService
 import am5800.harmonie.app.model.parallelSentence.ParallelSentenceTag
@@ -25,13 +27,20 @@ class WorkspaceViewModel(private val lifetime: Lifetime,
     get() = _items
 
   private fun createDefaultItems(): Collection<WorkspaceItemViewModel> {
+    val allTags = EnumerableDistribution.define<FlowItemTag> {
+      add(ParallelSentenceTag(Language.German), 0.8)
+      addRest(VPlusPFlowItemTag())
+    }
     val all = LanguageWorkspaceItemViewModel("Learn all",
-        listOf(ParallelSentenceTag(Language.German)),
+        allTags,
         tagStatisticsProvider,
         flowManager)
 
+    val vpluspTags = EnumerableDistribution.define<FlowItemTag> {
+      add(VPlusPFlowItemTag(), 1.0)
+    }
     val vplusp = LanguageWorkspaceItemViewModel("V+P",
-        listOf(VPlusPFlowItemTag()),
+        vpluspTags,
         tagStatisticsProvider,
         flowManager)
 
@@ -43,6 +52,6 @@ class WorkspaceViewModel(private val lifetime: Lifetime,
     val feedbackDescription = localizationService.createProperty(lifetime, { it.sendDbDescription })
     val feedback = SimpleWorkspaceItemViewModel(feedbackTitle, feedbackDescription, { feedbackService.collectAndSendData() })
 
-    return listOf(all, feedback, words, vplusp)
+    return listOf(all, vplusp, feedback, words)
   }
 }
