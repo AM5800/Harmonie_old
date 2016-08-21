@@ -23,10 +23,18 @@ class SqlSentenceScoreStorage(val userDb: UserDb) : SentenceScoreStorage {
         WHERE uid IN ($ids)
     """
     val queryResult = userDb.query2<String, String>(query)
-        .map { Pair(it.first, SentenceScore.valueOf(it.second)) }
+        .map { Pair(it.first, getSentenceScore(it)) }
         .toMap()
 
     return sentences.map { Pair(it, queryResult[it.uid]) }
+  }
+
+  private fun getSentenceScore(it: Pair<String, String>): SentenceScore {
+    try {
+      return SentenceScore.valueOf(it.second)
+    } catch (e: Exception) {
+      return SentenceScore.Unclear
+    }
   }
 
   override fun setScore(sentence: Sentence, score: SentenceScore) {
