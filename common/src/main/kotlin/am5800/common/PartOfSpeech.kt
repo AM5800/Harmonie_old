@@ -9,6 +9,10 @@ enum class PartOfSpeech {
   Other,
   Punctuation,
   ForeignLanguage,
+  Conjunction,
+  Pronoun,
+  Adverb,
+  Adjective,
   Digit;
 
   companion object {

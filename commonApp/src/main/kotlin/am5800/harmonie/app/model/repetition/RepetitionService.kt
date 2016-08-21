@@ -10,7 +10,8 @@ interface RepetitionService {
   fun submitAttempt(entityId: String, entityCategory: String, score: LearnScore): DateTime
   fun getAttemptedItems(entityCategory: String): List<String>
   fun getDueDates(entityIds: List<String>, entityCategory: String): Map<String, DateTime>
-  fun countOnDueItems(category: String, dateTime: DateTime): Int
+  fun countOnDueItems(entityCategory: String, dateTime: DateTime): Int
   fun getNextScheduledEntity(entityCategory: String, dateTime: DateTime): String?
+  fun remove(entityId: String, entityCategory: String)
 }
 

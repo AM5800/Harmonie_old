@@ -9,8 +9,13 @@ import org.joda.time.DateTime
 class SqlRepetitionService(private val repetitionAlgorithm: RepetitionAlgorithm,
                            private val db: UserDb,
                            debugOptions: DebugOptions) : RepetitionService {
-  override fun countOnDueItems(category: String, dateTime: DateTime): Int {
-    val query = "SELECT COUNT(*) FROM dueDatesCache WHERE dueDate < ${dateTime.millis} AND entityCategory = '$category'"
+  override fun remove(entityId: String, entityCategory: String) {
+    db.execute("DELETE FROM dueDatesCache WHERE entityId = '$entityId' AND entityCategory = '$entityCategory'")
+    db.execute("DELETE FROM attempts WHERE entityId = '$entityId' AND entityCategory = '$entityCategory'")
+  }
+
+  override fun countOnDueItems(entityCategory: String, dateTime: DateTime): Int {
+    val query = "SELECT COUNT(*) FROM dueDatesCache WHERE dueDate < ${dateTime.millis} AND entityCategory = '$entityCategory'"
     return db.query1<Int>(query).single()
   }
 

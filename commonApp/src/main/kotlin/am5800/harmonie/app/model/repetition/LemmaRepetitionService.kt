@@ -49,8 +49,12 @@ class LemmaRepetitionServiceImpl(private val repetitionService: RepetitionServic
 
   override fun getNextScheduledLemma(language: Language, dateTime: DateTime): Lemma? {
     val category = getCategory(language)
-    val scheduled = repetitionService.getNextScheduledEntity(category, dateTime) ?: return null
-    return sentenceAndLemmasProvider.getLemmasByIds(listOf(scheduled)).single()
+    while (true) {
+      val scheduled = repetitionService.getNextScheduledEntity(category, dateTime) ?: return null
+      val result = sentenceAndLemmasProvider.getLemmasByIds(listOf(scheduled)).singleOrNull()
+      if (result == null) repetitionService.remove(scheduled, category)
+      else return result
+    }
   }
 
   override fun getAttemptedLemmas(language: Language): List<Lemma> {
