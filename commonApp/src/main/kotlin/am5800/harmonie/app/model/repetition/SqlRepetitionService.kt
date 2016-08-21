@@ -34,7 +34,7 @@ class SqlRepetitionService(private val repetitionAlgorithm: RepetitionAlgorithm,
   override fun getDueDates(entityIds: List<String>, entityCategory: String): Map<String, DateTime> {
     val ids = entityIds.map { "'$it'" }.joinToString(", ")
     val query = """
-      SELECT entityId, dueDate FROM dueDatesCache WHERE entityCategory = '$entityCategory' entityId IN ($ids)
+      SELECT entityId, dueDate FROM dueDatesCache WHERE entityCategory = '$entityCategory' AND entityId IN ($ids)
     """
 
     return db.query2<String, Long>(query).map { Pair(it.first, DateTime(it.second)) }.toMap()
