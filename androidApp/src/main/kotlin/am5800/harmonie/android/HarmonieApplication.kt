@@ -22,7 +22,6 @@ import am5800.harmonie.app.model.languageCompetence.LanguageCompetenceManagerStu
 import am5800.harmonie.app.model.lemmasMeaning.SqlLemmaTranslationsProvider
 import am5800.harmonie.app.model.parallelSentence.ParallelSentenceFlowManager
 import am5800.harmonie.app.model.parallelSentence.ParallelSentenceSelectorImpl
-import am5800.harmonie.app.model.parallelSentence.SentenceSelectionStrategyImpl
 import am5800.harmonie.app.model.parallelSentence.sql.SqlSentenceScoreStorage
 import am5800.harmonie.app.model.repetition.BucketRepetitionAlgorithm
 import am5800.harmonie.app.model.repetition.LemmaRepetitionServiceImpl
@@ -69,7 +68,6 @@ class HarmonieApplication : Application() {
           debugOptions,
           sentenceAndLemmasProvider,
           SqlSentenceScoreStorage(userDb),
-          SentenceSelectionStrategyImpl(),
           orderer)
 
       val languageCompetenceManager = LanguageCompetenceManagerStub()

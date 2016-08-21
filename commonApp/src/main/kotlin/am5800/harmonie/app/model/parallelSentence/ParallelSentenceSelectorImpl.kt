@@ -17,7 +17,6 @@ class ParallelSentenceSelectorImpl(private val repetitionService: LemmaRepetitio
                                    private val debugOptions: DebugOptions,
                                    private val sentenceAndLemmasProvider: SentenceAndLemmasProvider,
                                    private val sentenceScoreStorage: SentenceScoreStorage,
-                                   private val sentenceSelectionStrategy: SentenceSelectionStrategy,
                                    private val lemmasOrderer: LemmasOrderer) : ParallelSentenceSelector {
   override fun submitScore(sentence: Sentence, score: SentenceScore) {
     sentenceScoreStorage.setScore(sentence, score)
@@ -72,8 +71,19 @@ class ParallelSentenceSelectorImpl(private val repetitionService: LemmaRepetitio
     val sentencesAndTranslation = sentenceAndLemmasProvider.getEasiestSentencesWith(lemma, languageCompetence, 50)
     val sentences = sentencesAndTranslation.map { it.sentence }
     val scores = sentenceScoreStorage.getScores(sentences)
-    val result = sentenceSelectionStrategy.select(scores) ?: return null
+    val result = select(scores) ?: return null
 
     return sentencesAndTranslation[sentences.indexOf(result)]
+  }
+
+  private fun select(sentences: List<Pair<Sentence, SentenceScore?>>): Sentence? {
+    if (sentences.isEmpty()) return null
+
+    val firstUnknown = sentences.firstOrNull { it.second == null }
+    if (firstUnknown != null) return firstUnknown.first
+
+    val firstNonBlackout = sentences.firstOrNull { it.second != SentenceScore.TotalBlackout } ?: return sentences.first().first
+
+    return firstNonBlackout.first
   }
 }
