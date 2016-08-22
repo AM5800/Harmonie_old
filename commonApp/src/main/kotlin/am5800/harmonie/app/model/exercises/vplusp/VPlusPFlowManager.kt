@@ -53,9 +53,12 @@ class VPlusPFlowManager(lifetime: Lifetime,
   }
 
   fun getNextScheduledItem(dateTime: DateTime): VPlusPData? {
-    val topic = repetitionService.getNextScheduledEntity(category, dateTime) ?: return null
-
-    return vPlusPDataProvider.get(topic).random(debugOptions.random)
+    while (true) {
+      val topic = repetitionService.getNextScheduledEntity(category, dateTime) ?: return null
+      val result = vPlusPDataProvider.get(topic).randomOrNull(debugOptions.random)
+      if (result != null) return result
+      else repetitionService.remove(topic, category)
+    }
   }
 
   fun getKnownPrepositions(): List<String> {
