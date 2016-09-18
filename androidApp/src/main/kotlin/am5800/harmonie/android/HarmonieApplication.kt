@@ -51,7 +51,7 @@ class HarmonieApplication : Application() {
     try {
       val lt = Lifetime()
       val container = ComponentContainer(lt, null)
-      val debugOptions = DebugOptions(false, null)
+      val debugOptions = DebugOptions(false, null, false)
       modelContainer = container
 
       val userDb = AndroidUserDb(this, lt)
@@ -81,7 +81,7 @@ class HarmonieApplication : Application() {
 
       val localizationService = AndroidLocalizationService.create(resources, keyValueDb, lt)
       val feedbackService = AndroidFeedbackService(userDb)
-      val reportingService = ErrorReportingServiceImpl(userDb)
+      val reportingService = ErrorReportingServiceImpl(userDb, debugOptions)
 
       // ViewModels
       val parallelSentenceViewModel = ParallelSentenceViewModel(lt, parallelSentenceFlowManager, flowManager, localizationService, SqlLemmaTranslationsProvider(contentDb), keyValueDb, reportingService)
